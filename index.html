@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Primosmusings">
+<meta name="description" content="Primosmusings — Sports Talk Podcast">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Primosmusings</title>
+<style>
+/* ── Reset ──────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{
+  font-family:-apple-system,'SF Pro Display','Segoe UI',Arial,sans-serif;
+  background:#000;color:#f0f0f0;
+  height:100%;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+a{text-decoration:none;color:inherit}
+
+/* ── Variables ──────────────────────────────────────── */
+:root{
+  --blue:#1A73E8;
+  --blue2:#4d9ef7;
+  --gold:#e8aa30;
+  --green:#1DB954;
+  --red:#e5383a;
+  --bg:#000;
+  --card:#141414;
+  --card2:#1e1e1e;
+  --nav:#0a0a0a;
+  --border:#282828;
+  --muted:#888;
+  --text:#f0f0f0;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --radius:14px;
+  --radius-sm:10px;
+}
+
+/* ── App shell ──────────────────────────────────────── */
+#app{
+  display:flex;flex-direction:column;
+  height:100dvh;max-width:430px;margin:0 auto;
+  position:relative;background:var(--bg);
+}
+
+/* ── Header ─────────────────────────────────────────── */
+#topbar{
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:10px 16px;padding-top:calc(10px + var(--safe-t));
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:sticky;top:0;z-index:100;
+}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-img{
+  width:34px;height:34px;border-radius:8px;
+  object-fit:cover;flex-shrink:0;
+  border:1.5px solid rgba(26,115,232,.5);
+}
+.logo-text{
+  font-size:.95rem;font-weight:800;letter-spacing:.07em;
+  color:#fff;
+}
+.logo-text span{color:var(--blue)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.icon-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.08);border:none;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#fff;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .15s;
+}
+.icon-btn:active{background:rgba(255,255,255,.15)}
+.icon-btn svg{width:18px;height:18px}
+
+/* ── Scroll area ────────────────────────────────────── */
+main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative}
+
+/* ── Pages & transitions ────────────────────────────── */
+.page{
+  display:none;
+  padding:16px 16px 100px;
+  animation:fadeSlide .22s ease both;
+}
+.page.active{display:block}
+@keyframes fadeSlide{
+  from{opacity:0;transform:translateY(6px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+
+/* ── Section label ──────────────────────────────────── */
+.sec-label{
+  font-size:.65rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+  padding:0 2px 8px;margin-bottom:10px;
+  border-bottom:1px solid var(--border);
+  margin-top:18px;
+}
+.sec-label:first-child{margin-top:0}
+
+/* ── Bottom nav ─────────────────────────────────────── */
+#bottom-nav{
+  background:rgba(10,10,10,.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,.07);
+  display:flex;flex-shrink:0;
+  padding-bottom:var(--safe-b);
+  position:sticky;bottom:0;z-index:100;
+}
+.nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;padding:9px 2px 6px;
+  background:none;border:none;color:var(--muted);
+  cursor:pointer;transition:color .15s;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+}
+.nav-btn::before{
+  content:'';position:absolute;top:0;left:25%;right:25%;
+  height:2px;background:var(--blue);border-radius:0 0 3px 3px;
+  transform:scaleX(0);transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-btn.active{color:#fff}
+.nav-btn.active::before{transform:scaleX(1)}
+.nav-icon{font-size:1.25rem;line-height:1}
+.nav-label{font-size:.58rem;font-weight:600;letter-spacing:.02em}
+
+/* ── Install banner ─────────────────────────────────── */
+#install-bar{
+  display:none;
+  background:linear-gradient(135deg,var(--blue) 0%,#0d3fa3 100%);
+  color:#fff;padding:10px 14px;
+  align-items:center;gap:8px;flex-shrink:0;
+}
+#install-bar.show{display:flex}
+#install-bar p{font-size:.78rem;font-weight:600;flex:1}
+.btn-inst{background:#fff;color:var(--blue);border:none;border-radius:7px;padding:5px 12px;font-size:.75rem;font-weight:800;cursor:pointer}
+.btn-x{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.1rem;cursor:pointer;padding:0 2px}
+
+/* ── Offline bar ────────────────────────────────────── */
+#offline-bar{display:none;background:#450a0a;color:#fca5a5;text-align:center;padding:5px;font-size:.7rem;font-weight:600;flex-shrink:0}
+#offline-bar.show{display:block}
+
+/* ══════════════════════════════════════════════════════
+   SEARCH OVERLAY
+══════════════════════════════════════════════════════ */
+#search-overlay{
+  position:absolute;inset:0;
+  background:var(--bg);z-index:500;
+  display:flex;flex-direction:column;
+  transform:translateY(100%);
+  transition:transform .28s cubic-bezier(.32,.72,0,1);
+}
+#search-overlay.open{transform:translateY(0)}
+.search-header{
+  padding:14px 16px;padding-top:calc(14px + var(--safe-t));
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,.8);
+  backdrop-filter:blur(20px);
+}
+.search-input-wrap{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.08);border-radius:12px;
+  padding:9px 12px;
+}
+.search-input-wrap svg{width:16px;height:16px;color:var(--muted);flex-shrink:0}
+#search-input{
+  flex:1;background:none;border:none;color:#fff;
+  font-size:.92rem;outline:none;font-family:inherit;
+}
+#search-input::placeholder{color:var(--muted)}
+.btn-search-cancel{
+  background:none;border:none;color:var(--blue);
+  font-size:.85rem;font-weight:700;cursor:pointer;
+  white-space:nowrap;-webkit-tap-highlight-color:transparent;
+}
+.search-results{flex:1;overflow-y:auto;padding:12px 16px 80px}
+.search-empty{
+  text-align:center;padding:48px 16px;color:var(--muted);
+}
+.search-empty .se-icon{font-size:2.5rem;margin-bottom:10px}
+.search-empty p{font-size:.82rem}
+.search-cat-label{
+  font-size:.62rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+  padding:14px 2px 8px;
+}
+.search-result-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  margin-bottom:4px;cursor:pointer;
+  background:var(--card);border:1px solid var(--border);
+  -webkit-tap-highlight-color:transparent;
+  transition:background .12s;
+}
+.search-result-item:active{background:var(--card2)}
+.sri-avatar{
+  width:40px;height:40px;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),#0d3fa3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;font-weight:800;color:#fff;flex-shrink:0;
+}
+.sri-avatar.ep{background:linear-gradient(135deg,#1a3a1a,var(--green))}
+.sri-avatar.blog{background:linear-gradient(135deg,#3a1a00,var(--gold))}
+.sri-info{flex:1;min-width:0}
+.sri-title{font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sri-sub{font-size:.65rem;color:var(--muted);margin-top:2px}
+.sri-go{color:var(--muted);font-size:.9rem}
+
+/* ══════════════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════════════ */
+.home-hero{
+  background:linear-gradient(160deg,#0d1f40 0%,#000 60%);
+  border:1px solid rgba(26,115,232,.2);
+  border-radius:var(--radius);padding:18px;margin-bottom:14px;
+  position:relative;overflow:hidden;
+}
+.home-hero::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(26,115,232,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.home-hero-row{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.home-logo{
+  width:72px;height:72px;border-radius:12px;
+  object-fit:cover;flex-shrink:0;
+  border:2px solid rgba(26,115,232,.5);
+  box-shadow:0 8px 24px rgba(26,115,232,.25);
+}
+.home-hero-text .est{font-size:.6rem;color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.home-hero-text h1{font-size:1.15rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:5px}
+.home-hero-text p{font-size:.73rem;color:rgba(255,255,255,.55);line-height:1.5}
+.home-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden}
+.home-stat{background:rgba(255,255,255,.04);padding:10px 6px;text-align:center}
+.home-stat .n{font-size:1.2rem;font-weight:900;color:#fff;line-height:1}
+.home-stat .l{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+.latest-card{
+  background:linear-gradient(135deg,#051830 0%,#0a1f35 100%);
+  border:1px solid rgba(29,185,84,.25);
+  border-radius:var(--radius);padding:14px;margin-bottom:14px;
+  position:relative;overflow:hidden;
+}
+.latest-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(29,185,84,.4),transparent);
+}
+.lc-badge{display:inline-flex;align-items:center;gap:5px;margin-bottom:8px}
+.lc-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.lc-label{font-size:.62rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em}
+.lc-date{font-size:.62rem;color:var(--muted);margin-left:auto}
+.latest-card h3{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:5px}
+.latest-card p{font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:12px}
+.btn-play-now{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--green);color:#000;
+  border:none;border-radius:8px;padding:9px 16px;
+  font-size:.78rem;font-weight:800;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-play-now svg{width:13px;height:13px}
+
+.desc-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:14px;
+}
+.desc-card p{font-size:.78rem;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:8px}
+.desc-card p:last-child{margin-bottom:0}
+.desc-card strong{color:#fff}
+
+.sport-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.sport-chip{
+  background:rgba(26,115,232,.12);color:var(--blue2);
+  font-size:.65rem;font-weight:600;padding:4px 10px;
+  border-radius:20px;border:1px solid rgba(26,115,232,.2);
+}
+
+/* ══════════════════════════════════════════════════════
+   LISTEN
+══════════════════════════════════════════════════════ */
+.spotify-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;margin-bottom:14px;
+}
+.spotify-card-head{padding:12px 14px 10px;display:flex;align-items:center;gap:8px}
+.spotify-card-head .sc-icon{width:26px;height:26px}
+.spotify-card-head h2{font-size:.9rem;font-weight:800;color:#fff}
+.spotify-card-head p{font-size:.68rem;color:var(--muted);margin-left:auto}
+.spotify-card iframe{display:block;width:100%}
+
+.platforms-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.platform-tile{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:11px 12px;
+  text-decoration:none;
+  transition:border-color .15s,background .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.platform-tile:active{background:var(--card2);border-color:rgba(255,255,255,.15)}
+.pt-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.pt-name{font-size:.78rem;font-weight:700;color:#fff}
+.pt-sub{font-size:.6rem;color:var(--muted);margin-top:1px}
+.pt-arrow{color:var(--muted);margin-left:auto;font-size:.8rem}
+
+.ep-loading{text-align:center;padding:28px 16px;color:var(--muted);font-size:.78rem}
+.spin{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px;display:block;margin:0 auto 8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.ep-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:8px;
+  transition:border-color .15s;
+}
+.ep-card:active{border-color:rgba(255,255,255,.15)}
+.ep-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ep-num{font-size:.6rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ep-dur{font-size:.6rem;color:var(--muted)}
+.ep-title{font-size:.88rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:7px}
+.ep-meta-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap}
+.ep-host-tag{
+  font-size:.6rem;font-weight:700;padding:2px 8px;
+  border-radius:20px;text-transform:uppercase;letter-spacing:.04em;
+  display:inline-block;
+}
+.tag-primo{background:rgba(232,170,48,.12);color:var(--gold);border:1px solid rgba(232,170,48,.2)}
+.tag-guest{background:rgba(29,185,84,.1);color:var(--green);border:1px solid rgba(29,185,84,.2)}
+.ep-date{font-size:.6rem;color:var(--muted)}
+.ep-desc{font-size:.73rem;color:rgba(255,255,255,.5);line-height:1.55;margin-bottom:10px}
+.btn-ep-play{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(29,185,84,.1);color:var(--green);
+  border:1px solid rgba(29,185,84,.2);
+  border-radius:7px;padding:7px 13px;font-size:.72rem;font-weight:700;
+  text-decoration:none;-webkit-tap-highlight-color:transparent;
+}
+
+/* ══════════════════════════════════════════════════════
+   GUESTS
+══════════════════════════════════════════════════════ */
+.guests-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.gstat{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px 6px;text-align:center;
+}
+.gstat .n{font-size:1.4rem;font-weight:900;color:var(--blue);line-height:1}
+.gstat .l{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+.guest-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:8px;overflow:hidden;
+  transition:border-color .2s;
+}
+.guest-card.expanded{border-color:rgba(26,115,232,.4)}
+.guest-card-header{
+  padding:13px 14px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.guest-avatar{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,#1a3a6a,var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;font-weight:800;color:#fff;flex-shrink:0;
+  letter-spacing:.02em;
+}
+.guest-info{flex:1;min-width:0}
+.guest-name{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.guest-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.guest-ep-badge{
+  font-size:.58rem;font-weight:700;padding:2px 6px;
+  border-radius:6px;
+  background:rgba(26,115,232,.15);color:var(--blue2);
+}
+.guest-sport-tag{
+  font-size:.55rem;font-weight:700;padding:1px 6px;
+  border-radius:6px;text-transform:uppercase;letter-spacing:.04em;
+}
+.guest-chevron{
+  color:var(--muted);flex-shrink:0;font-size:1rem;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.guest-card.expanded .guest-chevron{transform:rotate(90deg);color:var(--blue)}
+
+.guest-episodes{
+  display:none;padding:0 14px 12px;
+}
+.guest-card.expanded .guest-episodes{display:block}
+.ep-divider{height:1px;background:var(--border);margin-bottom:10px}
+.ep-row{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+.ep-row:last-child{border-bottom:none;padding-bottom:0}
+.ep-yr{
+  font-size:.58rem;font-weight:700;color:var(--blue);
+  background:rgba(26,115,232,.12);border-radius:4px;
+  padding:2px 5px;flex-shrink:0;
+}
+.ep-row-title{font-size:.75rem;color:rgba(255,255,255,.75);flex:1;line-height:1.3}
+.ep-btn{
+  display:inline-flex;align-items:center;gap:3px;
+  background:rgba(29,185,84,.1);color:var(--green);
+  border:1px solid rgba(29,185,84,.2);
+  border-radius:6px;padding:4px 9px;font-size:.65rem;font-weight:700;
+  text-decoration:none;white-space:nowrap;flex-shrink:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.no-eps{font-size:.72rem;color:var(--muted);text-align:center;padding:8px 0 2px}
+
+/* Sport badge colours */
+.b-tennis  {background:rgba(212,160,23,.15); color:#f8c94f}
+.b-golf    {background:rgba(29,185,84,.12);  color:#4ade80}
+.b-cricket {background:rgba(229,57,53,.12);  color:#f87171}
+.b-nfl     {background:rgba(16,185,129,.12); color:#34d399}
+.b-ncaa    {background:rgba(16,185,129,.1);  color:#6ee7b7}
+.b-nba     {background:rgba(249,115,22,.12); color:#fb923c}
+.b-soccer  {background:rgba(26,115,232,.12); color:var(--blue2)}
+.b-f1      {background:rgba(229,57,53,.15);  color:#fca5a5}
+.b-cycling {background:rgba(139,92,246,.12); color:#c4b5fd}
+
+/* ══════════════════════════════════════════════════════
+   BLOG
+══════════════════════════════════════════════════════ */
+.blog-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:8px;
+}
+.blog-date{font-size:.62rem;color:var(--muted);margin-bottom:6px}
+.blog-title{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:6px}
+.blog-excerpt{font-size:.74rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:10px}
+.btn-read{
+  display:inline-flex;align-items:center;gap:5px;
+  color:var(--blue);font-size:.72rem;font-weight:700;
+  background:rgba(26,115,232,.1);border:1px solid rgba(26,115,232,.2);
+  border-radius:7px;padding:6px 12px;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ══════════════════════════════════════════════════════
+   MORE
+══════════════════════════════════════════════════════ */
+.more-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:background .12s;
+}
+.more-item:active{background:var(--card2)}
+.more-icon-wrap{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  flex-shrink:0;
+}
+.more-item-lbl{font-size:.88rem;font-weight:700;color:#fff}
+.more-item-sub{font-size:.68rem;color:var(--muted);margin-top:2px}
+.more-chevron{color:var(--muted);margin-left:auto;font-size:.9rem}
+
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:none;color:var(--blue);
+  font-size:.85rem;font-weight:700;cursor:pointer;
+  padding:0 0 16px;-webkit-tap-highlight-color:transparent;
+}
+
+.about-logo{
+  width:130px;height:130px;border-radius:50%;
+  object-fit:cover;display:block;margin:0 auto 16px;
+  border:3px solid rgba(26,115,232,.4);
+  box-shadow:0 8px 30px rgba(26,115,232,.2);
+}
+.about-block{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+}
+.about-block h3{
+  font-size:.7rem;font-weight:700;color:var(--blue);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;
+}
+.about-block p{font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:6px}
+.about-block p:last-child{margin-bottom:0}
+.about-block strong{color:#fff}
+
+.links-list{display:flex;flex-direction:column;gap:8px}
+.link-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:13px 14px;
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .12s;
+}
+.link-row:active{background:var(--card2)}
+.link-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.link-name{font-size:.88rem;font-weight:700;color:#fff}
+.link-arrow{color:var(--muted);margin-left:auto}
+
+.cf-group{margin-bottom:12px}
+.cf-group label{font-size:.68rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.cf-input,
+.cf-textarea,
+.cf-select{
+  width:100%;background:var(--card2);
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:11px 13px;color:#fff;font-size:.85rem;
+  outline:none;font-family:inherit;
+  transition:border-color .15s;
+}
+.cf-input:focus,.cf-textarea:focus{border-color:var(--blue)}
+.cf-input::placeholder,.cf-textarea::placeholder{color:var(--muted)}
+.cf-textarea{resize:vertical;min-height:80px}
+.radio-group{display:flex;flex-direction:column;gap:8px}
+.radio-opt{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;cursor:pointer;
+  font-size:.8rem;color:rgba(255,255,255,.8);
+  -webkit-tap-highlight-color:transparent;
+}
+.radio-opt input{accent-color:var(--blue);width:auto}
+.btn-submit{
+  width:100%;background:var(--blue);color:#fff;
+  border:none;border-radius:var(--radius);padding:13px;
+  font-size:.9rem;font-weight:800;cursor:pointer;margin-top:4px;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .15s;
+}
+.btn-submit:active{background:#1558c0}
+.form-success{
+  background:rgba(29,185,84,.08);border:1px solid rgba(29,185,84,.25);
+  border-radius:var(--radius);padding:16px;text-align:center;
+  color:var(--green);font-weight:700;font-size:.85rem;
+  display:none;margin-top:10px;
+}
+
+.sub-page{display:none}
+.sub-page.active{display:block}
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar{width:2px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:1px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="offline-bar">📵 You're offline</div>
+  <div id="install-bar">
+    <p>📲 Add Primosmusings to your home screen</p>
+    <button class="btn-inst" id="btn-do-install">Install</button>
+    <button class="btn-x" id="btn-dismiss-install">✕</button>
+  </div>
+
+  <!-- Header -->
+  <div id="topbar">
+    <div class="logo-wrap">
+      <img class="logo-img" src="logo.jpg" alt="Primosmusings">
+      <span class="logo-text">PRIMOS<span>MUSINGS</span></span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" onclick="openSearch()" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Search overlay -->
+  <div id="search-overlay">
+    <div class="search-header">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input id="search-input" type="search" placeholder="Search episodes, guests, blog…" autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+      <button class="btn-search-cancel" onclick="closeSearch()">Cancel</button>
+    </div>
+    <div class="search-results" id="search-results">
+      <div class="search-empty">
+        <div class="se-icon">🔍</div>
+        <p>Search episodes, guests<br>blog posts and more</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main scroll area -->
+  <main id="main">
+
+    <!-- ══ HOME ══════════════════════════════════════ -->
+    <section id="page-home" class="page active">
+      <div class="home-hero">
+        <div class="home-hero-row">
+          <img class="home-logo" src="logo.jpg" alt="Primosmusings">
+          <div class="home-hero-text">
+            <div class="est">Est. Jan 2023</div>
+            <h1>Primosmusings Podcast</h1>
+            <p>Global sports. Sharp takes. No fluff.</p>
+          </div>
+        </div>
+        <div class="home-stats">
+          <div class="home-stat"><div class="n">3+</div><div class="l">Years</div></div>
+          <div class="home-stat"><div class="n">623+</div><div class="l">Episodes</div></div>
+          <div class="home-stat"><div class="n">9</div><div class="l">Sports</div></div>
+        </div>
+      </div>
+
+      <div class="latest-card" onclick="switchTab('listen',document.querySelector('[data-tab=listen]'))">
+        <div style="display:flex;align-items:center;margin-bottom:8px">
+          <div class="lc-badge"><div class="lc-dot"></div><span class="lc-label">Latest Episode</span></div>
+          <span class="lc-date">May 4, 2026</span>
+        </div>
+        <h3>Primos News Bites: Star Wars Edition — Sinner & Antonelli a Force to Reckon With</h3>
+        <p>Happy Star Wars Day. Italians Sinner and Antonelli dominate their respective sports as they capture the Madrid Open and Miami Grand Prix titles.</p>
+        <button class="btn-play-now">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Listen Now
+        </button>
+      </div>
+
+      <div class="desc-card">
+        <p>It all started in <strong>Jan 2023</strong> during the Australian Open Tennis by <strong>Primo a.k.a Sri Srinivasan</strong>. Since then, Primo has been breaking down sports across the world.</p>
+        <p>Sharp perspectives, efficient story-telling, and compelling guests who bring expertise and fresh viewpoints. <strong>If it matters in sports, Primosmusings is covering it.</strong></p>
+      </div>
+
+      <div class="sport-chips">
+        <span class="sport-chip">🎾 Tennis</span><span class="sport-chip">⛳ Golf</span>
+        <span class="sport-chip">🏏 Cricket</span><span class="sport-chip">🏈 NFL</span>
+        <span class="sport-chip">🏀 NBA</span><span class="sport-chip">⚽ Soccer</span>
+        <span class="sport-chip">🏎 Formula 1</span><span class="sport-chip">⚾ Baseball</span>
+        <span class="sport-chip">🚴 Cycling</span>
+      </div>
+    </section>
+
+    <!-- ══ LISTEN ════════════════════════════════════ -->
+    <section id="page-listen" class="page">
+      <div class="spotify-card">
+        <div class="spotify-card-head">
+          <svg class="sc-icon" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+          <h2>Listen Now</h2>
+          <p>Always up to date</p>
+        </div>
+        <iframe src="https://open.spotify.com/embed/show/0rN6FI7HAsjcm7Y19FMo0J?utm_source=generator&theme=0"
+          width="100%" height="232" frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy">
+        </iframe>
+      </div>
+
+      <p class="sec-label">All Platforms</p>
+      <div class="platforms-grid">
+        <a class="platform-tile" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank">
+          <span class="pt-dot" style="background:#1DB954"></span>
+          <div><div class="pt-name">Spotify</div><div class="pt-sub">Stream free</div></div>
+          <span class="pt-arrow">↗</span>
+        </a>
+        <a class="platform-tile" href="https://podcasts.apple.com/in/podcast/primosmusings/id1672851730" target="_blank">
+          <span class="pt-dot" style="background:#fc3c44"></span>
+          <div><div class="pt-name">Apple Podcasts</div><div class="pt-sub">iOS & Mac</div></div>
+          <span class="pt-arrow">↗</span>
+        </a>
+        <a class="platform-tile" href="https://www.youtube.com/playlist?list=PL15rJes1kJmHmPAQm7FRzX5VqAXi1slvX" target="_blank">
+          <span class="pt-dot" style="background:#FF0000"></span>
+          <div><div class="pt-name">YT Music</div><div class="pt-sub">YouTube</div></div>
+          <span class="pt-arrow">↗</span>
+        </a>
+        <a class="platform-tile" href="https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/primosmusings" target="_blank">
+          <span class="pt-dot" style="background:#FF9900"></span>
+          <div><div class="pt-name">Amazon Music</div><div class="pt-sub">Alexa ready</div></div>
+          <span class="pt-arrow">↗</span>
+        </a>
+        <a class="platform-tile" href="https://www.iheart.com/podcast/269-primosmusings-143372825/" target="_blank">
+          <span class="pt-dot" style="background:#C6002B"></span>
+          <div><div class="pt-name">iHeart Radio</div><div class="pt-sub">Free</div></div>
+          <span class="pt-arrow">↗</span>
+        </a>
+        <a class="platform-tile" href="https://pca.st/0y890ls4" target="_blank">
+          <span class="pt-dot" style="background:#f43e37"></span>
+          <div><div class="pt-name">Pocket Casts</div><div class="pt-sub">Best app</div></div>
+          <span class="pt-arrow">↗</span>
+        </a>
+      </div>
+
+      <p class="sec-label" style="margin-top:18px">Recent Episodes</p>
+      <div id="ep-loading" class="ep-loading"><div class="spin"></div><br>Loading episodes…</div>
+      <div id="ep-list"></div>
+      <div id="ep-error" style="display:none" class="ep-loading">
+        <p style="margin-bottom:10px">Couldn't load episodes.</p>
+        <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" class="btn-read">Open on Spotify →</a>
+      </div>
+    </section>
+
+    <!-- ══ GUESTS ════════════════════════════════════ -->
+    <section id="page-guests" class="page">
+      <div class="guests-stats">
+        <div class="gstat"><div class="n">12</div><div class="l">Guests</div></div>
+        <div class="gstat"><div class="n">25</div><div class="l">Episodes</div></div>
+        <div class="gstat"><div class="n">7</div><div class="l">Sports</div></div>
+      </div>
+
+      <p class="sec-label">Host</p>
+      <div class="guest-card expanded" id="gc-host">
+        <div class="guest-card-header" onclick="toggleGuest('host')">
+          <div class="guest-avatar" style="background:linear-gradient(135deg,#7a4f00,var(--gold));border-radius:12px">SR</div>
+          <div class="guest-info">
+            <div class="guest-name">Sridhar Srinivasan <span style="color:var(--gold);font-size:.7rem;font-weight:600">(Primo)</span></div>
+            <div class="guest-meta">
+              <span class="guest-ep-badge" style="background:rgba(232,170,48,.12);color:var(--gold)">623+ episodes</span>
+              <span class="guest-sport-tag b-tennis">🎾</span>
+              <span class="guest-sport-tag b-golf">⛳</span>
+              <span class="guest-sport-tag b-nfl">🏈</span>
+              <span class="guest-sport-tag b-cricket">🏏</span>
+              <span class="guest-sport-tag b-f1">🏎</span>
+            </div>
+          </div>
+          <span class="guest-chevron" style="transform:rotate(90deg);color:var(--gold)">›</span>
+        </div>
+        <div class="guest-episodes" style="display:block">
+          <div class="ep-divider"></div>
+          <p style="font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:10px">
+            Hosts every episode — solo takes, news bites, recaps & guest interviews. Est. Jan 2023, covering Tennis, Golf, Cricket, NFL, NBA, Soccer, F1 & more.
+          </p>
+          <div class="ep-row">
+            <span class="ep-yr">Live</span>
+            <span class="ep-row-title">Browse all 623+ episodes</span>
+            <a class="ep-btn" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <p class="sec-label" style="margin-top:14px">Featured Guests</p>
+      <div id="guests-list"></div>
+    </section>
+
+    <!-- ══ BLOG ══════════════════════════════════════ -->
+    <section id="page-blog" class="page">
+      <div id="blog-loading" class="ep-loading"><div class="spin"></div><br>Loading posts…</div>
+      <div id="blog-list"></div>
+      <div id="blog-error" style="display:none" class="ep-loading">
+        <p style="margin-bottom:10px">Couldn't load posts.</p>
+        <a href="https://www.primosmusings.com/blogs" target="_blank" class="btn-read">Open Blog →</a>
+      </div>
+    </section>
+
+    <!-- ══ MORE ══════════════════════════════════════ -->
+    <section id="page-more" class="page">
+      <div id="more-menu">
+        <div class="more-item" onclick="showSub('about')">
+          <div class="more-icon-wrap" style="background:rgba(26,115,232,.12)">👤</div>
+          <div><div class="more-item-lbl">About Me</div><div class="more-item-sub">Who is Primo?</div></div>
+          <span class="more-chevron">›</span>
+        </div>
+        <div class="more-item" onclick="showSub('links')">
+          <div class="more-icon-wrap" style="background:rgba(29,185,84,.1)">🔗</div>
+          <div><div class="more-item-lbl">Podcast Links</div><div class="more-item-sub">All 6 platforms</div></div>
+          <span class="more-chevron">›</span>
+        </div>
+        <div class="more-item" onclick="showSub('contact')">
+          <div class="more-icon-wrap" style="background:rgba(232,170,48,.1)">✉️</div>
+          <div><div class="more-item-lbl">Contact Me</div><div class="more-item-sub">Drop Primo a message</div></div>
+          <span class="more-chevron">›</span>
+        </div>
+        <a class="more-item" href="https://www.primosmusings.com" target="_blank" style="text-decoration:none">
+          <div class="more-icon-wrap" style="background:rgba(255,255,255,.06)">🌐</div>
+          <div><div class="more-item-lbl">Full Website</div><div class="more-item-sub">primosmusings.com</div></div>
+          <span class="more-chevron" style="font-size:.8rem">↗</span>
+        </a>
+      </div>
+
+      <div id="sub-about" class="sub-page">
+        <button class="back-btn" onclick="hideSub()">‹ Back</button>
+        <img class="about-logo" src="logo.jpg" alt="Primosmusings">
+        <div class="about-block">
+          <h3>Who is Primo?</h3>
+          <p>A lifelong learner driven by a trifecta of passions: writing, music, and sport. What began as a hobby project to document the Australian Open has evolved into <strong>Primosmusings</strong> — a comprehensive podcast where global sports cultures collide.</p>
+        </div>
+        <div class="about-block">
+          <h3>The Cricket Roots</h3>
+          <p>My journey with sports started on the <strong>cricket pitch in India</strong>. My move to the US opened a new chapter — as a proud <strong>UConn Husky alumnus</strong>, I became a devoted follower of the <strong>New England Patriots</strong> and the <strong>Boston Red Sox</strong>.</p>
+        </div>
+        <div class="about-block">
+          <h3>Tennis & Golf</h3>
+          <p>First idol: <strong>Bjorn Borg</strong>. Then Becker, then Federer. Currently relishing the <strong>Alcaraz vs Sinner</strong> rivalry. Golf picked up in recent years — <strong>Tiger</strong> will always be #1.</p>
+        </div>
+        <div class="sport-chips" style="margin-top:4px">
+          <span class="sport-chip">🎾 Tennis</span><span class="sport-chip">⛳ Golf</span>
+          <span class="sport-chip">🏏 Cricket</span><span class="sport-chip">🏈 NFL</span>
+          <span class="sport-chip">🏀 NBA</span><span class="sport-chip">⚽ Soccer</span>
+          <span class="sport-chip">🏎 F1</span><span class="sport-chip">⚾ Baseball</span>
+          <span class="sport-chip">🚴 Cycling</span>
+        </div>
+      </div>
+
+      <div id="sub-links" class="sub-page">
+        <button class="back-btn" onclick="hideSub()">‹ Back</button>
+        <p class="sec-label">Primosmusings Podcast · Available on</p>
+        <div class="links-list">
+          <a class="link-row" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank"><span class="link-dot" style="background:#1DB954"></span><span class="link-name">Spotify</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://podcasts.apple.com/in/podcast/primosmusings/id1672851730" target="_blank"><span class="link-dot" style="background:#fc3c44"></span><span class="link-name">Apple Podcast</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://www.youtube.com/playlist?list=PL15rJes1kJmHmPAQm7FRzX5VqAXi1slvX" target="_blank"><span class="link-dot" style="background:#FF0000"></span><span class="link-name">YT Music</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/primosmusings" target="_blank"><span class="link-dot" style="background:#FF9900"></span><span class="link-name">Amazon Music</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://www.iheart.com/podcast/269-primosmusings-143372825/" target="_blank"><span class="link-dot" style="background:#C6002B"></span><span class="link-name">iHeart Radio</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://pca.st/0y890ls4" target="_blank"><span class="link-dot" style="background:#f43e37"></span><span class="link-name">Pocket Casts</span><span class="link-arrow">↗</span></a>
+        </div>
+      </div>
+
+      <div id="sub-contact" class="sub-page">
+        <button class="back-btn" onclick="hideSub()">‹ Back</button>
+        <p class="sec-label">Drop Primo A Message</p>
+        <form id="contact-form" onsubmit="submitContact(event)">
+          <div class="cf-group"><label>Your Full Name *</label><input class="cf-input" type="text" placeholder="Jane Smith" required></div>
+          <div class="cf-group"><label>Email Address *</label><input class="cf-input" type="email" placeholder="jane@example.com" required></div>
+          <div class="cf-group">
+            <label>How did you find us?</label>
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="src" value="Spotify"> Spotify</label>
+              <label class="radio-opt"><input type="radio" name="src" value="Apple Podcast"> Apple Podcast</label>
+              <label class="radio-opt"><input type="radio" name="src" value="Amazon Music"> Amazon Music</label>
+              <label class="radio-opt"><input type="radio" name="src" value="YT Music"> YT Music</label>
+              <label class="radio-opt"><input type="radio" name="src" value="Friend"> Friend / Word of mouth</label>
+              <label class="radio-opt"><input type="radio" name="src" value="Other"> Other</label>
+            </div>
+          </div>
+          <div class="cf-group"><label>Your Message</label><textarea class="cf-textarea" placeholder="I loved the episode about…"></textarea></div>
+          <button type="submit" class="btn-submit">Send Message</button>
+        </form>
+        <div class="form-success" id="form-success">✓ Message sent! Primo will get back to you.</div>
+        <p style="font-size:.68rem;color:var(--muted);text-align:center;margin-top:12px">or <a href="mailto:primosmusings@gmail.com" style="color:var(--blue)">primosmusings@gmail.com</a></p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav id="bottom-nav">
+    <button class="nav-btn active" data-tab="home"   onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn"        data-tab="listen" onclick="switchTab('listen',this)"><span class="nav-icon">🎙</span><span class="nav-label">Listen</span></button>
+    <button class="nav-btn"        data-tab="guests" onclick="switchTab('guests',this)"><span class="nav-icon">👥</span><span class="nav-label">Guests</span></button>
+    <button class="nav-btn"        data-tab="blog"   onclick="switchTab('blog',this)"><span class="nav-icon">📝</span><span class="nav-label">Blog</span></button>
+    <button class="nav-btn"        data-tab="more"   onclick="switchTab('more',this)"><span class="nav-icon">☰</span><span class="nav-label">More</span></button>
+  </nav>
+</div>
+
+<script>
+/* ── Tab navigation ──────────────────────────────── */
+let blogLoaded = false, epLoaded = false;
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  (btn || document.querySelector(`[data-tab="${tab}"]`)).classList.add('active');
+  document.getElementById('main').scrollTo(0,0);
+  if (tab==='blog' && !blogLoaded) loadBlog();
+  if (tab==='listen' && !epLoaded) loadEpisodes();
+  history.replaceState(null,'','?tab='+tab);
+}
+
+/* Deep-link */
+window.addEventListener('DOMContentLoaded', () => {
+  const tab = new URLSearchParams(location.search).get('tab');
+  if (tab && document.getElementById('page-'+tab)) switchTab(tab);
+  renderGuests();
+});
+
+/* ── More sub-pages ──────────────────────────────── */
+function showSub(id) {
+  document.getElementById('more-menu').style.display='none';
+  document.querySelectorAll('.sub-page').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sub-'+id).classList.add('active');
+}
+function hideSub() {
+  document.getElementById('more-menu').style.display='';
+  document.querySelectorAll('.sub-page').forEach(s=>s.classList.remove('active'));
+}
+
+/* ── Guest data ──────────────────────────────────── */
+const SPORT_EMOJI = {Tennis:'🎾',Golf:'⛳',Cricket:'🏏',NFL:'🏈',NBA:'🏀',Soccer:'⚽',F1:'🏎','NCAA Football':'🏈',Cycling:'🚴',Baseball:'⚾',Basketball:'🏀'};
+const SPORT_CLASS = {Tennis:'b-tennis',Golf:'b-golf',Cricket:'b-cricket',NFL:'b-nfl',NBA:'b-nba',Soccer:'b-soccer',F1:'b-f1','NCAA Football':'b-ncaa',Cycling:'b-cycling'};
+
+const GUESTS = [
+  { name:'Dr Daniel Kessler', init:'DK', year:2026, sports:['Golf','Tennis','Baseball','Basketball'],
+    episodes:[
+      {year:2026,title:'2026 Golf Masters Recap',                   url:'https://open.spotify.com/episode/0eSNnLnyl0GlrkE5DXdEa1'},
+      {year:2026,title:'2026 Golf Masters Preview',                  url:'https://open.spotify.com/episode/2xhp3oWm9EsJAIBAUjy5O3'},
+      {year:2026,title:"2026 Australian Open Men's Final recap",     url:'https://open.spotify.com/episode/1zROsKUzImjt2si2AgRoNk'},
+      {year:2025,title:'2025 College Football Playoff Preview Show', url:'https://open.spotify.com/episode/2H6WNSCKPkrPYsRi24oZhL'},
+      {year:2025,title:'2025 Tennis ATP Recap',                      url:'https://open.spotify.com/episode/7INQwjJAQXK9fWn8qHTHhl'},
+      {year:2025,title:'2025 PGA Recap',                             url:'https://open.spotify.com/episode/23kiHluPKZX9V2MtMt5IbU'},
+      {year:2025,title:'Dodgers go back-to-back',                    url:'https://open.spotify.com/episode/6NBdA9UR4FYxJ6lX1NzNAA'},
+      {year:2025,title:'Ryder Cup Recap',                            url:'https://open.spotify.com/episode/5rnGVXMd2HmnG9F2CIaZXc'},
+    ]},
+  { name:'Amit Duvedi', init:'AD', year:2026, sports:['NFL','Cricket'],
+    episodes:[
+      {year:2026,title:'T20 World Cup Cricket Final recap',          url:'https://open.spotify.com/episode/5DXbLsQNGeLbQvC6ltFMjm'},
+      {year:2026,title:'Super Bowl 60 Preview',                      url:'https://open.spotify.com/episode/02qGT8kvgGxXvmXyZzibZL'},
+      {year:2026,title:'AFC/NFC Championships Preview',              url:'https://open.spotify.com/episode/01f535MQKUgUXNL2k8yFzK'},
+      {year:2025,title:'2025-2026 NFL Divisional Round Preview',     url:'https://open.spotify.com/episode/2NaiMlbsAzA6Xmmg2RehiP'},
+      {year:2025,title:'2025-2026 NFL Wild Card Preview',            url:'https://open.spotify.com/episode/1H7WONzaM6unc2Lrx0jChj'},
+    ]},
+  { name:'Aneesh Sridhar', init:'AS', year:2026, sports:['NFL','NBA'], episodes:[] },
+  { name:'Steve Rewenko',  init:'SR', year:2025, sports:['NFL'],
+    episodes:[
+      {year:2025,title:'March Madness Sweet Sixteen Preview',        url:'https://open.spotify.com/episode/4PmrGgkZz8r7KeGrigjbrq'},
+      {year:2025,title:'2025-26 NFL Playoff Preview',                url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'},
+      {year:2025,title:'NFL Mid Season Review',                      url:'https://open.spotify.com/episode/2mefWX94RrJMWNSq8Pktc8'},
+    ]},
+  { name:'Mark Rewenko',   init:'MR', year:2025, sports:['NFL'],
+    episodes:[
+      {year:2025,title:'March Madness Sweet Sixteen Preview',        url:'https://open.spotify.com/episode/4PmrGgkZz8r7KeGrigjbrq'},
+      {year:2025,title:'2025-26 NFL Playoff Preview',                url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'},
+      {year:2025,title:'NFL Mid Season Review',                      url:'https://open.spotify.com/episode/2mefWX94RrJMWNSq8Pktc8'},
+    ]},
+  { name:'Christopher Rogers', init:'CR', year:2025, sports:['NFL','Soccer'],
+    episodes:[{year:2025,title:'2025-26 NFL Playoff Preview',        url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'}]},
+  { name:'Jamie Palma',    init:'JP', year:2025, sports:['NFL'],
+    episodes:[{year:2025,title:'2025-26 NFL Playoff Preview',        url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'}]},
+  { name:'Joshua Kean',    init:'JK', year:2025, sports:['NCAA Football'],
+    episodes:[{year:2025,title:'2025 College Football Championship Preview', url:'https://open.spotify.com/episode/4J5jwJvC4luEIKsExioCe7'}]},
+  { name:'Kaya Moe & Erika Moe', init:'KE', year:2025, sports:['Tennis'],
+    episodes:[{year:2025,title:'Interview with US Open Tennis Star', url:'https://open.spotify.com/episode/5fLI30Fmia5SIknoZ2yWwp'}]},
+  { name:'Mel Simon',      init:'MS', year:2025, sports:['Cycling'],
+    episodes:[{year:2025,title:'3800 Mile Cycling Adventure — Interview with Mel Simon', url:'https://open.spotify.com/episode/1zklTk78CzZHbDYCySZXF5'}]},
+  { name:'Matt Altshuler', init:'MA', year:2025, sports:['NFL'],
+    episodes:[{year:2025,title:'Super Bowl Recap',                   url:'https://open.spotify.com/episode/0HnhQZ9GBUGHGoTevz5z3F'}]},
+  { name:'Dr Satish Narayanan', init:'SN', year:2025, sports:['NFL','F1'], episodes:[] },
+];
+
+function renderGuests() {
+  document.getElementById('guests-list').innerHTML = GUESTS.map((g, i) => {
+    const sports = g.sports.map(s =>
+      `<span class="guest-sport-tag ${SPORT_CLASS[s]||'b-nfl'}">${SPORT_EMOJI[s]||'🏆'} ${s}</span>`
+    ).join('');
+    const epCount = g.episodes.length;
+    const badge = epCount ? `${epCount} ep${epCount>1?'s':''}` : 'Guest';
+    const epRows = epCount
+      ? g.episodes.map(ep=>`
+          <div class="ep-row">
+            <span class="ep-yr">${ep.year}</span>
+            <span class="ep-row-title">${ep.title}</span>
+            <a class="ep-btn" href="${ep.url}" target="_blank">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
+            </a>
+          </div>`).join('')
+      : `<div class="no-eps">Episodes linking soon · <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="color:var(--blue)">Browse show →</a></div>`;
+    return `
+    <div class="guest-card" id="gc-${i}">
+      <div class="guest-card-header" onclick="toggleGuest(${i})">
+        <div class="guest-avatar">${g.init}</div>
+        <div class="guest-info">
+          <div class="guest-name">${g.name}</div>
+          <div class="guest-meta">
+            <span class="guest-ep-badge">${badge}</span>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">${sports}</div>
+          </div>
+        </div>
+        <span class="guest-chevron">›</span>
+      </div>
+      <div class="guest-episodes"><div class="ep-divider"></div>${epRows}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleGuest(id) {
+  document.getElementById('gc-'+id).classList.toggle('expanded');
+}
+
+/* ── Episode loader ──────────────────────────────── */
+const EP_GUEST_MAP = {};
+GUESTS.forEach(g => g.episodes.forEach(ep => {
+  const id = ep.url.replace('https://open.spotify.com/episode/','');
+  EP_GUEST_MAP[id] = g.name;
+}));
+
+let loadedEpisodes = [];
+
+async function loadEpisodes() {
+  epLoaded = true;
+  const loading = document.getElementById('ep-loading');
+  const list    = document.getElementById('ep-list');
+  const errEl   = document.getElementById('ep-error');
+  try {
+    const rssUrl = encodeURIComponent('https://anchor.fm/s/d9746d30/podcast/rss');
+    const res = await fetch(`https://api.allorigins.win/raw?url=${rssUrl}`);
+    if (!res.ok) throw new Error('fetch failed');
+    const text = await res.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/xml');
+    const items = [...doc.querySelectorAll('item')].slice(0,15);
+    if (!items.length) throw new Error('no items');
+    loadedEpisodes = items.map((item, i) => ({
+      num:   items.length - i,
+      title: cleanCDATA(item.querySelector('title')?.textContent || ''),
+      desc:  stripTags(cleanCDATA(item.querySelector('summary')?.textContent || item.querySelector('description')?.textContent || '')).substring(0,160),
+      pub:   fmtDate(item.querySelector('pubDate')?.textContent || ''),
+      dur:   item.querySelector('duration')?.textContent?.trim() || '',
+      link:  item.querySelector('link')?.textContent?.trim() || '',
+    }));
+    loading.style.display='none';
+    list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
+  } catch(e) {
+    loading.style.display='none';
+    errEl.style.display='block';
+  }
+}
+
+function renderEpCard(ep) {
+  let guestName = null;
+  GUESTS.forEach(g => g.episodes.forEach(gep => {
+    if (ep.title.toLowerCase().trim() === gep.title.toLowerCase().trim()) guestName = g.name;
+  }));
+  const tag = guestName
+    ? `<span class="ep-host-tag tag-guest">👥 ${guestName}</span>`
+    : `<span class="ep-host-tag tag-primo">🎙 Primo (Sri)</span>`;
+  return `<div class="ep-card">
+    <div class="ep-card-top"><span class="ep-num">Ep ${ep.num}</span><span class="ep-dur">${ep.dur?'⏱ '+ep.dur:''}</span></div>
+    <div class="ep-title">${ep.title}</div>
+    <div class="ep-meta-row">${tag}<span class="ep-date">${ep.pub}</span></div>
+    ${ep.desc?`<div class="ep-desc">${ep.desc}…</div>`:''}
+    <a class="btn-ep-play" href="${ep.link||'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J'}" target="_blank">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
+    </a>
+  </div>`;
+}
+
+/* ── Blog loader ─────────────────────────────────── */
+let loadedPosts = [];
+async function loadBlog() {
+  blogLoaded=true;
+  const loading=document.getElementById('blog-loading');
+  const list=document.getElementById('blog-list');
+  const errEl=document.getElementById('blog-error');
+  try {
+    const posts = await fetchBlogger();
+    loadedPosts = posts;
+    loading.style.display='none';
+    if (!posts.length) throw new Error('empty');
+    list.innerHTML = posts.map(p=>`
+      <div class="blog-card">
+        <div class="blog-date">${p.date}</div>
+        <div class="blog-title">${p.title}</div>
+        <div class="blog-excerpt">${p.excerpt}</div>
+        <a class="btn-read" href="${p.url}" target="_blank">Read Post →</a>
+      </div>`).join('');
+  } catch(e) { loading.style.display='none'; errEl.style.display='block'; }
+}
+
+function fetchBlogger() {
+  return new Promise((resolve,reject)=>{
+    const cb='__blog_'+Date.now();
+    const t=setTimeout(()=>{reject();cleanup();},8000);
+    window[cb]=data=>{
+      clearTimeout(t);cleanup();
+      try{resolve((data.feed.entry||[]).map(e=>({
+        title:e.title.$t,
+        excerpt:stripTags(e.summary?e.summary.$t:(e.content?e.content.$t:'')).substring(0,150)+'…',
+        url:(e.link.find(l=>l.rel==='alternate')||{}).href||'#',
+        date:fmtDate(e.published.$t),
+      })));}catch(e){reject(e);}
+    };
+    function cleanup(){script.remove();delete window[cb];}
+    const script=document.createElement('script');
+    script.src=`https://www.primosmusings.com/blogs/feeds/posts/default?alt=json-in-script&max-results=10&callback=${cb}`;
+    script.onerror=()=>{clearTimeout(t);cleanup();reject();};
+    document.head.appendChild(script);
+  });
+}
+
+/* ── Search ──────────────────────────────────────── */
+function openSearch() {
+  document.getElementById('search-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('search-input').focus(),300);
+}
+function closeSearch() {
+  document.getElementById('search-overlay').classList.remove('open');
+  document.getElementById('search-input').value='';
+  document.getElementById('search-results').innerHTML=`<div class="search-empty"><div class="se-icon">🔍</div><p>Search episodes, guests<br>blog posts and more</p></div>`;
+}
+
+document.getElementById('search-input').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  if (!q) { closeSearch(); openSearch(); return; }
+  runSearch(q);
+});
+
+function runSearch(q) {
+  const res = [];
+
+  // Search guests
+  GUESTS.forEach(g => {
+    if (g.name.toLowerCase().includes(q) || g.sports.some(s=>s.toLowerCase().includes(q))) {
+      res.push({type:'guest', title:g.name, sub:g.sports.join(' · '), action:()=>{closeSearch();switchTab('guests');setTimeout(()=>toggleGuest(GUESTS.indexOf(g)),300);}});
+    }
+    g.episodes.forEach(ep => {
+      if (ep.title.toLowerCase().includes(q)) {
+        res.push({type:'episode', title:ep.title, sub:`Guest: ${g.name} · ${ep.year}`, url:ep.url});
+      }
+    });
+  });
+
+  // Search loaded episodes
+  loadedEpisodes.forEach(ep => {
+    if (ep.title.toLowerCase().includes(q) || ep.desc.toLowerCase().includes(q)) {
+      if (!res.find(r=>r.title===ep.title)) {
+        res.push({type:'episode', title:ep.title, sub:`🎙 Primo (Sri) · ${ep.pub}`, url:ep.link});
+      }
+    }
+  });
+
+  // Search blog posts
+  loadedPosts.forEach(p => {
+    if (p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q)) {
+      res.push({type:'blog', title:p.title, sub:p.date, url:p.url});
+    }
+  });
+
+  const container = document.getElementById('search-results');
+  if (!res.length) {
+    container.innerHTML=`<div class="search-empty"><div class="se-icon">😕</div><p>No results for "<strong>${q}</strong>"</p></div>`;
+    return;
+  }
+
+  const groups = {guest:[], episode:[], blog:[]};
+  res.forEach(r=>groups[r.type].push(r));
+  const labels = {guest:'Guests',episode:'Episodes',blog:'Blog Posts'};
+  const icons  = {guest:'👥',episode:'🎙',blog:'📝'};
+
+  let html='';
+  ['guest','episode','blog'].forEach(type=>{
+    if (!groups[type].length) return;
+    html+=`<div class="search-cat-label">${icons[type]} ${labels[type]}</div>`;
+    html+=groups[type].map(r=>`
+      <div class="search-result-item" onclick="${r.action?`(${r.action.toString()})()`:`window.open('${r.url}','_blank')`}">
+        <div class="sri-avatar ${type}">
+          ${type==='guest'?r.title.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase().slice(0,2):type==='episode'?'▶':'📝'}
+        </div>
+        <div class="sri-info">
+          <div class="sri-title">${r.title}</div>
+          <div class="sri-sub">${r.sub}</div>
+        </div>
+        <span class="sri-go">›</span>
+      </div>`).join('');
+  });
+  container.innerHTML=html;
+}
+
+/* ── Utilities ───────────────────────────────────── */
+function cleanCDATA(s){return(s||'').replace(/^<!\[CDATA\[|\]\]>$/g,'').trim()}
+function stripTags(s){return(s||'').replace(/<[^>]+>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').trim()}
+function fmtDate(s){try{return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}catch{return s}}
+
+/* ── Contact form ────────────────────────────────── */
+function submitContact(e) {
+  e.preventDefault();
+  document.getElementById('contact-form').style.display='none';
+  document.getElementById('form-success').style.display='block';
+}
+
+/* ── Install prompt ──────────────────────────────── */
+let installPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('install-bar').classList.add('show');});
+document.getElementById('btn-do-install').addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;document.getElementById('install-bar').classList.remove('show');});
+document.getElementById('btn-dismiss-install').addEventListener('click',()=>document.getElementById('install-bar').classList.remove('show'));
+
+/* ── Offline ─────────────────────────────────────── */
+const offBar=document.getElementById('offline-bar');
+window.addEventListener('online',()=>offBar.classList.remove('show'));
+window.addEventListener('offline',()=>offBar.classList.add('show'));
+if(!navigator.onLine)offBar.classList.add('show');
+
+/* ── Service Worker ──────────────────────────────── */
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body>
+</html>
