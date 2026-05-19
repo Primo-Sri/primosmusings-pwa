@@ -55,16 +55,62 @@ Run from: `C:\Users\padik\Claude\Podcast\primosmusings-pwa\`
 
 ## Git Repository
 
-The `.git` folder exists locally at `C:\Users\padik\Claude\Podcast\primosmusings-pwa\.git` but the repository has **no configured remote** — it is not connected to GitHub or any other remote host. Git is initialized but commits have not been made and no `origin` remote exists.
+| Property | Value |
+|---|---|
+| GitHub repo | https://github.com/Primo-Sri/primosmusings-pwa |
+| Default branch | `main` |
+| Local branch | `master` (tracks `origin/main`) |
+| Last synced | May 2026 |
 
-**To connect to GitHub in the future:**
-1. Create a new repository on GitHub (e.g., `Primo-Sri/primosmusings-pwa`)
-2. Run:
+**Local path:** `C:\Users\padik\Claude\Podcast\primosmusings-pwa\`
+
+**Standard workflow (from PC):**
+1. Make changes to files locally
+2. `git add <filename>`
+3. `git commit -m "description"`
+4. `git push origin master:main`
+5. `firebase deploy --only hosting`
+
+---
+
+## Mobile Management (Pending Setup)
+
+**Goal:** Edit and deploy the app from a phone, no PC required.
+
+**Status:** GitHub Mobile is ready to use for browsing and editing files. Auto-deploy to Firebase is not yet configured — changes committed from mobile do not go live until `firebase deploy` is run manually on the PC.
+
+### What works today on mobile
+
+- Browse all files in the repo via the GitHub app
+- Edit files and commit directly from the phone
+- Changes appear on GitHub immediately
+
+**GitHub Mobile app:**
+- iPhone: App Store → "GitHub"
+- Android: Play Store → "GitHub"
+- Sign in as `Primo-Sri`
+
+### Pending: GitHub Actions auto-deploy
+
+Once set up, every commit pushed to GitHub (including from mobile) will automatically deploy to Firebase — no terminal needed.
+
+**One-time setup steps (do from PC when ready):**
+
+1. Run this command in the project folder to get a Firebase deploy token:
    ```
-   git remote add origin https://github.com/Primo-Sri/primosmusings-pwa.git
-   git branch -M main
-   git push -u origin main
+   firebase login:ci
    ```
+   It opens a browser, you log in, and it prints a long token string. Copy it.
+
+2. Go to: https://github.com/Primo-Sri/primosmusings-pwa/settings/secrets/actions
+   - Click **New repository secret**
+   - Name: `FIREBASE_TOKEN`
+   - Value: paste the token from step 1
+   - Click **Add secret**
+
+3. Ask Claude Code to create `.github/workflows/deploy.yml` — this is the file that triggers the auto-deploy on every push to `main`.
+
+4. Commit and push the workflow file. From that point on, any commit to `main` (including edits made on GitHub Mobile) will automatically deploy to Firebase within ~2 minutes.
 
 ---
 
