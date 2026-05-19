@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -397,6 +398,29 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 }
 .guest-card.expanded .guest-chevron{transform:rotate(90deg);color:var(--blue)}
 
+/* rank badges */
+.rank-badge{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:800;flex-shrink:0}
+.rank-1{background:linear-gradient(135deg,#e8aa30,#c8860a);color:#000}
+.rank-2{background:linear-gradient(135deg,#bbb,#888);color:#000}
+.rank-3{background:linear-gradient(135deg,#cd7f32,#9a5a20);color:#fff}
+/* top-3 podium */
+.top3-podium{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.podium-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 6px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.podium-card.p1{border-color:rgba(232,170,48,.45)}
+.podium-card.p2{border-color:rgba(187,187,187,.3)}
+.podium-card.p3{border-color:rgba(205,127,50,.35)}
+.podium-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:#fff;margin:0 auto 7px;background:linear-gradient(135deg,#1a3a6a,var(--blue))}
+.podium-medal{font-size:1rem;margin-bottom:4px}
+.podium-name{font-size:.65rem;font-weight:700;color:#fff;line-height:1.3}
+.podium-eps{font-size:.6rem;color:var(--muted);margin-top:3px}
+/* sport filter */
+.sport-filter{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.sport-filter::-webkit-scrollbar{display:none}
+.sport-pill{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:.7rem;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .15s;flex-shrink:0;font-family:inherit}
+.sport-pill.active{background:rgba(26,115,232,.15);border-color:rgba(26,115,232,.5);color:var(--blue)}
+/* spotify link on guest */
+.spotify-btn{display:inline-flex;align-items:center;gap:4px;font-size:.65rem;color:var(--green);font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(29,185,84,.08);border:1px solid rgba(29,185,84,.2);text-decoration:none;margin-top:6px;flex-shrink:0}
+
 .guest-episodes{
   display:none;padding:0 14px 12px;
 }
@@ -553,6 +577,88 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .sub-page{display:none}
 .sub-page.active{display:block}
 
+/* ══════════════════════════════════════════════════════
+   HELP / FAQ
+══════════════════════════════════════════════════════ */
+.help-intro{
+  background:linear-gradient(135deg,#0d1f40 0%,#000 60%);
+  border:1px solid rgba(26,115,232,.2);
+  border-radius:var(--radius);padding:16px;margin-bottom:14px;
+}
+.help-intro h2{font-size:.95rem;font-weight:800;color:#fff;margin-bottom:5px}
+.help-intro p{font-size:.75rem;color:rgba(255,255,255,.5);line-height:1.6}
+
+.faq-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);margin-bottom:8px;overflow:hidden;
+  transition:border-color .2s;
+}
+.faq-card.open{border-color:rgba(26,115,232,.4)}
+.faq-header{
+  padding:13px 14px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+  -webkit-tap-highlight-color:transparent;user-select:none;
+}
+.faq-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.faq-title{font-size:.86rem;font-weight:700;color:#fff;flex:1}
+.faq-chevron{
+  color:var(--muted);font-size:1rem;flex-shrink:0;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.faq-card.open .faq-chevron{transform:rotate(90deg);color:var(--blue)}
+.faq-body{
+  display:none;padding:0 14px 14px;
+  border-top:1px solid var(--border);
+}
+.faq-card.open .faq-body{display:block}
+
+.faq-steps{list-style:none;margin-top:10px}
+.faq-steps li{
+  display:flex;gap:10px;
+  padding:7px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.5;
+}
+.faq-steps li:last-child{border-bottom:none;padding-bottom:0}
+.step-num{
+  min-width:20px;height:20px;border-radius:50%;
+  background:rgba(26,115,232,.2);color:var(--blue);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.62rem;font-weight:800;flex-shrink:0;margin-top:1px;
+}
+.faq-note{
+  font-size:.72rem;color:var(--muted);line-height:1.55;
+  margin-top:10px;padding:9px 12px;
+  background:rgba(255,255,255,.03);border-radius:8px;
+  border-left:2px solid var(--blue);
+}
+.faq-note strong{color:rgba(255,255,255,.7)}
+.faq-shortcut{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:4px;
+}
+.kbd{
+  display:inline-block;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:5px;padding:2px 7px;font-size:.72rem;
+  font-family:monospace;color:#fff;
+}
+.platform-badge-lg{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.65rem;font-weight:700;padding:3px 8px;
+  border-radius:6px;margin-bottom:8px;margin-top:8px;
+}
+.pb-edge   {background:rgba(0,120,215,.15);color:#59acff}
+.pb-chrome {background:rgba(66,133,244,.15);color:#7baaf7}
+.pb-android{background:rgba(61,220,132,.15);color:#3ddc84}
+.pb-ios    {background:rgba(255,255,255,.1);color:#ccc}
+.pb-safari {background:rgba(0,122,255,.15);color:#3d9cf5}
+.pb-firefox{background:rgba(255,149,0,.15);color:#ff9500}
+
 /* ── Scrollbar ──────────────────────────────────────── */
 ::-webkit-scrollbar{width:2px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -624,17 +730,19 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </div>
       </div>
 
-      <div class="latest-card" onclick="switchTab('listen',document.querySelector('[data-tab=listen]'))">
+      <div class="latest-card" id="home-latest-card">
         <div style="display:flex;align-items:center;margin-bottom:8px">
           <div class="lc-badge"><div class="lc-dot"></div><span class="lc-label">Latest Episode</span></div>
-          <span class="lc-date">May 4, 2026</span>
+          <span class="lc-date" id="home-latest-date"></span>
         </div>
-        <h3>Primos News Bites: Star Wars Edition — Sinner & Antonelli a Force to Reckon With</h3>
-        <p>Happy Star Wars Day. Italians Sinner and Antonelli dominate their respective sports as they capture the Madrid Open and Miami Grand Prix titles.</p>
-        <button class="btn-play-now">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          Listen Now
-        </button>
+        <h3 id="home-latest-title" style="color:var(--muted);font-size:.9rem;font-weight:500">Loading latest episode…</h3>
+        <p id="home-latest-desc"></p>
+        <a id="home-latest-link" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="text-decoration:none">
+          <button class="btn-play-now">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Listen Now
+          </button>
+        </a>
       </div>
 
       <div class="desc-card">
@@ -711,14 +819,14 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
     <!-- ══ GUESTS ════════════════════════════════════ -->
     <section id="page-guests" class="page">
       <div class="guests-stats">
-        <div class="gstat"><div class="n">12</div><div class="l">Guests</div></div>
-        <div class="gstat"><div class="n">25</div><div class="l">Episodes</div></div>
-        <div class="gstat"><div class="n">7</div><div class="l">Sports</div></div>
+        <div class="gstat"><div class="n" id="stat-guests">12</div><div class="l">Guests</div></div>
+        <div class="gstat"><div class="n" id="stat-guest-eps">25</div><div class="l">Guest Episodes</div></div>
+        <div class="gstat"><div class="n" id="stat-sports">7</div><div class="l">Sports</div></div>
       </div>
 
       <p class="sec-label">Host</p>
       <div class="guest-card expanded" id="gc-host">
-        <div class="guest-card-header" onclick="toggleGuest('host')">
+        <div class="guest-card-header" onclick="toggleGuest('gc-host')">
           <div class="guest-avatar" style="background:linear-gradient(135deg,#7a4f00,var(--gold));border-radius:12px">SR</div>
           <div class="guest-info">
             <div class="guest-name">Sridhar Srinivasan <span style="color:var(--gold);font-size:.7rem;font-weight:600">(Primo)</span></div>
@@ -748,7 +856,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </div>
       </div>
 
-      <p class="sec-label" style="margin-top:14px">Featured Guests</p>
+      <p class="sec-label" style="margin-top:14px">Top Guests</p>
+      <div class="top3-podium" id="top3-podium"></div>
+      <div class="sport-filter" id="sport-filter">
+        <button class="sport-pill active" onclick="filterGuests('All',this)">All</button>
+      </div>
+      <p class="sec-label" id="guests-label" style="margin-bottom:8px">All guests · ranked by appearances</p>
       <div id="guests-list"></div>
     </section>
 
@@ -849,6 +962,293 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
       </div>
     </section>
 
+    <!-- ══ HELP ══════════════════════════════════════ -->
+    <section id="page-help" class="page">
+
+      <div class="help-intro">
+        <h2>❓ Help &amp; FAQ</h2>
+        <p>Seeing old content? App not updating? This page walks you through clearing cache on every device and browser — plus answers common questions about the app.</p>
+      </div>
+
+      <!-- ── WHY DOES THIS HAPPEN ──────────────────── -->
+      <p class="sec-label">Why Does the App Look Outdated?</p>
+
+      <div class="faq-card open" id="faq-why">
+        <div class="faq-header" onclick="toggleFaq('faq-why')">
+          <div class="faq-icon" style="background:rgba(232,170,48,.1)">💾</div>
+          <span class="faq-title">What is a cache and why does it get stuck?</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.65;margin-top:10px">
+            Your browser saves a local copy of this app so it loads fast — even offline. That copy is called the <strong style="color:#fff">cache</strong>.
+          </p>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.65;margin-top:8px">
+            When Primo updates the app, your browser sometimes keeps serving the old saved copy instead of downloading the new one. The fix is simple: clear that saved copy and let the browser fetch fresh content.
+          </p>
+          <div class="faq-note">
+            <strong>The app now auto-updates</strong> — when a new version is deployed, it silently refreshes in the background. But if you're seeing stale content, the steps below will fix it immediately.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CLEAR CACHE BY PLATFORM ───────────────── -->
+      <p class="sec-label" style="margin-top:18px">Clear Cache — Step by Step</p>
+
+      <!-- Edge -->
+      <div class="faq-card" id="faq-edge">
+        <div class="faq-header" onclick="toggleFaq('faq-edge')">
+          <div class="faq-icon" style="background:rgba(0,120,215,.12)">🌐</div>
+          <span class="faq-title">Microsoft Edge — Windows &amp; Mac</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-edge">🌐 Edge on Windows</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Press <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">Delete</span> to open Clear browsing data</span></li>
+            <li><span class="step-num">2</span><span>Set <strong style="color:#fff">Time range</strong> to <em>All time</em></span></li>
+            <li><span class="step-num">3</span><span>Tick <strong style="color:#fff">Cached images and files</strong> (untick Browsing history if you want to keep it)</span></li>
+            <li><span class="step-num">4</span><span>Click <strong style="color:#fff">Clear now</strong></span></li>
+            <li><span class="step-num">5</span><span>Come back to the app tab and press <span class="kbd">F5</span> or <span class="kbd">Ctrl</span> + <span class="kbd">R</span></span></li>
+          </ol>
+          <span class="platform-badge-lg pb-edge" style="margin-top:14px">🌐 Edge on Mac</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Press <span class="kbd">⌘ Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">Delete</span></span></li>
+            <li><span class="step-num">2</span><span>Set <strong style="color:#fff">Time range</strong> to <em>All time</em>, tick <strong style="color:#fff">Cached images and files</strong></span></li>
+            <li><span class="step-num">3</span><span>Click <strong style="color:#fff">Clear now</strong>, then refresh the tab</span></li>
+          </ol>
+          <div class="faq-note">If you have the app installed as a PWA from Edge, uninstall it from the taskbar (right-click the app icon → Uninstall), then reinstall from the browser.</div>
+        </div>
+      </div>
+
+      <!-- Chrome Desktop -->
+      <div class="faq-card" id="faq-chrome">
+        <div class="faq-header" onclick="toggleFaq('faq-chrome')">
+          <div class="faq-icon" style="background:rgba(66,133,244,.12)">🔵</div>
+          <span class="faq-title">Google Chrome — Windows &amp; Mac</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-chrome">🔵 Chrome on Windows</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Press <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">Delete</span></span></li>
+            <li><span class="step-num">2</span><span>Set <strong style="color:#fff">Time range</strong> to <em>All time</em></span></li>
+            <li><span class="step-num">3</span><span>Tick <strong style="color:#fff">Cached images and files</strong></span></li>
+            <li><span class="step-num">4</span><span>Click <strong style="color:#fff">Clear data</strong></span></li>
+            <li><span class="step-num">5</span><span>Refresh the tab with <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span> (hard reload)</span></li>
+          </ol>
+          <span class="platform-badge-lg pb-chrome" style="margin-top:14px">🔵 Chrome on Mac</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Press <span class="kbd">⌘ Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">Delete</span></span></li>
+            <li><span class="step-num">2</span><span>Set range to <em>All time</em>, tick <strong style="color:#fff">Cached images and files</strong>, click <strong style="color:#fff">Clear data</strong></span></li>
+            <li><span class="step-num">3</span><span>Hard reload with <span class="kbd">⌘ Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span></span></li>
+          </ol>
+          <div class="faq-note"><strong>Faster option:</strong> Click the 🔒 lock icon in the address bar → Site settings → Clear data. This clears only this site's cache, nothing else.</div>
+        </div>
+      </div>
+
+      <!-- Android -->
+      <div class="faq-card" id="faq-android">
+        <div class="faq-header" onclick="toggleFaq('faq-android')">
+          <div class="faq-icon" style="background:rgba(61,220,132,.12)">🤖</div>
+          <span class="faq-title">Android — Chrome App</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-android">🤖 Android · In Chrome</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Tap the <strong style="color:#fff">three dots ⋮</strong> menu in Chrome</span></li>
+            <li><span class="step-num">2</span><span>Tap <strong style="color:#fff">Settings → Privacy and security → Clear browsing data</strong></span></li>
+            <li><span class="step-num">3</span><span>Set time range to <em>All time</em>, tick <strong style="color:#fff">Cached images and files</strong></span></li>
+            <li><span class="step-num">4</span><span>Tap <strong style="color:#fff">Clear data</strong></span></li>
+            <li><span class="step-num">5</span><span>Return to the app and pull down to refresh</span></li>
+          </ol>
+          <span class="platform-badge-lg pb-android" style="margin-top:14px">🤖 Android · Installed PWA</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Go to <strong style="color:#fff">Settings → Apps → Chrome</strong> (or search "Primosmusings" in Apps)</span></li>
+            <li><span class="step-num">2</span><span>Tap <strong style="color:#fff">Storage → Clear Cache</strong></span></li>
+            <li><span class="step-num">3</span><span>Reopen the app</span></li>
+          </ol>
+          <div class="faq-note">If it's still stale, long-press the app icon → <strong>App info</strong> → <strong>Clear Cache</strong>. This is the most direct route on Android.</div>
+        </div>
+      </div>
+
+      <!-- iPhone / iPad -->
+      <div class="faq-card" id="faq-ios">
+        <div class="faq-header" onclick="toggleFaq('faq-ios')">
+          <div class="faq-icon" style="background:rgba(255,255,255,.07)">🍎</div>
+          <span class="faq-title">iPhone &amp; iPad — Safari</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-ios">🍎 iOS · Safari browser</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Open the iPhone/iPad <strong style="color:#fff">Settings</strong> app (not Safari settings)</span></li>
+            <li><span class="step-num">2</span><span>Scroll down and tap <strong style="color:#fff">Apps → Safari</strong></span></li>
+            <li><span class="step-num">3</span><span>Tap <strong style="color:#fff">Clear History and Website Data</strong></span></li>
+            <li><span class="step-num">4</span><span>Confirm, then reopen Safari and visit the app</span></li>
+          </ol>
+          <div class="faq-note" style="margin-top:10px;margin-bottom:10px"><strong>Note:</strong> This clears all Safari history and data, not just this app. If you want to clear only this site, use the steps below instead.</div>
+          <span class="platform-badge-lg pb-ios">🍎 iOS · Site-specific only</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Open <strong style="color:#fff">Settings → Apps → Safari → Advanced → Website Data</strong></span></li>
+            <li><span class="step-num">2</span><span>Search for <strong style="color:#fff">primosmusings</strong></span></li>
+            <li><span class="step-num">3</span><span>Swipe left on the entry and tap <strong style="color:#fff">Delete</strong></span></li>
+          </ol>
+          <span class="platform-badge-lg pb-ios" style="margin-top:14px">🍎 iOS · Installed PWA (home screen icon)</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Long-press the <strong style="color:#fff">Primosmusings icon</strong> on your home screen</span></li>
+            <li><span class="step-num">2</span><span>Tap <strong style="color:#fff">Remove App → Delete App</strong></span></li>
+            <li><span class="step-num">3</span><span>Open Safari, go to the site, tap <strong style="color:#fff">Share → Add to Home Screen</strong> to reinstall</span></li>
+          </ol>
+          <div class="faq-note">iOS is the strictest about caching. If nothing else works, the delete + reinstall from home screen always fixes it.</div>
+        </div>
+      </div>
+
+      <!-- Mac Safari -->
+      <div class="faq-card" id="faq-safari">
+        <div class="faq-header" onclick="toggleFaq('faq-safari')">
+          <div class="faq-icon" style="background:rgba(0,122,255,.12)">🧭</div>
+          <span class="faq-title">Safari — Mac</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-safari">🧭 Safari on Mac</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>In the menu bar, click <strong style="color:#fff">Safari → Settings</strong> (or Preferences on older macOS)</span></li>
+            <li><span class="step-num">2</span><span>Click the <strong style="color:#fff">Privacy</strong> tab</span></li>
+            <li><span class="step-num">3</span><span>Click <strong style="color:#fff">Manage Website Data…</strong></span></li>
+            <li><span class="step-num">4</span><span>Search for <strong style="color:#fff">primosmusings</strong>, select it, click <strong style="color:#fff">Remove</strong></span></li>
+            <li><span class="step-num">5</span><span>Close settings and reload the page with <span class="kbd">⌘ Cmd</span> + <span class="kbd">R</span></span></li>
+          </ol>
+          <div class="faq-note"><strong>Quick option:</strong> In Safari, hold <span class="kbd">Shift</span> while clicking the Reload button — this does a hard refresh that bypasses the cache without clearing everything.</div>
+        </div>
+      </div>
+
+      <!-- Firefox -->
+      <div class="faq-card" id="faq-firefox">
+        <div class="faq-header" onclick="toggleFaq('faq-firefox')">
+          <div class="faq-icon" style="background:rgba(255,149,0,.12)">🦊</div>
+          <span class="faq-title">Firefox — Windows &amp; Mac</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-firefox">🦊 Firefox</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Press <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">Delete</span> (Windows) or <span class="kbd">⌘</span> + <span class="kbd">Shift</span> + <span class="kbd">Delete</span> (Mac)</span></li>
+            <li><span class="step-num">2</span><span>Set time range to <em>Everything</em></span></li>
+            <li><span class="step-num">3</span><span>Tick <strong style="color:#fff">Cache</strong></span></li>
+            <li><span class="step-num">4</span><span>Click <strong style="color:#fff">Clear Now</strong></span></li>
+            <li><span class="step-num">5</span><span>Hard reload with <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span></span></li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- ── QUICK KEYBOARD SHORTCUTS ───────────────── -->
+      <p class="sec-label" style="margin-top:18px">Quick Hard-Reload Shortcuts</p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:14px">
+        <p style="font-size:.72rem;color:var(--muted);margin-bottom:10px">Skip clearing cache entirely — a hard reload bypasses the cache for just this page load.</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.78rem;color:rgba(255,255,255,.7)">Windows / Linux (Chrome, Edge, Firefox)</span>
+            <span class="faq-shortcut"><span class="kbd">Ctrl</span><span style="color:var(--muted);font-size:.7rem">+</span><span class="kbd">Shift</span><span style="color:var(--muted);font-size:.7rem">+</span><span class="kbd">R</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.78rem;color:rgba(255,255,255,.7)">Mac (Chrome, Edge, Firefox)</span>
+            <span class="faq-shortcut"><span class="kbd">⌘</span><span style="color:var(--muted);font-size:.7rem">+</span><span class="kbd">Shift</span><span style="color:var(--muted);font-size:.7rem">+</span><span class="kbd">R</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.78rem;color:rgba(255,255,255,.7)">Mac Safari</span>
+            <span class="faq-shortcut"><span class="kbd">Shift</span><span style="color:var(--muted);font-size:.7rem">+</span><span style="font-size:.78rem;color:rgba(255,255,255,.5)">Click Reload</span></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.78rem;color:rgba(255,255,255,.7)">Any browser (alternate)</span>
+            <span class="faq-shortcut"><span class="kbd">F5</span><span style="color:var(--muted);font-size:.7rem">or</span><span class="kbd">Ctrl</span><span style="color:var(--muted);font-size:.7rem">+</span><span class="kbd">F5</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── APP FAQ ─────────────────────────────────── -->
+      <p class="sec-label" style="margin-top:18px">App Questions</p>
+
+      <div class="faq-card" id="faq-episodes">
+        <div class="faq-header" onclick="toggleFaq('faq-episodes')">
+          <div class="faq-icon" style="background:rgba(29,185,84,.1)">🎙</div>
+          <span class="faq-title">Episodes aren't loading — what do I do?</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <ol class="faq-steps" style="margin-top:10px">
+            <li><span class="step-num">1</span><span>Check your internet connection — the episode list loads live from Spotify/Anchor</span></li>
+            <li><span class="step-num">2</span><span>If connected, try a hard reload (<span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">R</span>)</span></li>
+            <li><span class="step-num">3</span><span>If still blank, the proxy that fetches episodes may be temporarily down — wait a few minutes and try again</span></li>
+            <li><span class="step-num">4</span><span>As a fallback, tap <strong style="color:#fff">Open on Spotify</strong> — that always works</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faq-card" id="faq-install">
+        <div class="faq-header" onclick="toggleFaq('faq-install')">
+          <div class="faq-icon" style="background:rgba(26,115,232,.1)">📲</div>
+          <span class="faq-title">How do I install this app on my device?</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <span class="platform-badge-lg pb-android">🤖 Android</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Open the site in <strong style="color:#fff">Chrome</strong></span></li>
+            <li><span class="step-num">2</span><span>Tap the <strong style="color:#fff">three dots ⋮</strong> → <strong style="color:#fff">Add to Home Screen</strong></span></li>
+            <li><span class="step-num">3</span><span>Tap <strong style="color:#fff">Install</strong> — the app appears on your home screen like a native app</span></li>
+          </ol>
+          <span class="platform-badge-lg pb-ios" style="margin-top:12px">🍎 iPhone / iPad</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Open the site in <strong style="color:#fff">Safari</strong> (must be Safari, not Chrome)</span></li>
+            <li><span class="step-num">2</span><span>Tap the <strong style="color:#fff">Share</strong> button (box with arrow pointing up)</span></li>
+            <li><span class="step-num">3</span><span>Tap <strong style="color:#fff">Add to Home Screen</strong> → <strong style="color:#fff">Add</strong></span></li>
+          </ol>
+          <span class="platform-badge-lg pb-chrome" style="margin-top:12px">💻 Desktop (Chrome / Edge)</span>
+          <ol class="faq-steps">
+            <li><span class="step-num">1</span><span>Look for the <strong style="color:#fff">install icon</strong> (⊕ or computer icon) in the address bar</span></li>
+            <li><span class="step-num">2</span><span>Click it → <strong style="color:#fff">Install</strong></span></li>
+            <li><span class="step-num">3</span><span>The app opens in its own window, separate from the browser</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="faq-card" id="faq-offline">
+        <div class="faq-header" onclick="toggleFaq('faq-offline')">
+          <div class="faq-icon" style="background:rgba(232,170,48,.1)">📵</div>
+          <span class="faq-title">Does the app work offline?</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.65;margin-top:10px">
+            <strong style="color:#fff">Yes — partially.</strong> The app shell (layout, guest list, navigation) loads from your device's cache when offline.
+          </p>
+          <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.65;margin-top:8px">
+            The <strong style="color:#fff">episode list</strong> and <strong style="color:#fff">blog posts</strong> require an internet connection because they're loaded live from Spotify and the blog feed.
+          </p>
+          <div class="faq-note">To actually listen offline, save episodes in the Spotify app directly — the Primosmusings website/PWA can't store audio files.</div>
+        </div>
+      </div>
+
+      <div class="faq-card" id="faq-contact-help">
+        <div class="faq-header" onclick="toggleFaq('faq-contact-help')">
+          <div class="faq-icon" style="background:rgba(255,255,255,.06)">✉️</div>
+          <span class="faq-title">Still stuck? Contact Primo</span>
+          <span class="faq-chevron">›</span>
+        </div>
+        <div class="faq-body">
+          <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.65;margin-top:10px">If none of the above helped, drop a message and describe what you're seeing.</p>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+            <button class="btn-submit" style="font-size:.8rem;padding:11px" onclick="switchTab('more');setTimeout(()=>showSub('contact'),200)">Go to Contact Form →</button>
+            <a href="mailto:primosmusings@gmail.com" style="display:block;text-align:center;font-size:.75rem;color:var(--blue);margin-top:4px">primosmusings@gmail.com</a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
   </main>
 
   <!-- Bottom Nav -->
@@ -858,6 +1258,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
     <button class="nav-btn"        data-tab="guests" onclick="switchTab('guests',this)"><span class="nav-icon">👥</span><span class="nav-label">Guests</span></button>
     <button class="nav-btn"        data-tab="blog"   onclick="switchTab('blog',this)"><span class="nav-icon">📝</span><span class="nav-label">Blog</span></button>
     <button class="nav-btn"        data-tab="more"   onclick="switchTab('more',this)"><span class="nav-icon">☰</span><span class="nav-label">More</span></button>
+    <button class="nav-btn"        data-tab="help"   onclick="switchTab('help',this)"><span class="nav-icon">❓</span><span class="nav-label">Help</span></button>
   </nav>
 </div>
 
@@ -881,6 +1282,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const tab = new URLSearchParams(location.search).get('tab');
   if (tab && document.getElementById('page-'+tab)) switchTab(tab);
   renderGuests();
+  // preload episodes for home tab latest card
+  if (!epLoaded) loadEpisodes();
 });
 
 /* ── More sub-pages ──────────────────────────────── */
@@ -900,6 +1303,7 @@ const SPORT_CLASS = {Tennis:'b-tennis',Golf:'b-golf',Cricket:'b-cricket',NFL:'b-
 
 const GUESTS = [
   { name:'Dr Daniel Kessler', init:'DK', year:2026, sports:['Golf','Tennis','Baseball','Basketball'],
+    spotify:'https://open.spotify.com/search/Dr%20Daniel%20Kessler',
     episodes:[
       {year:2026,title:'2026 Golf Masters Recap',                   url:'https://open.spotify.com/episode/0eSNnLnyl0GlrkE5DXdEa1'},
       {year:2026,title:'2026 Golf Masters Preview',                  url:'https://open.spotify.com/episode/2xhp3oWm9EsJAIBAUjy5O3'},
@@ -911,48 +1315,146 @@ const GUESTS = [
       {year:2025,title:'Ryder Cup Recap',                            url:'https://open.spotify.com/episode/5rnGVXMd2HmnG9F2CIaZXc'},
     ]},
   { name:'Amit Duvedi', init:'AD', year:2026, sports:['NFL','Cricket'],
+    aliases:['amit duvedi','amit'],
+    spotify:'https://open.spotify.com/search/Amit%20Duvedi',
     episodes:[
       {year:2026,title:'T20 World Cup Cricket Final recap',          url:'https://open.spotify.com/episode/5DXbLsQNGeLbQvC6ltFMjm'},
       {year:2026,title:'Super Bowl 60 Preview',                      url:'https://open.spotify.com/episode/02qGT8kvgGxXvmXyZzibZL'},
       {year:2026,title:'AFC/NFC Championships Preview',              url:'https://open.spotify.com/episode/01f535MQKUgUXNL2k8yFzK'},
       {year:2025,title:'2025-2026 NFL Divisional Round Preview',     url:'https://open.spotify.com/episode/2NaiMlbsAzA6Xmmg2RehiP'},
       {year:2025,title:'2025-2026 NFL Wild Card Preview',            url:'https://open.spotify.com/episode/1H7WONzaM6unc2Lrx0jChj'},
+      {year:2025,title:'NFL Musings – Dec 31',                       url:'https://open.spotify.com/episode/55bnkAsqLV0HlYakVC9WVX'},
+      {year:2025,title:'2025 Patriots Season Preview',               url:'https://open.spotify.com/episode/0ZIWXSkQyolu4Le6OpmzLd'},
     ]},
-  { name:'Aneesh Sridhar', init:'AS', year:2026, sports:['NFL','NBA'], episodes:[] },
   { name:'Steve Rewenko',  init:'SR', year:2025, sports:['NFL'],
+    aliases:['steve rewenko','steve'],
+    spotify:'https://open.spotify.com/search/Steve%20Rewenko',
     episodes:[
       {year:2025,title:'March Madness Sweet Sixteen Preview',        url:'https://open.spotify.com/episode/4PmrGgkZz8r7KeGrigjbrq'},
       {year:2025,title:'2025-26 NFL Playoff Preview',                url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'},
       {year:2025,title:'NFL Mid Season Review',                      url:'https://open.spotify.com/episode/2mefWX94RrJMWNSq8Pktc8'},
     ]},
   { name:'Mark Rewenko',   init:'MR', year:2025, sports:['NFL'],
+    aliases:['mark rewenko','mark'],
+    spotify:'https://open.spotify.com/search/Mark%20Rewenko',
     episodes:[
       {year:2025,title:'March Madness Sweet Sixteen Preview',        url:'https://open.spotify.com/episode/4PmrGgkZz8r7KeGrigjbrq'},
       {year:2025,title:'2025-26 NFL Playoff Preview',                url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'},
       {year:2025,title:'NFL Mid Season Review',                      url:'https://open.spotify.com/episode/2mefWX94RrJMWNSq8Pktc8'},
     ]},
   { name:'Christopher Rogers', init:'CR', year:2025, sports:['NFL','Soccer'],
-    episodes:[{year:2025,title:'2025-26 NFL Playoff Preview',        url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'}]},
+    aliases:['christopher rogers','chris rogers','chris'],
+    spotify:'https://open.spotify.com/search/Christopher%20Rogers',
+    episodes:[
+      {year:2025,title:'2025-26 NFL Playoff Preview',                url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'},
+      {year:2024,title:'2024 Copa America / UEFA QF-SF Predictions', url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/651aefd2-07f8-47d9-b87c-61e0c9b758f6/primosmusings-2024-uefa-euro-cup-copa-america-predictions-for-quarters-semis-finals'},
+      {year:2024,title:'2024 Copa America / UEFA Cup Preview',       url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/740b990e-21ad-4b82-9526-6b9e29b34323/primosmusings-soccer-uefa-euro-cup-copa-america-preview'},
+    ]},
   { name:'Jamie Palma',    init:'JP', year:2025, sports:['NFL'],
+    aliases:['jamie palma','jamie'],
+    spotify:'https://open.spotify.com/search/Jamie%20Palma',
     episodes:[{year:2025,title:'2025-26 NFL Playoff Preview',        url:'https://open.spotify.com/episode/6Ikh9w1VHhh0f36w8k0OsQ'}]},
   { name:'Joshua Kean',    init:'JK', year:2025, sports:['NCAA Football'],
-    episodes:[{year:2025,title:'2025 College Football Championship Preview', url:'https://open.spotify.com/episode/4J5jwJvC4luEIKsExioCe7'}]},
+    aliases:['joshua kean','joshua'],
+    spotify:'https://open.spotify.com/search/Joshua%20Kean',
+    episodes:[
+      {year:2025,title:'2025 College Football Championship Preview',  url:'https://open.spotify.com/episode/4J5jwJvC4luEIKsExioCe7'},
+      {year:2025,title:'2025 CFP Championship Game Preview',          url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/e9f7625e-e055-4747-8eac-ce1c76f8c3e0/primosmusings-cfp-championship-preview-can-notre-dame-stop-ohio-state'},
+      {year:2024,title:'2024 CFP Final Four Preview',                 url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/e909eb1a-33c9-4634-a5b2-b078ddec58b9/primosmusings-cfp-final-4-preview-can-texas-stop-ohio-state'},
+      {year:2024,title:'2024 College Football Playoffs Preview',      url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/f4ffc103-c552-40ee-920a-28a3cdda7729/primosmusings-ncaa-college-football-playoff-preview-show'},
+    ]},
   { name:'Kaya Moe & Erika Moe', init:'KE', year:2025, sports:['Tennis'],
+    spotify:'https://open.spotify.com/search/Kaya%20Moe',
     episodes:[{year:2025,title:'Interview with US Open Tennis Star', url:'https://open.spotify.com/episode/5fLI30Fmia5SIknoZ2yWwp'}]},
   { name:'Mel Simon',      init:'MS', year:2025, sports:['Cycling'],
-    episodes:[{year:2025,title:'3800 Mile Cycling Adventure — Interview with Mel Simon', url:'https://open.spotify.com/episode/1zklTk78CzZHbDYCySZXF5'}]},
+    spotify:'https://open.spotify.com/search/Mel%20Simon',
+    episodes:[
+      {year:2025,title:'3800 Mile Cycling Adventure — Interview with Mel Simon', url:'https://open.spotify.com/episode/1zklTk78CzZHbDYCySZXF5'},
+      {year:2025,title:'400 Miles Done',                             url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/7af67ffb-d192-4bb9-811d-6f01f5b4915c/primosmusings-3800--mile-cycling-adventure-400-miles-in-mel-shares-his-updates'},
+      {year:2025,title:'Update from Ohio',                           url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/7cf34a5d-1195-43dd-97ba-808f114479bd/primosmusings-3800-mile-cycling-adventure-mel-checks-in-from-ohio'},
+      {year:2025,title:'Wyoming Here We Come',                       url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/fbd5a221-70f2-4447-bba3-75a9d2186c16/primosmusings-3800-mile-cycling-adventure-wyoming-beckons-for-mel'},
+      {year:2025,title:'Mel Update – Journey Across America',        url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/63d94369-2aa1-4c0f-85c7-781ac1b38540/primosmusings-mel%27s-cross-country-cycling-adventure-a-journey-across-america'},
+      {year:2025,title:'Mel in Montana',                             url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/e32fdbc1-177b-452d-b5bd-155684d87af9/primosmusings-3800-mile-cycling-adventure-journey-through-mountainous-montana'},
+      {year:2025,title:'Mel Checks In from Fort Collins',            url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/306a7274-6751-4256-bfed-66b79831af7b/primosmusings-3800-mile-cycling-adventure-mel-checks-in-from-fort-collins-with-some-exciting-stories'},
+      {year:2025,title:'Gratitude and Appreciation',                 url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/3a4a92c3-f685-4fea-9283-760f56003ebe/primosmusings-3800-mile-cycling-adventure-gratitude-and-appreciation-on-memorial-day'},
+    ]},
   { name:'Matt Altshuler', init:'MA', year:2025, sports:['NFL'],
+    spotify:'https://open.spotify.com/search/Matt%20Altshuler',
     episodes:[{year:2025,title:'Super Bowl Recap',                   url:'https://open.spotify.com/episode/0HnhQZ9GBUGHGoTevz5z3F'}]},
-  { name:'Dr Satish Narayanan', init:'SN', year:2025, sports:['NFL','F1'], episodes:[] },
+  { name:'Aneesh Sridhar', init:'AS', year:2026, sports:['NFL','NBA'],
+    aliases:['aneesh sridhar','aneesh'],
+    spotify:'https://open.spotify.com/search/Aneesh%20Sridhar',
+    episodes:[
+      {year:2024,title:'Celtics Win Championship',                   url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/317df3c1-045e-4b33-9df8-a533eb7390cd/primosmusings-nba-celtics-humble-mavericks'},
+      {year:2024,title:'2024 Patriots / AFC East Preview',           url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/087c68d9-cc96-4a28-a383-25a52204d14a/primosmusings-2024-nfl-season-patriots-afc-east-preview'},
+    ]},
+  { name:'Dr Satish Narayanan', init:'SN', year:2025, sports:['NFL','F1'],
+    spotify:'https://open.spotify.com/search/Dr%20Satish%20Narayanan',
+    episodes:[
+      {year:2025,title:'Formula 1 – 2025 Season Preview',            url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/episodes/f99ba39b-3225-4d2b-869c-7559f6956ef3/primosmusings-formula-1-2025-preview-season-of-surprises-in-store'},
+    ]},
 ];
 
-function renderGuests() {
-  document.getElementById('guests-list').innerHTML = GUESTS.map((g, i) => {
+/* sorted — refreshed after RSS enrichment */
+let SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
+
+function renderPodium() {
+  const top3 = SORTED_GUESTS.slice(0,3);
+  const medals = ['🥇','🥈','🥉'];
+  const pClass = ['p1','p2','p3'];
+  document.getElementById('top3-podium').innerHTML = top3.map((g,i) => `
+    <div class="podium-card ${pClass[i]}" onclick="scrollToGuest('${g.name}')">
+      <div class="podium-medal">${medals[i]}</div>
+      <div class="podium-avatar">${g.init}</div>
+      <div class="podium-name">${g.name.split(' ')[0]}</div>
+      <div class="podium-eps">${g.episodes.length} ep${g.episodes.length!==1?'s':''}</div>
+    </div>`).join('');
+}
+
+function buildSportFilter() {
+  const sports = new Set();
+  GUESTS.forEach(g => g.sports.forEach(s => sports.add(s)));
+  const bar = document.getElementById('sport-filter');
+  [...sports].sort().forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'sport-pill';
+    btn.textContent = (SPORT_EMOJI[s]||'') + ' ' + s;
+    btn.onclick = () => filterGuests(s, btn);
+    bar.appendChild(btn);
+  });
+}
+
+let activeFilter = 'All';
+
+function filterGuests(sport, btn) {
+  activeFilter = sport;
+  document.querySelectorAll('.sport-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const label = document.getElementById('guests-label');
+  label.textContent = sport === 'All'
+    ? 'All guests · ranked by appearances'
+    : `${sport} guests · ranked by appearances`;
+  renderGuestList(sport);
+}
+
+function renderGuestList(sport) {
+  const filtered = sport === 'All'
+    ? SORTED_GUESTS
+    : SORTED_GUESTS.filter(g => g.sports.includes(sport));
+  document.getElementById('guests-list').innerHTML = filtered.map((g) => {
+    const globalRank = SORTED_GUESTS.indexOf(g);
+    const rankBadge = globalRank < 3
+      ? `<div class="rank-badge rank-${globalRank+1}">${globalRank+1}</div>`
+      : '';
     const sports = g.sports.map(s =>
       `<span class="guest-sport-tag ${SPORT_CLASS[s]||'b-nfl'}">${SPORT_EMOJI[s]||'🏆'} ${s}</span>`
     ).join('');
     const epCount = g.episodes.length;
     const badge = epCount ? `${epCount} ep${epCount>1?'s':''}` : 'Guest';
+    const spotifyBtn = `<a class="spotify-btn" href="${g.spotify}" target="_blank">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.519-.972c3.632-1.102 8.147-.568 11.234 1.328a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.612z"/></svg>
+      Spotify
+    </a>`;
     const epRows = epCount
       ? g.episodes.map(ep=>`
           <div class="ep-row">
@@ -963,16 +1465,18 @@ function renderGuests() {
             </a>
           </div>`).join('')
       : `<div class="no-eps">Episodes linking soon · <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="color:var(--blue)">Browse show →</a></div>`;
+    const gid = 'gc-' + g.name.replace(/\s+/g,'-');
     return `
-    <div class="guest-card" id="gc-${i}">
-      <div class="guest-card-header" onclick="toggleGuest(${i})">
+    <div class="guest-card" id="${gid}">
+      <div class="guest-card-header" onclick="toggleGuest('${gid}')">
         <div class="guest-avatar">${g.init}</div>
         <div class="guest-info">
-          <div class="guest-name">${g.name}</div>
+          <div class="guest-name" style="display:flex;align-items:center;gap:6px">${rankBadge}${g.name}</div>
           <div class="guest-meta">
             <span class="guest-ep-badge">${badge}</span>
             <div style="display:flex;gap:4px;flex-wrap:wrap">${sports}</div>
           </div>
+          ${spotifyBtn}
         </div>
         <span class="guest-chevron">›</span>
       </div>
@@ -981,8 +1485,79 @@ function renderGuests() {
   }).join('');
 }
 
+function renderGuests() {
+  SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
+  renderPodium();
+  buildSportFilter();
+  renderGuestList('All');
+  updateGuestStats();
+}
+
+function updateGuestStats() {
+  const totalEps = GUESTS.reduce((s,g) => s + g.episodes.length, 0);
+  const sports = new Set();
+  GUESTS.forEach(g => g.sports.forEach(s => sports.add(s)));
+  document.getElementById('stat-guests').textContent = GUESTS.length;
+  document.getElementById('stat-guest-eps').textContent = totalEps;
+  document.getElementById('stat-sports').textContent = sports.size;
+}
+
+function enrichGuestsFromRSS() {
+  if (!loadedEpisodes.length) return;
+  let updated = false;
+
+  loadedEpisodes.forEach(ep => {
+    const titleLower = ep.title.toLowerCase();
+
+    // Skip if this episode title already exists in any guest's list
+    const alreadyCounted = GUESTS.some(g =>
+      g.episodes.some(ge => ge.title.toLowerCase().trim() === ep.title.toLowerCase().trim())
+    );
+    if (alreadyCounted) return;
+
+    // Try to match a guest by name or aliases
+    GUESTS.forEach(g => {
+      // Check aliases first (e.g. 'amit' for Amit Duvedi)
+      const aliasMatch = g.aliases && g.aliases.some(a => titleLower.includes(a.toLowerCase()));
+
+      // Fallback: first + last name both in title (safe for shared surnames like Rewenko)
+      const clean = g.name.replace(/^Dr\.?\s*/i, '');
+      const parts = clean.trim().split(/\s+/);
+      const first = parts[0].toLowerCase();
+      const last  = parts[parts.length - 1].toLowerCase();
+      const nameMatch = last.length >= 4 && titleLower.includes(first) && titleLower.includes(last);
+
+      if (aliasMatch || nameMatch) {
+        const pubYear = ep.pub ? parseInt(ep.pub.split(' ').pop()) : new Date().getFullYear();
+        g.episodes.push({ year: pubYear || new Date().getFullYear(), title: ep.title, url: ep.link || '' });
+        updated = true;
+      }
+    });
+  });
+
+  if (updated) {
+    SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
+    renderPodium();
+    renderGuestList(activeFilter);
+    updateGuestStats();
+  }
+}
+
+function scrollToGuest(name) {
+  const gid = 'gc-' + name.replace(/\s+/g,'-');
+  const el = document.getElementById(gid);
+  if (el) {
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    el.classList.add('expanded');
+  }
+}
+
 function toggleGuest(id) {
-  document.getElementById('gc-'+id).classList.toggle('expanded');
+  document.getElementById(id).classList.toggle('expanded');
+}
+
+function toggleFaq(id) {
+  document.getElementById(id).classList.toggle('open');
 }
 
 /* ── Episode loader ──────────────────────────────── */
@@ -1018,10 +1593,26 @@ async function loadEpisodes() {
     }));
     loading.style.display='none';
     list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
+    updateHomeLatest();
+    enrichGuestsFromRSS();
   } catch(e) {
     loading.style.display='none';
     errEl.style.display='block';
   }
+}
+
+function updateHomeLatest() {
+  if (!loadedEpisodes.length) return;
+  const ep = loadedEpisodes[0];
+  document.getElementById('home-latest-title').textContent = ep.title;
+  document.getElementById('home-latest-title').style.color = '';
+  document.getElementById('home-latest-title').style.fontSize = '';
+  document.getElementById('home-latest-title').style.fontWeight = '';
+  document.getElementById('home-latest-date').textContent = ep.pub;
+  document.getElementById('home-latest-desc').textContent = ep.desc ? ep.desc + '…' : '';
+  const link = ep.link || 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
+  document.getElementById('home-latest-link').href = link;
+  document.getElementById('home-latest-card').onclick = null;
 }
 
 function renderEpCard(ep) {
@@ -1109,7 +1700,7 @@ function runSearch(q) {
   // Search guests
   GUESTS.forEach(g => {
     if (g.name.toLowerCase().includes(q) || g.sports.some(s=>s.toLowerCase().includes(q))) {
-      res.push({type:'guest', title:g.name, sub:g.sports.join(' · '), action:()=>{closeSearch();switchTab('guests');setTimeout(()=>toggleGuest(GUESTS.indexOf(g)),300);}});
+      res.push({type:'guest', title:g.name, sub:g.sports.join(' · '), action:()=>{closeSearch();switchTab('guests');setTimeout(()=>scrollToGuest(g.name),300);}});
     }
     g.episodes.forEach(ep => {
       if (ep.title.toLowerCase().includes(q)) {
@@ -1173,23 +1764,34 @@ function fmtDate(s){try{return new Date(s).toLocaleDateString('en-US',{year:'num
 function submitContact(e) {
   e.preventDefault();
   document.getElementById('contact-form').style.display='none';
-  document.getElementById('form-success').style.display='block';
+  document.getElementById('contact-form').style.display='none';
+  document.getElementById('contact-success').style.display='block';
 }
 
-/* ── Install prompt ──────────────────────────────── */
-let installPrompt=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('install-bar').classList.add('show');});
-document.getElementById('btn-do-install').addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;document.getElementById('install-bar').classList.remove('show');});
-document.getElementById('btn-dismiss-install').addEventListener('click',()=>document.getElementById('install-bar').classList.remove('show'));
+/* ── Service worker ──────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // Check for a new SW version every 30 minutes (catches long-running sessions)
+    setInterval(() => reg.update(), 30 * 60 * 1000);
+  });
 
-/* ── Offline ─────────────────────────────────────── */
-const offBar=document.getElementById('offline-bar');
-window.addEventListener('online',()=>offBar.classList.remove('show'));
-window.addEventListener('offline',()=>offBar.classList.add('show'));
-if(!navigator.onLine)offBar.classList.add('show');
+  // When a new SW takes control, reload so users get the latest HTML.
+  // The `refreshing` flag prevents an infinite reload loop.
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
+}
 
-/* ── Service Worker ──────────────────────────────── */
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+window.addEventListener('DOMContentLoaded', () => {
+  const tab = new URLSearchParams(location.search).get('tab');
+  if (tab && document.getElementById('page-'+tab)) switchTab(tab);
+  renderGuests();
+  if (!epLoaded) loadEpisodes();
+});
 </script>
 </body>
 </html>

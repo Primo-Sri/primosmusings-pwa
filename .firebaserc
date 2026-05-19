@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "primosmusings-b47f7"
+  },
+  "targets": {
+    "primosmusings-b47f7": {
+      "hosting": {
+        "primosmusings": [
+          "primosmusings"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

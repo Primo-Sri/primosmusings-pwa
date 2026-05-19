@@ -1,89 +1,108 @@
-/* ============================================================
-   Primosmusings Service Worker
-   Strategy: Cache-first for app shell, Network-first for dynamic
-   ============================================================ */
-
-const CACHE_NAME = 'primosmusings-v1';
+const CACHE_NAME = 'primosmusings-v6';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/apple-touch-icon.png'
+  '/apple-touch-icon.png',
+  '/logo.jpg'
 ];
 
-// ── Install: cache the app shell ──────────────────────────────
+// ── Install: pre-cache icons, take over immediately ───────────
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// ── Activate: clean up old caches ─────────────────────────────
+// ── Activate: wipe old caches, claim all open tabs ────────────
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
+    caches.keys()
+      .then(keys => Promise.all(
         keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
-    ).then(() => self.clients.claim())
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// ── Fetch: cache-first for static, network-first for dynamic ──
+// ── Network-first fetch with timeout (avoids hanging on slow mobile) ──
+function networkFirst(request, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+
+    const timer = setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        caches.match(request).then(cached => {
+          cached ? resolve(cached) : reject(new Error('timeout + no cache'));
+        });
+      }
+    }, timeoutMs);
+
+    fetch(request).then(response => {
+      clearTimeout(timer);
+      if (!settled) {
+        settled = true;
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(c => c.put(request, clone));
+        resolve(response);
+      }
+    }).catch(err => {
+      clearTimeout(timer);
+      if (!settled) {
+        settled = true;
+        caches.match(request).then(cached => {
+          cached ? resolve(cached) : reject(err);
+        });
+      }
+    });
+  });
+}
+
+// ── Fetch strategy ────────────────────────────────────────────
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // Skip non-GET and cross-origin (Spotify iframes, Blogger API)
-  if (event.request.method !== 'GET') return;
+  // Cross-origin (Spotify, RSS, Blogger) — always network, no cache
   if (url.origin !== self.location.origin) return;
 
-  // App shell: cache-first
-  if (STATIC_ASSETS.some(asset => url.pathname === asset || url.pathname === '/')) {
-    event.respondWith(
-      caches.match(event.request).then(cached => {
-        return cached || fetch(event.request).then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
-          return response;
-        });
-      })
-    );
+  const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
+  const isManifest = url.pathname.endsWith('manifest.json');
+
+  if (isHTML || isManifest) {
+    // Network-first with 4s timeout — user always gets fresh content,
+    // but falls back to cache instantly if offline or network is slow
+    event.respondWith(networkFirst(event.request, 4000));
     return;
   }
 
-  // Everything else: network-first, fall back to cache
+  // Images & icons: cache-first (they never change between versions)
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request).then(response => {
         const clone = response.clone();
         caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
         return response;
-      })
-      .catch(() => caches.match(event.request))
+      });
+    })
   );
 });
 
-// ── Push notifications (future use) ───────────────────────────
+// ── Push notifications ────────────────────────────────────────
 self.addEventListener('push', event => {
   const data = event.data ? event.data.json() : {};
-  const title = data.title || 'Primosmusings';
-  const options = {
-    body: data.body || 'New episode or pick just dropped!',
+  event.waitUntil(self.registration.showNotification(data.title || 'Primosmusings', {
+    body: data.body || 'New episode just dropped!',
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     tag: 'primosmusings-notification',
     data: { url: data.url || '/' }
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
+  }));
 });
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url || '/')
-  );
+  event.waitUntil(clients.openWindow(event.notification.data.url || '/'));
 });

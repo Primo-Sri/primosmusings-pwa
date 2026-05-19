@@ -1,0 +1,21 @@
+{
+  "hosting": [
+    {
+      "target": "primosmusings",
+      "public": ".",
+      "ignore": [
+        "firebase.json",
+        ".*",
+        "github-upload.html"
+      ],
+      "headers": [
+        {
+          "source": "sw.js",
+          "headers": [
+            { "key": "Cache-Control", "value": "no-cache" }
+          ]
+        }
+      ]
+    }
+  ]
+}
