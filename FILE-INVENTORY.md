@@ -4,8 +4,10 @@
 
 | URL | Purpose |
 |---|---|
-| https://primos-apps.web.app | Primary live URL |
-| https://primosmusings.web.app | Old project — no longer the active deployment |
+| https://primosmusings.web.app | Podcast PWA — primary live URL |
+| https://primos-apps.web.app | Primo's App Store — separate app, separate folder |
+
+> The App Store lives at `C:\Users\padik\Claude\Primos-Apps` and deploys to the `primos-apps` Firebase project. Keep these two projects completely separate.
 
 ---
 
@@ -35,10 +37,10 @@
 
 | Property | Value |
 |---|---|
-| Project ID | `primos-apps` |
-| Hosting target | `primos-apps` |
+| Project ID | `primosmusings-b47f7` |
+| Hosting target | `primosmusings` |
 | Public directory | `.` (root of project folder) |
-| Firebase Console | https://console.firebase.google.com/project/primos-apps |
+| Firebase Console | https://console.firebase.google.com/project/primosmusings-b47f7 |
 
 **Deploy command:**
 ```
@@ -146,7 +148,7 @@ C:\Users\padik\AppData\Roaming\Claude\local-agent-mode-sessions\skills-plugin\
 | Spotify Podcast | https://open.spotify.com/show/primosmusings | Primary episode platform |
 | Amazon Music | `26244d08-ef1b-430e-8e03-38f33efb7adb` | Secondary episode platform |
 | Blogger RSS | Referenced in `enrichGuestsFromRSS()` | Auto-enriches guest episode data |
-| Firebase Hosting | `primos-apps` | App deployment |
+| Firebase Hosting | `primosmusings-b47f7` | Podcast app deployment |
 
 ---
 
