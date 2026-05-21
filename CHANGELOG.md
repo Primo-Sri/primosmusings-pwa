@@ -1,5 +1,30 @@
 # Primosmusings PWA — Changelog
 
+---
+
+## Roadmap
+
+### Phase 1 — Auto-deploy from GitHub *(next up)*
+Set up GitHub Actions so any push to `main` automatically deploys to Firebase.
+No terminal needed — works from phone, Claude Code, anywhere.
+See setup steps in `FILE-INVENTORY.md` under "Mobile Management".
+
+### Phase 2 — Mobile guest tagging *(future)*
+A lightweight admin page that:
+- Reads the RSS feed and lists recent episodes
+- You tap an episode → select a guest → save
+- Writes to Firestore
+- PWA reads guest data from Firestore instead of the hardcoded `GUESTS` array
+
+This removes the need for Claude Code for routine episode-to-guest tagging.
+The full workflow becomes: publish on Spotify → open admin on phone → tag guest → done.
+
+**Why Firestore?** The `GUESTS` array is currently baked into `index.html` — every
+update requires editing code and deploying. Firestore moves that data out of the
+code so it can be updated from a simple form without touching the app itself.
+
+---
+
 ## Session: May 2026
 
 ---
