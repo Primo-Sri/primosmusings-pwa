@@ -1569,16 +1569,37 @@ GUESTS.forEach(g => g.episodes.forEach(ep => {
 
 let loadedEpisodes = [];
 
+// Multiple CORS proxies — tried in order, first one that works is used.
+// If allorigins.win is down, the app automatically falls back to the next.
+const RSS_URL = 'https://anchor.fm/s/d9746d30/podcast/rss';
+const RSS_PROXIES = [
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+async function fetchRSS() {
+  for (const proxy of RSS_PROXIES) {
+    try {
+      const res = await fetch(proxy(RSS_URL), { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) continue;
+      const text = await res.text();
+      // Sanity check — make sure we got actual RSS, not an error page
+      if (text.includes('<rss') || text.includes('<channel')) return text;
+    } catch(e) {
+      // This proxy timed out or failed — try the next one
+    }
+  }
+  throw new Error('All RSS proxies failed');
+}
+
 async function loadEpisodes() {
   epLoaded = true;
   const loading = document.getElementById('ep-loading');
   const list    = document.getElementById('ep-list');
   const errEl   = document.getElementById('ep-error');
   try {
-    const rssUrl = encodeURIComponent('https://anchor.fm/s/d9746d30/podcast/rss');
-    const res = await fetch(`https://api.allorigins.win/raw?url=${rssUrl}`);
-    if (!res.ok) throw new Error('fetch failed');
-    const text = await res.text();
+    const text = await fetchRSS();
     const parser = new DOMParser();
     const doc = parser.parseFromString(text, 'text/xml');
     const items = [...doc.querySelectorAll('item')].slice(0,15);
