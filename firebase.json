@@ -1,7 +1,7 @@
 {
   "hosting": [
     {
-      "target": "primosmusings",
+      "target": "primos-apps",
       "public": ".",
       "ignore": [
         "firebase.json",

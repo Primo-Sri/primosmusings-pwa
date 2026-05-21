@@ -1,12 +1,12 @@
 {
   "projects": {
-    "default": "primosmusings-b47f7"
+    "default": "primos-apps"
   },
   "targets": {
-    "primosmusings-b47f7": {
+    "primos-apps": {
       "hosting": {
-        "primosmusings": [
-          "primosmusings"
+        "primos-apps": [
+          "primos-apps"
         ]
       }
     }
