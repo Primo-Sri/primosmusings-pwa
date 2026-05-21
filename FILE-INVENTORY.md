@@ -4,8 +4,8 @@
 
 | URL | Purpose |
 |---|---|
-| https://primosmusings.web.app | Primary live URL |
-| https://primosmusings-b47f7.web.app | Firebase default URL (same app) |
+| https://primos-apps.web.app | Primary live URL |
+| https://primosmusings.web.app | Old project — no longer the active deployment |
 
 ---
 
@@ -35,10 +35,10 @@
 
 | Property | Value |
 |---|---|
-| Project ID | `primosmusings-b47f7` |
-| Hosting target | `primosmusings` |
+| Project ID | `primos-apps` |
+| Hosting target | `primos-apps` |
 | Public directory | `.` (root of project folder) |
-| Firebase Console | https://console.firebase.google.com/project/primosmusings-b47f7 |
+| Firebase Console | https://console.firebase.google.com/project/primos-apps |
 
 **Deploy command:**
 ```
@@ -146,7 +146,7 @@ C:\Users\padik\AppData\Roaming\Claude\local-agent-mode-sessions\skills-plugin\
 | Spotify Podcast | https://open.spotify.com/show/primosmusings | Primary episode platform |
 | Amazon Music | `26244d08-ef1b-430e-8e03-38f33efb7adb` | Secondary episode platform |
 | Blogger RSS | Referenced in `enrichGuestsFromRSS()` | Auto-enriches guest episode data |
-| Firebase Hosting | `primosmusings-b47f7` | App deployment |
+| Firebase Hosting | `primos-apps` | App deployment |
 
 ---
 
