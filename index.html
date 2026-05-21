@@ -1356,14 +1356,16 @@ const GUESTS = [
   { name:'Dr Daniel Kessler', init:'DK', year:2026, sports:['Golf','Tennis','Baseball','Basketball'],
     spotify:'https://open.spotify.com/search/Dr%20Daniel%20Kessler',
     episodes:[
-      {year:2026,title:'2026 Golf Masters Recap',                   url:'https://open.spotify.com/episode/0eSNnLnyl0GlrkE5DXdEa1'},
-      {year:2026,title:'2026 Golf Masters Preview',                  url:'https://open.spotify.com/episode/2xhp3oWm9EsJAIBAUjy5O3'},
-      {year:2026,title:"2026 Australian Open Men's Final recap",     url:'https://open.spotify.com/episode/1zROsKUzImjt2si2AgRoNk'},
-      {year:2025,title:'2025 College Football Playoff Preview Show', url:'https://open.spotify.com/episode/2H6WNSCKPkrPYsRi24oZhL'},
-      {year:2025,title:'2025 Tennis ATP Recap',                      url:'https://open.spotify.com/episode/7INQwjJAQXK9fWn8qHTHhl'},
-      {year:2025,title:'2025 PGA Recap',                             url:'https://open.spotify.com/episode/23kiHluPKZX9V2MtMt5IbU'},
-      {year:2025,title:'Dodgers go back-to-back',                    url:'https://open.spotify.com/episode/6NBdA9UR4FYxJ6lX1NzNAA'},
-      {year:2025,title:'Ryder Cup Recap',                            url:'https://open.spotify.com/episode/5rnGVXMd2HmnG9F2CIaZXc'},
+      {year:2026,title:'PGA Championship: Rai raises the roof',                url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-Rai-raises-the-roof-e3jgsq8'},
+      {year:2026,title:'PGA Championship preview: Can Rory make it back to back?', url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-preview--Can-Rory-make-it-back-to-back-e3jbgob'},
+      {year:2026,title:'2026 Golf Masters Recap',                               url:'https://open.spotify.com/episode/0eSNnLnyl0GlrkE5DXdEa1'},
+      {year:2026,title:'2026 Golf Masters Preview',                             url:'https://open.spotify.com/episode/2xhp3oWm9EsJAIBAUjy5O3'},
+      {year:2026,title:"2026 Australian Open Men's Final recap",                url:'https://open.spotify.com/episode/1zROsKUzImjt2si2AgRoNk'},
+      {year:2025,title:'2025 College Football Playoff Preview Show',            url:'https://open.spotify.com/episode/2H6WNSCKPkrPYsRi24oZhL'},
+      {year:2025,title:'2025 Tennis ATP Recap',                                 url:'https://open.spotify.com/episode/7INQwjJAQXK9fWn8qHTHhl'},
+      {year:2025,title:'2025 PGA Recap',                                        url:'https://open.spotify.com/episode/23kiHluPKZX9V2MtMt5IbU'},
+      {year:2025,title:'Dodgers go back-to-back',                               url:'https://open.spotify.com/episode/6NBdA9UR4FYxJ6lX1NzNAA'},
+      {year:2025,title:'Ryder Cup Recap',                                       url:'https://open.spotify.com/episode/5rnGVXMd2HmnG9F2CIaZXc'},
     ]},
   { name:'Amit Duvedi', init:'AD', year:2026, sports:['NFL','Cricket'],
     aliases:['amit duvedi','amit'],
@@ -1469,6 +1471,21 @@ const TAGGED_EPISODES = [
     url:'https://open.spotify.com/episode/2mefWX94RrJMWNSq8Pktc8' },
 
   // ── Golf ───────────────────────────────────────────────────────────────
+  { tags:['Golf'], year:2026, title:'PGA Championship: Rai raises the roof',
+    guests:'Dr Daniel Kessler',
+    url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-Rai-raises-the-roof-e3jgsq8' },
+  { tags:['Golf'], year:2026, title:'PGA Championship: Smalley puts on a show',
+    guests:'',
+    url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-Smalley-puts-on-a-show--Final-day-will-be-fun-to-watch-e3jg1ob' },
+  { tags:['Golf'], year:2026, title:'PGA Championship: Maverick & Smalley shine',
+    guests:'',
+    url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-Maverick-and-Smalley-shine-while-ScottieRory-settle-down-e3jet5f' },
+  { tags:['Golf'], year:2026, title:'PGA Championship: Scottie steady, Rory in trouble?',
+    guests:'',
+    url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-Scottie-steady--Rory-in-trouble-e3jdja2' },
+  { tags:['Golf'], year:2026, title:'PGA Championship preview: Can Rory make it back to back?',
+    guests:'Dr Daniel Kessler',
+    url:'https://podcasters.spotify.com/pod/show/sri-sri07/episodes/Golf-108th-PGA-Championship-preview--Can-Rory-make-it-back-to-back-e3jbgob' },
   { tags:['Golf'], year:2026, title:'2026 Golf Masters Recap',
     guests:'Dr Daniel Kessler',
     url:'https://open.spotify.com/episode/0eSNnLnyl0GlrkE5DXdEa1' },
@@ -1696,7 +1713,7 @@ function filterSportEps(sport, btn) {
           <div class="sport-ep-icon">${emoji}</div>
           <div class="sport-ep-body">
             <div class="sport-ep-title">${e.title}</div>
-            <div class="sport-ep-meta">with ${e.guests} &nbsp;·&nbsp; ${e.year}</div>
+            <div class="sport-ep-meta">${e.guests ? 'with ' + e.guests + ' &nbsp;·&nbsp; ' : ''}${e.year}</div>
           </div>
           <div class="sport-ep-arrow">↗</div>
         </a>`).join('')
@@ -1758,7 +1775,6 @@ async function loadEpisodes() {
     loading.style.display='none';
     list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
     updateHomeLatest();
-    enrichGuestsFromRSS();
   } catch(e) {
     loading.style.display='none';
     errEl.style.display='block';
