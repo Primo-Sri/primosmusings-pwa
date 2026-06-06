@@ -6,7 +6,8 @@
       "ignore": [
         "firebase.json",
         ".*",
-        "github-upload.html"
+        "github-upload.html",
+        "firestore.rules"
       ],
       "headers": [
         {
@@ -17,5 +18,8 @@
         }
       ]
     }
-  ]
+  ],
+  "firestore": {
+    "rules": "firestore.rules"
+  }
 }

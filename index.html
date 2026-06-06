@@ -1988,9 +1988,48 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('DOMContentLoaded', () => {
   const tab = new URLSearchParams(location.search).get('tab');
   if (tab && document.getElementById('page-'+tab)) switchTab(tab);
-  renderGuests();
+  loadFirestoreTags(); // fetches Firestore tags then calls renderGuests()
   if (!epLoaded) loadEpisodes();
 });
+</script>
+
+<!-- Firebase SDK — auto-configured by Firebase Hosting (no API key needed) -->
+<script src="/__/firebase/10.12.0/firebase-app-compat.js"></script>
+<script src="/__/firebase/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/__/firebase/init.js"></script>
+<script>
+// Load guest tags from Firestore and merge with the hardcoded GUESTS array.
+// New tags added via admin.html show up here automatically.
+async function loadFirestoreTags() {
+  try {
+    const db   = firebase.firestore();
+    const snap = await db.collection('episodeTags').get();
+
+    snap.forEach(doc => {
+      const { guestName, episodeTitle, episodeUrl, episodePub, episodeYear } = doc.data();
+      if (!guestName || !episodeTitle) return;
+
+      // Find existing guest by name (case-insensitive)
+      let guest = GUESTS.find(g => g.name.toLowerCase() === guestName.toLowerCase());
+
+      if (!guest) {
+        // New guest — create an entry on the fly
+        const initials = guestName.trim().split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
+        guest = { name: guestName, init: initials, year: episodeYear || new Date().getFullYear(), sports: [], episodes: [] };
+        GUESTS.push(guest);
+      }
+
+      // Add episode only if it isn't already in the array
+      const alreadyAdded = guest.episodes.some(e => e.url === episodeUrl);
+      if (!alreadyAdded) {
+        guest.episodes.unshift({ year: episodeYear || new Date().getFullYear(), title: episodeTitle, url: episodeUrl });
+      }
+    });
+  } catch(e) {
+    // Non-fatal — app works fine without Firestore (e.g. offline)
+  }
+  renderGuests();
+}
 </script>
 </body>
 </html>

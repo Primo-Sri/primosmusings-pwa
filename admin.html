@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Primosmusings Admin</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0e0e0e; color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh; padding: 24px 16px 40px;
+}
+
+/* ── Auth ─────────────────────────── */
+#auth-screen {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 85vh; gap: 16px;
+}
+#auth-screen h1 { font-size: 1.8rem; color: #e8aa30; }
+#auth-screen p  { color: rgba(255,255,255,.45); font-size: .85rem; }
+#pw-input {
+  background: #1a1a1a; border: 1.5px solid #2a2a2a; border-radius: 14px;
+  color: #fff; font-size: 1.1rem; padding: 14px 18px;
+  width: 100%; max-width: 320px; outline: none; text-align: center;
+}
+#pw-input:focus { border-color: #e8aa30; }
+#pw-btn {
+  background: #e8aa30; color: #000; font-weight: 700; border: none;
+  border-radius: 14px; font-size: 1rem; padding: 14px 0;
+  cursor: pointer; width: 100%; max-width: 320px;
+}
+#pw-error { color: #ff5555; font-size: .85rem; min-height: 20px; }
+
+/* ── Admin ────────────────────────── */
+#admin-screen { display: none; max-width: 560px; margin: 0 auto; }
+.page-title { font-size: 1.3rem; color: #e8aa30; font-weight: 700; margin-bottom: 4px; }
+.page-sub   { font-size: .8rem; color: rgba(255,255,255,.4); margin-bottom: 20px; }
+
+/* ── Episode cards ────────────────── */
+.ep-card {
+  background: #141414; border: 1.5px solid #222; border-radius: 14px;
+  margin-bottom: 8px; overflow: hidden;
+}
+.ep-card.tagged  { border-color: rgba(232,170,48,.35); }
+.ep-card.open    { border-color: #444; }
+.ep-header {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 14px; cursor: pointer;
+}
+.ep-date  { font-size: .68rem; color: rgba(255,255,255,.35); min-width: 54px; padding-top: 2px; }
+.ep-title { font-size: .88rem; line-height: 1.45; flex: 1; }
+.ep-badge {
+  font-size: .63rem; font-weight: 700; background: rgba(232,170,48,.15);
+  color: #e8aa30; border-radius: 20px; padding: 3px 8px; white-space: nowrap;
+  align-self: flex-start; margin-top: 1px;
+}
+.ep-body { display: none; padding: 0 14px 14px; border-top: 1px solid #222; }
+.ep-card.open .ep-body { display: block; }
+.ep-body label { font-size: .72rem; color: rgba(255,255,255,.4); display: block; margin: 12px 0 6px; }
+.ep-body input {
+  width: 100%; background: #0e0e0e; border: 1.5px solid #2a2a2a;
+  border-radius: 10px; color: #fff; font-size: 1rem;
+  padding: 11px 14px; outline: none; margin-bottom: 12px;
+}
+.ep-body input:focus { border-color: #e8aa30; }
+.btn-row { display: flex; gap: 8px; }
+.save-btn {
+  background: #e8aa30; color: #000; font-weight: 700; border: none;
+  border-radius: 10px; padding: 11px 24px; font-size: .9rem; cursor: pointer; flex: 1;
+}
+.remove-btn {
+  background: transparent; color: rgba(255,255,255,.4);
+  border: 1.5px solid #2a2a2a; border-radius: 10px;
+  padding: 11px 18px; font-size: .9rem; cursor: pointer;
+}
+.confirm-msg { font-size: .8rem; color: #4caf50; margin-top: 10px; display: none; }
+
+#loading-msg { color: rgba(255,255,255,.45); font-size: .9rem; padding: 24px 0; }
+#error-msg   { color: #ff5555; font-size: .9rem; padding: 24px 0; display: none; }
+</style>
+</head>
+<body>
+
+<!-- ── Password gate ─────────────────────────────── -->
+<div id="auth-screen">
+  <h1>🎙 Admin</h1>
+  <p>Primosmusings guest tagging</p>
+  <input type="password" id="pw-input" placeholder="Password"
+         onkeydown="if(event.key==='Enter') checkPassword()">
+  <button id="pw-btn" onclick="checkPassword()">Enter</button>
+  <p id="pw-error"></p>
+</div>
+
+<!-- ── Admin screen ──────────────────────────────── -->
+<div id="admin-screen">
+  <p class="page-title">🎙 Tag a Guest</p>
+  <p class="page-sub">Tap an episode to add or update its guest</p>
+  <div id="loading-msg">Loading recent episodes…</div>
+  <div id="error-msg">Could not load episodes. Check your connection and try again.</div>
+  <div id="ep-list"></div>
+</div>
+
+<!-- Firebase SDK — auto-injected by Firebase Hosting (no API key needed) -->
+<script src="/__/firebase/10.12.0/firebase-app-compat.js"></script>
+<script src="/__/firebase/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/__/firebase/init.js"></script>
+
+<script>
+const PASSWORD = 'primo_rocks';
+const RSS_URL  = 'https://anchor.fm/s/d9746d30/podcast/rss';
+const PROXIES  = [
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+];
+
+let db;
+let episodes    = [];   // { title, url, pub, year }
+let tagsByUrl   = {};   // url → { id, guestName }
+
+// ── Auth ──────────────────────────────────────────────────────────────
+function checkPassword() {
+  if (document.getElementById('pw-input').value === PASSWORD) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('pw-error').textContent = 'Wrong password — try again.';
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+async function initAdmin() {
+  db = firebase.firestore();
+
+  // Load existing tags so we can show which episodes are already tagged
+  try {
+    const snap = await db.collection('episodeTags').get();
+    snap.forEach(doc => {
+      const d = doc.data();
+      if (d.episodeUrl) tagsByUrl[d.episodeUrl] = { id: doc.id, guestName: d.guestName };
+    });
+  } catch(e) { /* non-fatal — continue without tag data */ }
+
+  loadRSS();
+}
+
+// ── RSS ────────────────────────────────────────────────────────────────
+async function loadRSS() {
+  for (const proxy of PROXIES) {
+    try {
+      const res  = await fetch(proxy(RSS_URL), { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (!text.includes('<rss') && !text.includes('<channel')) continue;
+      renderEpisodes(text);
+      return;
+    } catch(e) { /* try next proxy */ }
+  }
+  document.getElementById('loading-msg').style.display = 'none';
+  document.getElementById('error-msg').style.display   = 'block';
+}
+
+// ── Render ─────────────────────────────────────────────────────────────
+function renderEpisodes(xml) {
+  const doc   = new DOMParser().parseFromString(xml, 'text/xml');
+  const items = [...doc.querySelectorAll('item')].slice(0, 30);
+
+  episodes = items.map(item => ({
+    title: clean(item.querySelector('title')?.textContent || 'Untitled'),
+    url:   clean(item.querySelector('link')?.textContent  || ''),
+    pub:   fmtDate(item.querySelector('pubDate')?.textContent || ''),
+    year:  new Date(item.querySelector('pubDate')?.textContent || '').getFullYear() || new Date().getFullYear(),
+  }));
+
+  document.getElementById('loading-msg').style.display = 'none';
+  document.getElementById('ep-list').innerHTML = episodes.map((ep, i) => {
+    const tag    = tagsByUrl[ep.url];
+    const tagged = !!tag;
+    return `
+      <div class="ep-card${tagged ? ' tagged' : ''}" id="card-${i}">
+        <div class="ep-header" onclick="toggleCard(${i})">
+          <span class="ep-date">${ep.pub}</span>
+          <span class="ep-title">${ep.title}</span>
+          ${tagged ? `<span class="ep-badge">✓ ${tag.guestName}</span>` : ''}
+        </div>
+        <div class="ep-body">
+          <label>Guest name</label>
+          <input type="text" id="guest-${i}" placeholder="e.g. Joshua Kean"
+                 value="${tagged ? escHtml(tag.guestName) : ''}">
+          <div class="btn-row">
+            <button class="save-btn"   onclick="saveTag(${i})">Save</button>
+            ${tagged ? `<button class="remove-btn" onclick="removeTag(${i})">Remove</button>` : ''}
+          </div>
+          <div class="confirm-msg" id="confirm-${i}"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleCard(idx) {
+  const card = document.getElementById('card-' + idx);
+  // Close all others
+  document.querySelectorAll('.ep-card.open').forEach(c => {
+    if (c !== card) c.classList.remove('open');
+  });
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) {
+    setTimeout(() => document.getElementById('guest-' + idx)?.focus(), 120);
+  }
+}
+
+// ── Save ────────────────────────────────────────────────────────────────
+async function saveTag(idx) {
+  const ep        = episodes[idx];
+  const guestName = document.getElementById('guest-' + idx).value.trim();
+  if (!guestName) { alert('Enter a guest name first.'); return; }
+
+  const data = {
+    guestName,
+    episodeTitle: ep.title,
+    episodeUrl:   ep.url,
+    episodePub:   ep.pub,
+    episodeYear:  ep.year,
+    taggedAt:     firebase.firestore.FieldValue.serverTimestamp(),
+  };
+
+  try {
+    const existing = tagsByUrl[ep.url];
+    if (existing) {
+      await db.collection('episodeTags').doc(existing.id).set(data);
+      tagsByUrl[ep.url].guestName = guestName;
+    } else {
+      const ref = await db.collection('episodeTags').add(data);
+      tagsByUrl[ep.url] = { id: ref.id, guestName };
+    }
+    showConfirm(idx, '✓ Saved! Guest tagged successfully.');
+    const card = document.getElementById('card-' + idx);
+    card.classList.add('tagged');
+  } catch(e) {
+    alert('Save failed: ' + e.message);
+  }
+}
+
+// ── Remove ──────────────────────────────────────────────────────────────
+async function removeTag(idx) {
+  if (!confirm('Remove this guest tag?')) return;
+  const ep  = episodes[idx];
+  const tag = tagsByUrl[ep.url];
+  if (!tag) return;
+
+  try {
+    await db.collection('episodeTags').doc(tag.id).delete();
+    delete tagsByUrl[ep.url];
+    showConfirm(idx, '✓ Removed.');
+    document.getElementById('card-' + idx).classList.remove('tagged');
+  } catch(e) {
+    alert('Remove failed: ' + e.message);
+  }
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+function showConfirm(idx, msg) {
+  const el = document.getElementById('confirm-' + idx);
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
+function clean(s)   { return s.replace(/<!\[CDATA\[|\]\]>/g, '').trim(); }
+function escHtml(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+function fmtDate(s) {
+  if (!s) return '';
+  return new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+</script>
+</body>
+</html>
