@@ -1761,7 +1761,7 @@ async function fetchEpisodeItems() {
   // ── 1. rss2json — best option, designed for RSS, handles anchor.fm ──
   try {
     const res = await fetch(
-      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}&count=30`,
+      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`,
       { signal: AbortSignal.timeout(12000) }
     );
     if (res.ok) {

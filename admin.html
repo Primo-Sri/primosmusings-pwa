@@ -224,7 +224,7 @@ async function loadRSS() {
   // Try rss2json — same fix as the main app
   try {
     const res = await fetch(
-      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}&count=30`,
+      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`,
       { signal: AbortSignal.timeout(12000) }
     );
     if (res.ok) {
