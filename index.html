@@ -1742,23 +1742,39 @@ let loadedEpisodes = [];
 // Multiple CORS proxies — tried in order, first one that works is used.
 // If allorigins.win is down, the app automatically falls back to the next.
 const RSS_URL = 'https://anchor.fm/s/d9746d30/podcast/rss';
+const EP_CACHE_KEY = 'pm_episodes_v1';
+
+function saveCachedEpisodes(eps) {
+  try { localStorage.setItem(EP_CACHE_KEY, JSON.stringify(eps)); } catch(e) {}
+}
+function loadCachedEpisodes() {
+  try {
+    const raw = localStorage.getItem(EP_CACHE_KEY);
+    if (!raw) return null;
+    const eps = JSON.parse(raw);
+    return Array.isArray(eps) && eps.length ? eps : null;
+  } catch(e) { return null; }
+}
 const RSS_PROXIES = [
   url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
   url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
   url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
 ];
 
 async function fetchRSS() {
   for (const proxy of RSS_PROXIES) {
     try {
-      const res = await fetch(proxy(RSS_URL), { signal: AbortSignal.timeout(6000) });
+      const res = await fetch(proxy(RSS_URL), { signal: AbortSignal.timeout(10000) });
       if (!res.ok) continue;
-      const text = await res.text();
-      // Sanity check — make sure we got actual RSS, not an error page
+      let text = await res.text();
+      // allorigins /get returns JSON — extract the contents field
+      if (text.trim().startsWith('{')) {
+        try { text = JSON.parse(text).contents || ''; } catch(e) { continue; }
+      }
       if (text.includes('<rss') || text.includes('<channel')) return text;
-    } catch(e) {
-      // This proxy timed out or failed — try the next one
-    }
+    } catch(e) { /* try next proxy */ }
   }
   throw new Error('All RSS proxies failed');
 }
@@ -1768,6 +1784,16 @@ async function loadEpisodes() {
   const loading = document.getElementById('ep-loading');
   const list    = document.getElementById('ep-list');
   const errEl   = document.getElementById('ep-error');
+
+  // Show cached episodes immediately while fetching fresh ones
+  const cached = loadCachedEpisodes();
+  if (cached) {
+    loadedEpisodes = cached;
+    loading.style.display='none';
+    list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
+    updateHomeLatest();
+  }
+
   try {
     const text = await fetchRSS();
     const parser = new DOMParser();
@@ -1791,15 +1817,17 @@ async function loadEpisodes() {
       dur:   item.querySelector('duration')?.textContent?.trim() || '',
       link:  item.querySelector('link')?.textContent?.trim() || '',
     }));
-    // Cache recent episodes in Firestore so admin.html can read them
-    // without needing external CORS proxies
+    saveCachedEpisodes(loadedEpisodes);
     cacheEpisodesInFirestore(allItems.slice(0, 30));
     loading.style.display='none';
     list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
     updateHomeLatest();
   } catch(e) {
-    loading.style.display='none';
-    errEl.style.display='block';
+    if (!cached) {
+      loading.style.display='none';
+      errEl.style.display='block';
+    }
+    // If we had cached episodes, they're already showing — fail silently
   }
 }
 
