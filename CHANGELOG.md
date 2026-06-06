@@ -10,19 +10,35 @@ Every push to `main` automatically deploys to Firebase — no terminal needed.
 Auth uses a service account key stored as `FIREBASE_SERVICE_ACCOUNT` in GitHub Secrets.
 Service account JSON blocked from commits via `.gitignore`.
 
-### Phase 2 — Mobile guest tagging *(future)*
-A lightweight admin page that:
-- Reads the RSS feed and lists recent episodes
-- You tap an episode → select a guest → save
-- Writes to Firestore
-- PWA reads guest data from Firestore instead of the hardcoded `GUESTS` array
+### Phase 2 — Mobile guest tagging ✅ *(complete — June 2026)*
+Admin page live at `primosmusings.web.app/admin.html`.
+- Secured with Firebase Authentication (email + password — no password in source code)
+- Loads recent episodes via rss2json, cached in Firestore for instant future loads
+- Tap episode → type guest name → Save → appears in main app automatically
+- Firestore rules: only authenticated users can write guest tags; reads are public
+- Main app merges Firestore tags with hardcoded GUESTS array on every load
+- New guests not in the hardcoded list are created automatically from Firestore tags
 
-This removes the need for Claude Code for routine episode-to-guest tagging.
-The full workflow becomes: publish on Spotify → open admin on phone → tag guest → done.
+**Workflow:** Publish on Spotify → open admin on phone → sign in → tag guest → done.
 
-**Why Firestore?** The `GUESTS` array is currently baked into `index.html` — every
-update requires editing code and deploying. Firestore moves that data out of the
-code so it can be updated from a simple form without touching the app itself.
+---
+
+## Session: June 2026
+
+### 1. GitHub Actions Auto-Deploy (Phase 1)
+Every push to `main` deploys to Firebase automatically. Uses service account key stored in GitHub Secrets. Firestore rules deployed manually via local terminal (service account lacks Firebase Rules permission).
+
+### 2. Live Episode Count
+Episode count on home screen now reads live from RSS feed on every load — no manual updates needed.
+
+### 3. Firebase Firestore Setup
+Firestore database created for `primosmusings-b47f7`. Web App registered to enable Firebase SDK. Episode cache stored in `cache/recentEpisodes`, guest tags in `episodeTags`.
+
+### 4. RSS Loading Fix
+Switched from unreliable CORS proxies (blocked by anchor.fm) to `rss2json.com` as primary source. Added localStorage cache so episodes show instantly on repeat visits even if network is slow.
+
+### 5. Mobile Guest Tagging Admin Page (Phase 2)
+`admin.html` deployed with Firebase Auth login, Firestore-backed episode list, and guest tagging. Firestore rules enforce auth on writes. Main app reads and merges Firestore tags automatically.
 
 ---
 
