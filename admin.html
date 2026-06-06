@@ -219,8 +219,29 @@ async function loadAdminData() {
   loadRSS();
 }
 
-// ── RSS fallback ────────────────────────────────────────────────────────
+// ── RSS fallback (rss2json first, then XML proxies) ─────────────────────
 async function loadRSS() {
+  // Try rss2json — same fix as the main app
+  try {
+    const res = await fetch(
+      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}&count=30`,
+      { signal: AbortSignal.timeout(12000) }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) {
+        episodes = data.items.map(item => ({
+          title: item.title || '',
+          url:   item.link  || item.guid || '',
+          pub:   fmtDate(item.pubDate || ''),
+          year:  new Date(item.pubDate || '').getFullYear() || new Date().getFullYear(),
+        }));
+        renderEpisodeList();
+        return;
+      }
+    }
+  } catch(e) {}
+
   for (const proxy of PROXIES) {
     try {
       const res  = await fetch(proxy(RSS_URL), { signal: AbortSignal.timeout(8000) });
