@@ -110,11 +110,22 @@ body {
   <div id="ep-list"></div>
 </div>
 
-<!-- Firebase SDK — auto-injected by Firebase Hosting (no API key needed) -->
-<script src="/__/firebase/10.12.0/firebase-app-compat.js"></script>
-<script src="/__/firebase/10.12.0/firebase-auth-compat.js"></script>
-<script src="/__/firebase/10.12.0/firebase-firestore-compat.js"></script>
-<script src="/__/firebase/init.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    apiKey:            "AIzaSyCL_ROFX3JzviTBJ4plAFFjvoCDzCheZ1E",
+    authDomain:        "primosmusings-b47f7.firebaseapp.com",
+    projectId:         "primosmusings-b47f7",
+    storageBucket:     "primosmusings-b47f7.firebasestorage.app",
+    messagingSenderId: "60238815621",
+    appId:             "1:60238815621:web:ff7c622820f162cf6864ec"
+  });
+}
+</script>
 
 <script>
 const RSS_URL  = 'https://anchor.fm/s/d9746d30/podcast/rss';
