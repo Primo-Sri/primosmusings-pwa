@@ -124,26 +124,28 @@ function checkPassword() {
   if (document.getElementById('pw-input').value === PASSWORD) {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
-    initAdmin();
+    // Load RSS immediately — don't wait for Firebase
+    loadRSS();
+    // Load Firestore tags in parallel (non-blocking)
+    initFirestore();
   } else {
     document.getElementById('pw-error').textContent = 'Wrong password — try again.';
   }
 }
 
-// ── Init ──────────────────────────────────────────────────────────────
-async function initAdmin() {
-  db = firebase.firestore();
-
-  // Load existing tags so we can show which episodes are already tagged
+// ── Firestore init (runs in background, independent of RSS) ───────────
+async function initFirestore() {
   try {
+    if (typeof firebase === 'undefined') return;
+    db = firebase.firestore();
     const snap = await db.collection('episodeTags').get();
     snap.forEach(doc => {
       const d = doc.data();
       if (d.episodeUrl) tagsByUrl[d.episodeUrl] = { id: doc.id, guestName: d.guestName };
     });
-  } catch(e) { /* non-fatal — continue without tag data */ }
-
-  loadRSS();
+    // If episodes already rendered, refresh badges to show tagged status
+    if (episodes.length > 0) applyTagBadges();
+  } catch(e) { /* Firebase unavailable — tagging will still work, saves queued */ }
 }
 
 // ── RSS ────────────────────────────────────────────────────────────────
@@ -213,6 +215,7 @@ function toggleCard(idx) {
 
 // ── Save ────────────────────────────────────────────────────────────────
 async function saveTag(idx) {
+  if (!db) { alert('Still connecting to database — wait a moment and try again.'); return; }
   const ep        = episodes[idx];
   const guestName = document.getElementById('guest-' + idx).value.trim();
   if (!guestName) { alert('Enter a guest name first.'); return; }
@@ -236,8 +239,7 @@ async function saveTag(idx) {
       tagsByUrl[ep.url] = { id: ref.id, guestName };
     }
     showConfirm(idx, '✓ Saved! Guest tagged successfully.');
-    const card = document.getElementById('card-' + idx);
-    card.classList.add('tagged');
+    document.getElementById('card-' + idx).classList.add('tagged');
   } catch(e) {
     alert('Save failed: ' + e.message);
   }
@@ -258,6 +260,26 @@ async function removeTag(idx) {
   } catch(e) {
     alert('Remove failed: ' + e.message);
   }
+}
+
+// ── Refresh badges after Firestore loads (if episodes already rendered) ──
+function applyTagBadges() {
+  episodes.forEach((ep, i) => {
+    const tag  = tagsByUrl[ep.url];
+    const card = document.getElementById('card-' + i);
+    if (!card || !tag) return;
+    card.classList.add('tagged');
+    // Inject badge if not already there
+    if (!card.querySelector('.ep-badge')) {
+      const badge = document.createElement('span');
+      badge.className = 'ep-badge';
+      badge.textContent = '✓ ' + tag.guestName;
+      card.querySelector('.ep-header').appendChild(badge);
+    }
+    // Prefill input
+    const input = document.getElementById('guest-' + i);
+    if (input && !input.value) input.value = tag.guestName;
+  });
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────
