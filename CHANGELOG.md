@@ -4,10 +4,11 @@
 
 ## Roadmap
 
-### Phase 1 — Auto-deploy from GitHub *(next up)*
-Set up GitHub Actions so any push to `main` automatically deploys to Firebase.
-No terminal needed — works from phone, Claude Code, anywhere.
-See setup steps in `FILE-INVENTORY.md` under "Mobile Management".
+### Phase 1 — Auto-deploy from GitHub ✅ *(complete — June 2026)*
+GitHub Actions workflow live at `.github/workflows/deploy.yml`.
+Every push to `main` automatically deploys to Firebase — no terminal needed.
+Auth uses a service account key stored as `FIREBASE_SERVICE_ACCOUNT` in GitHub Secrets.
+Service account JSON blocked from commits via `.gitignore`.
 
 ### Phase 2 — Mobile guest tagging *(future)*
 A lightweight admin page that:
@@ -128,12 +129,12 @@ Created a reusable Claude Code skill that automates all post-episode publishing 
 
 ---
 
-## Deploy command
+## Deploy
 
-After any of these changes, deploy with:
+**Auto-deploy (Phase 1 — active):** Push any change to GitHub and Firebase deploys automatically within ~1 minute. No terminal needed.
 
+**Manual deploy (fallback):** If you ever need to deploy without pushing to GitHub:
 ```
 firebase deploy --only hosting
 ```
-
-Run this from `C:\Users\padik\Claude\Podcast\primosmusings-pwa\`.
+Run from `C:\Users\padik\Claude\Podcast\primosmusings-pwa\`.
