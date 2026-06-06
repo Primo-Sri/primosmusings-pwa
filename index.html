@@ -1755,28 +1755,58 @@ function loadCachedEpisodes() {
     return Array.isArray(eps) && eps.length ? eps : null;
   } catch(e) { return null; }
 }
-const RSS_PROXIES = [
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-  url => `https://thingproxy.freeboard.io/fetch/${url}`,
-  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-];
+// Fetch episodes — tries rss2json first (handles anchor.fm CORS correctly),
+// then falls back to raw XML proxies.
+async function fetchEpisodeItems() {
+  // ── 1. rss2json — best option, designed for RSS, handles anchor.fm ──
+  try {
+    const res = await fetch(
+      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}&count=30`,
+      { signal: AbortSignal.timeout(12000) }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) {
+        return data.items.map(item => ({
+          title: item.title || '',
+          link:  item.link  || item.guid || '',
+          pub:   item.pubDate || '',
+          desc:  item.description || item.content || '',
+          dur:   '',
+        }));
+      }
+    }
+  } catch(e) {}
 
-async function fetchRSS() {
-  for (const proxy of RSS_PROXIES) {
+  // ── 2. XML CORS proxies as fallback ──────────────────────────────────
+  const proxies = [
+    u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ];
+  for (const proxy of proxies) {
     try {
       const res = await fetch(proxy(RSS_URL), { signal: AbortSignal.timeout(10000) });
       if (!res.ok) continue;
       let text = await res.text();
-      // allorigins /get returns JSON — extract the contents field
       if (text.trim().startsWith('{')) {
         try { text = JSON.parse(text).contents || ''; } catch(e) { continue; }
       }
-      if (text.includes('<rss') || text.includes('<channel')) return text;
-    } catch(e) { /* try next proxy */ }
+      if (!text.includes('<rss') && !text.includes('<channel')) continue;
+      const doc = new DOMParser().parseFromString(text, 'text/xml');
+      const xmlItems = [...doc.querySelectorAll('item')];
+      if (!xmlItems.length) continue;
+      return xmlItems.map(item => ({
+        title: cleanCDATA(item.querySelector('title')?.textContent || ''),
+        link:  item.querySelector('link')?.textContent?.trim() || '',
+        pub:   item.querySelector('pubDate')?.textContent || '',
+        desc:  cleanCDATA(item.querySelector('summary')?.textContent || item.querySelector('description')?.textContent || ''),
+        dur:   item.querySelector('duration')?.textContent?.trim() || '',
+      }));
+    } catch(e) {}
   }
-  throw new Error('All RSS proxies failed');
+
+  throw new Error('All sources failed');
 }
 
 async function loadEpisodes() {
@@ -1785,49 +1815,51 @@ async function loadEpisodes() {
   const list    = document.getElementById('ep-list');
   const errEl   = document.getElementById('ep-error');
 
-  // Show cached episodes immediately while fetching fresh ones
+  // Show locally cached episodes immediately while fetching fresh ones
   const cached = loadCachedEpisodes();
   if (cached) {
     loadedEpisodes = cached;
-    loading.style.display='none';
+    loading.style.display = 'none';
     list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
     updateHomeLatest();
   }
 
   try {
-    const text = await fetchRSS();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/xml');
-    const allItems = [...doc.querySelectorAll('item')];
-    if (!allItems.length) throw new Error('no items');
-    const totalCount = allItems.length;
-    const countLabel = totalCount + '+';
-    const stat = document.getElementById('ep-count-stat');
+    const items = await fetchEpisodeItems();
+    if (!items.length) throw new Error('no items');
+
+    // Update live episode count
+    const countLabel = items.length + '+';
+    const stat  = document.getElementById('ep-count-stat');
     const badge = document.getElementById('ep-count-badge');
-    const browse = document.getElementById('ep-count-browse');
-    if (stat) stat.textContent = countLabel;
+    const browse= document.getElementById('ep-count-browse');
+    if (stat)  stat.textContent  = countLabel;
     if (badge) badge.textContent = countLabel + ' episodes';
-    if (browse) browse.textContent = 'Browse all ' + countLabel + ' episodes';
-    const items = allItems.slice(0,15);
-    loadedEpisodes = items.map((item, i) => ({
+    if (browse)browse.textContent= 'Browse all ' + countLabel + ' episodes';
+
+    loadedEpisodes = items.slice(0, 15).map((item, i) => ({
       num:   items.length - i,
-      title: cleanCDATA(item.querySelector('title')?.textContent || ''),
-      desc:  stripTags(cleanCDATA(item.querySelector('summary')?.textContent || item.querySelector('description')?.textContent || '')).substring(0,160),
-      pub:   fmtDate(item.querySelector('pubDate')?.textContent || ''),
-      dur:   item.querySelector('duration')?.textContent?.trim() || '',
-      link:  item.querySelector('link')?.textContent?.trim() || '',
+      title: item.title,
+      desc:  stripTags(item.desc).substring(0, 160),
+      pub:   fmtDate(item.pub),
+      dur:   item.dur,
+      link:  item.link,
     }));
+
     saveCachedEpisodes(loadedEpisodes);
-    cacheEpisodesInFirestore(allItems.slice(0, 30));
-    loading.style.display='none';
+    // Cache for admin.html (Firestore format uses raw pub string)
+    cacheEpisodesInFirestore(items.slice(0, 30).map(e => ({
+      title: e.title, url: e.link, pub: e.pub
+    })));
+
+    loading.style.display = 'none';
     list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
     updateHomeLatest();
   } catch(e) {
     if (!cached) {
-      loading.style.display='none';
-      errEl.style.display='block';
+      loading.style.display = 'none';
+      errEl.style.display   = 'block';
     }
-    // If we had cached episodes, they're already showing — fail silently
   }
 }
 
@@ -2042,14 +2074,11 @@ if (!firebase.apps.length) {
 <script>
 // Save recent episodes to Firestore so admin.html can load them directly.
 // Called silently after every successful RSS fetch — non-blocking.
+// items is now a plain array of { title, url, pub } objects
 async function cacheEpisodesInFirestore(items) {
   try {
     const db = firebase.firestore();
-    const episodes = items.map(item => ({
-      title: (item.querySelector('title')?.textContent || '').replace(/<!\[CDATA\[|\]\]>/g, '').trim(),
-      url:   (item.querySelector('link')?.textContent  || '').trim(),
-      pub:   (item.querySelector('pubDate')?.textContent || '').trim(),
-    })).filter(e => e.title && e.url);
+    const episodes = items.filter(e => e.title && e.url);
     await db.collection('cache').doc('recentEpisodes').set({
       episodes,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
