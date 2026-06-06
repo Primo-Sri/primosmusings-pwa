@@ -116,39 +116,60 @@ const PROXIES  = [
 ];
 
 let db;
-let episodes    = [];   // { title, url, pub, year }
-let tagsByUrl   = {};   // url → { id, guestName }
+let episodes  = [];  // { title, url, pub, year }
+let tagsByUrl = {};  // url → { id, guestName }
 
 // ── Auth ──────────────────────────────────────────────────────────────
 function checkPassword() {
   if (document.getElementById('pw-input').value === PASSWORD) {
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
-    // Load RSS immediately — don't wait for Firebase
-    loadRSS();
-    // Load Firestore tags in parallel (non-blocking)
-    initFirestore();
+    loadAdminData();
   } else {
     document.getElementById('pw-error').textContent = 'Wrong password — try again.';
   }
 }
 
-// ── Firestore init (runs in background, independent of RSS) ───────────
-async function initFirestore() {
+// ── Main loader — Firestore first, RSS fallback ────────────────────────
+// Episodes are cached in Firestore by the main app after every RSS load.
+// This means admin.html never needs external CORS proxies on normal use.
+async function loadAdminData() {
+  if (typeof firebase === 'undefined') { loadRSS(); return; }
+
   try {
-    if (typeof firebase === 'undefined') return;
     db = firebase.firestore();
-    const snap = await db.collection('episodeTags').get();
-    snap.forEach(doc => {
+
+    // Load tags and episode cache in parallel
+    const [tagsSnap, cacheDoc] = await Promise.all([
+      db.collection('episodeTags').get(),
+      db.collection('cache').doc('recentEpisodes').get(),
+    ]);
+
+    tagsSnap.forEach(doc => {
       const d = doc.data();
       if (d.episodeUrl) tagsByUrl[d.episodeUrl] = { id: doc.id, guestName: d.guestName };
     });
-    // If episodes already rendered, refresh badges to show tagged status
-    if (episodes.length > 0) applyTagBadges();
-  } catch(e) { /* Firebase unavailable — tagging will still work, saves queued */ }
+
+    const cached = cacheDoc.exists ? (cacheDoc.data().episodes || []) : [];
+    if (cached.length > 0) {
+      // Great — use Firestore cache (fast, no external requests)
+      episodes = cached.map(e => ({
+        title: e.title,
+        url:   e.url,
+        pub:   fmtDate(e.pub),
+        year:  new Date(e.pub).getFullYear() || new Date().getFullYear(),
+      }));
+      renderEpisodeList();
+      return;
+    }
+  } catch(e) { /* Firestore unavailable — try RSS */ }
+
+  // No Firestore cache yet — fall back to RSS proxies.
+  // Cache is populated the first time you open the main app.
+  loadRSS();
 }
 
-// ── RSS ────────────────────────────────────────────────────────────────
+// ── RSS fallback ────────────────────────────────────────────────────────
 async function loadRSS() {
   for (const proxy of PROXIES) {
     try {
@@ -156,26 +177,30 @@ async function loadRSS() {
       if (!res.ok) continue;
       const text = await res.text();
       if (!text.includes('<rss') && !text.includes('<channel')) continue;
-      renderEpisodes(text);
+      const doc   = new DOMParser().parseFromString(text, 'text/xml');
+      const items = [...doc.querySelectorAll('item')].slice(0, 30);
+      episodes = items.map(item => ({
+        title: clean(item.querySelector('title')?.textContent || 'Untitled'),
+        url:   clean(item.querySelector('link')?.textContent  || ''),
+        pub:   fmtDate(item.querySelector('pubDate')?.textContent || ''),
+        year:  new Date(item.querySelector('pubDate')?.textContent || '').getFullYear() || new Date().getFullYear(),
+      }));
+      renderEpisodeList();
       return;
     } catch(e) { /* try next proxy */ }
   }
+  // All sources failed
   document.getElementById('loading-msg').style.display = 'none';
-  document.getElementById('error-msg').style.display   = 'block';
+  document.getElementById('error-msg').innerHTML =
+    'Could not load episodes.<br><br>' +
+    '<strong>Quick fix:</strong> Open the <a href="/" style="color:#e8aa30">main app</a> first, ' +
+    'then come back here. Episodes will load instantly after that.<br><br>' +
+    '<button onclick="loadAdminData()" style="background:#e8aa30;color:#000;border:none;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer">Try again</button>';
+  document.getElementById('error-msg').style.display = 'block';
 }
 
-// ── Render ─────────────────────────────────────────────────────────────
-function renderEpisodes(xml) {
-  const doc   = new DOMParser().parseFromString(xml, 'text/xml');
-  const items = [...doc.querySelectorAll('item')].slice(0, 30);
-
-  episodes = items.map(item => ({
-    title: clean(item.querySelector('title')?.textContent || 'Untitled'),
-    url:   clean(item.querySelector('link')?.textContent  || ''),
-    pub:   fmtDate(item.querySelector('pubDate')?.textContent || ''),
-    year:  new Date(item.querySelector('pubDate')?.textContent || '').getFullYear() || new Date().getFullYear(),
-  }));
-
+// ── Render episode list (episodes[] already populated) ─────────────────
+function renderEpisodeList() {
   document.getElementById('loading-msg').style.display = 'none';
   document.getElementById('ep-list').innerHTML = episodes.map((ep, i) => {
     const tag    = tagsByUrl[ep.url];

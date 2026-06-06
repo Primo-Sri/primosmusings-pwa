@@ -1791,6 +1791,9 @@ async function loadEpisodes() {
       dur:   item.querySelector('duration')?.textContent?.trim() || '',
       link:  item.querySelector('link')?.textContent?.trim() || '',
     }));
+    // Cache recent episodes in Firestore so admin.html can read them
+    // without needing external CORS proxies
+    cacheEpisodesInFirestore(allItems.slice(0, 30));
     loading.style.display='none';
     list.innerHTML = loadedEpisodes.map(ep => renderEpCard(ep)).join('');
     updateHomeLatest();
@@ -1998,6 +2001,23 @@ window.addEventListener('DOMContentLoaded', () => {
 <script src="/__/firebase/10.12.0/firebase-firestore-compat.js"></script>
 <script src="/__/firebase/init.js"></script>
 <script>
+// Save recent episodes to Firestore so admin.html can load them directly.
+// Called silently after every successful RSS fetch — non-blocking.
+async function cacheEpisodesInFirestore(items) {
+  try {
+    const db = firebase.firestore();
+    const episodes = items.map(item => ({
+      title: (item.querySelector('title')?.textContent || '').replace(/<!\[CDATA\[|\]\]>/g, '').trim(),
+      url:   (item.querySelector('link')?.textContent  || '').trim(),
+      pub:   (item.querySelector('pubDate')?.textContent || '').trim(),
+    })).filter(e => e.title && e.url);
+    await db.collection('cache').doc('recentEpisodes').set({
+      episodes,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch(e) { /* non-fatal */ }
+}
+
 // Load guest tags from Firestore and merge with the hardcoded GUESTS array.
 // New tags added via admin.html show up here automatically.
 async function loadFirestoreTags() {
