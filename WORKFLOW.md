@@ -14,37 +14,51 @@ Record and publish the episode as you normally do. Nothing changes here.
 
 ---
 
-### Step 2 — Open Claude Code and update the app
+### Step 2 — Open Claude Code and update the episode count
 
 Tell Claude something like:
 
-> "New episode 649 with Joshua Smith. Here's the Spotify link: https://open.spotify.com/episode/..."
+> "New episode 649, solo" or "New episode 649 with a new guest, just need the count updated."
 
-Claude will do the following — confirm each one before it pushes:
-
-**In `index.html`:**
-- Add the new guest to the `GUESTS` array (name, initials, sport, first episode)
-- Update the episode count in all three places
-
-**In `admin.html`:**
-- Add the new guest's name to the `<datalist id="guest-names">` block
-  (This is what makes their name appear in the dropdown on the admin page)
-
-**In `sw.js`:**
-- Bump the cache version number by 1
+Claude will:
+- Update the episode count in `index.html`
+- Bump the cache version in `sw.js`
 
 ---
 
 ### Step 3 — Push to GitHub
 
 ```
-git add index.html admin.html sw.js
-git commit -m "Add [Guest Name] — episode [number]"
+git add index.html sw.js
+git commit -m "Episode 649"
 git push origin master
 ```
 
-GitHub Actions auto-deploys to Firebase in about 1 minute. Check the Actions tab at:
-https://github.com/Primo-Sri/primosmusings-pwa/actions
+Auto-deploys in about 1 minute.
+
+---
+
+### Step 4 — Tag the episode in admin.html
+
+1. Open **primosmusings.web.app/admin.html** on your phone
+2. Sign in
+3. Find the new episode → tap to expand
+4. Type the guest's name in the field (free text — new guest, so no dropdown match yet)
+5. Tap **Save** → ✓ Saved!
+
+The guest will now appear automatically in the main app's Guests tab on the next load.
+Their card will show their name and this episode. No code needed.
+
+---
+
+### Step 5 — Tell Claude about the new guest (when ready)
+
+When you want the guest fully set up with sports categories and proper filtering, just say:
+
+> "New guest: Joshua Smith, plays NFL. Add him properly."
+
+Claude will add them to the `GUESTS` array in `index.html` and to the dropdown in `admin.html`.
+Until then, the tag alone is enough for them to show up in the app.
 
 ---
 
@@ -140,11 +154,12 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ## Quick Reference
 
-| What changed | Files to update |
-|---|---|
-| New guest added | `index.html` (GUESTS array + count) · `admin.html` (datalist) · `sw.js` (cache bump) |
-| Returning guest, new episode | `index.html` (episode added + count) · `sw.js` (cache bump) |
-| Solo episode | `index.html` (count only) · `sw.js` (cache bump) |
+| What changed | Files to update | Also do |
+|---|---|---|
+| New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
+| Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
+| Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |
+| Add full guest profile later | `index.html` (GUESTS array) · `admin.html` (datalist) · `sw.js` | Tell Claude: "New guest: Name, Sport" |
 
 ---
 
