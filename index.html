@@ -2093,8 +2093,12 @@ async function loadFirestoreTags() {
     const db   = firebase.firestore();
     const snap = await db.collection('episodeTags').get();
 
+    console.log('[Firestore] episodeTags loaded:', snap.size, 'tag(s)');
+
     snap.forEach(doc => {
       const { guestName, episodeTitle, episodeUrl, episodePub, episodeYear } = doc.data();
+      console.log('[Firestore] tag →', guestName, '|', episodeTitle, '|', episodeUrl);
+
       if (!guestName || !episodeTitle) return;
 
       // Find existing guest by name (case-insensitive)
@@ -2102,19 +2106,28 @@ async function loadFirestoreTags() {
 
       if (!guest) {
         // New guest — create an entry on the fly
+        console.log('[Firestore] creating new guest:', guestName);
         const initials = guestName.trim().split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
         guest = { name: guestName, init: initials, year: episodeYear || new Date().getFullYear(), sports: [], episodes: [] };
         GUESTS.push(guest);
+      } else {
+        console.log('[Firestore] matched existing guest:', guest.name);
       }
 
-      // Add episode only if it isn't already in the array
-      const alreadyAdded = guest.episodes.some(e => e.url === episodeUrl);
+      // Add episode only if it isn't already in the array (check URL and title)
+      const alreadyAdded = guest.episodes.some(e =>
+        e.url === episodeUrl ||
+        e.title.toLowerCase().trim() === episodeTitle.toLowerCase().trim()
+      );
       if (!alreadyAdded) {
+        console.log('[Firestore] adding episode to', guest.name, ':', episodeTitle);
         guest.episodes.unshift({ year: episodeYear || new Date().getFullYear(), title: episodeTitle, url: episodeUrl });
+      } else {
+        console.log('[Firestore] episode already in list for', guest.name, '— skipped');
       }
     });
   } catch(e) {
-    // Non-fatal — app works fine without Firestore (e.g. offline)
+    console.error('[Firestore] loadFirestoreTags failed:', e);
   }
   renderGuests();
 }
