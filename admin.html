@@ -110,6 +110,22 @@ body {
   <div id="ep-list"></div>
 </div>
 
+<!-- Known guest names for autocomplete dropdown -->
+<datalist id="guest-names">
+  <option value="Dr Daniel Kessler">
+  <option value="Amit Duvedi">
+  <option value="Steve Rewenko">
+  <option value="Mark Rewenko">
+  <option value="Christopher Rogers">
+  <option value="Jamie Palma">
+  <option value="Joshua Kean">
+  <option value="Kaya Moe &amp; Erika Moe">
+  <option value="Mel Simon">
+  <option value="Matt Altshuler">
+  <option value="Aneesh Sridhar">
+  <option value="Dr Satish Narayanan">
+</datalist>
+
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -285,7 +301,8 @@ function renderEpisodeList() {
         </div>
         <div class="ep-body">
           <label>Guest name</label>
-          <input type="text" id="guest-${i}" placeholder="e.g. Joshua Kean"
+          <input type="text" id="guest-${i}" list="guest-names"
+                 placeholder="Choose or type a guest name"
                  value="${tagged ? escHtml(tag.guestName) : ''}">
           <div class="btn-row">
             <button class="save-btn"   onclick="saveTag(${i})">Save</button>
