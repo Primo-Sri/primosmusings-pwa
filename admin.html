@@ -81,6 +81,15 @@ body {
   padding: 11px 18px; font-size: .9rem; cursor: pointer;
 }
 .confirm-msg { font-size: .8rem; color: #4caf50; margin-top: 10px; display: none; }
+.srt-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid #1e1e1e; }
+.srt-row label { font-size: .72rem; color: rgba(255,255,255,.35); display: block; margin-bottom: 8px; }
+.srt-btn {
+  width: 100%; background: transparent; border: 1.5px dashed #333;
+  border-radius: 10px; color: rgba(255,255,255,.5);
+  padding: 11px; font-size: .85rem; cursor: pointer; text-align: center;
+}
+.srt-btn:active { background: rgba(255,255,255,.05); }
+.srt-status { font-size: .78rem; display: block; margin-top: 8px; min-height: 18px; }
 
 #loading-msg { color: rgba(255,255,255,.45); font-size: .9rem; padding: 24px 0; }
 #error-msg   { color: #ff5555; font-size: .9rem; padding: 24px 0; display: none; }
@@ -309,6 +318,12 @@ function renderEpisodeList() {
             ${tagged ? `<button class="remove-btn" onclick="removeTag(${i})">Remove</button>` : ''}
           </div>
           <div class="confirm-msg" id="confirm-${i}"></div>
+          <div class="srt-row">
+            <label>TRANSCRIPT (download .srt from Spotify, upload here)</label>
+            <input type="file" id="srt-${i}" accept=".srt,.vtt" onchange="uploadTranscript(${i})" style="display:none">
+            <button class="srt-btn" onclick="document.getElementById('srt-${i}').click()">📄 Upload .srt file</button>
+            <span class="srt-status" id="srt-status-${i}"></span>
+          </div>
         </div>
       </div>`;
   }).join('');
@@ -405,6 +420,57 @@ function showConfirm(idx, msg) {
 
 function clean(s)   { return s.replace(/<!\[CDATA\[|\]\]>/g, '').trim(); }
 function escHtml(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+// ── Transcript upload ────────────────────────────────────────────────────
+function parseSRT(raw) {
+  // Strip sequence numbers, timestamps, blank lines — keep only spoken text
+  return raw.split('\n')
+    .filter(l => { const t = l.trim(); return t && !/^\d+$/.test(t) && !t.includes('-->'); })
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function buildWordIndex(text) {
+  const stop = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','was','are','were','be','been','have','has','had','do','does','did','will','would','could','should','may','might','this','that','these','those','it','its','i','you','he','she','we','they','me','him','her','us','them','my','your','his','our','their','what','which','who','when','where','how','all','just','so','if','not','no','as','up','out','about','into','then','than','more','also','like','some','can','one','two','said','going','think','mean','yeah','okay','right','good','going','get','got','actually','really','very','know','well','even','still','back','they','again']);
+  return [...new Set(
+    text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stop.has(w))
+  )];
+}
+
+async function uploadTranscript(idx) {
+  const fileInput = document.getElementById('srt-' + idx);
+  const statusEl  = document.getElementById('srt-status-' + idx);
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  statusEl.style.color = 'rgba(255,255,255,.5)';
+  statusEl.textContent = 'Saving…';
+
+  try {
+    const raw    = await file.text();
+    const text   = parseSRT(raw);
+    const words  = buildWordIndex(text);
+    const ep     = episodes[idx];
+    // Use a URL-safe document ID derived from the episode URL
+    const docId  = btoa(unescape(encodeURIComponent(ep.url))).replace(/[^a-zA-Z0-9]/g, '_');
+
+    await db.collection('transcripts').doc(docId).set({
+      episodeTitle: ep.title,
+      episodeUrl:   ep.url,
+      episodeYear:  ep.year || new Date().getFullYear(),
+      text,
+      words,
+      uploadedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    statusEl.style.color = '#4caf50';
+    statusEl.textContent = '✓ Transcript saved — searchable in main app';
+  } catch(e) {
+    statusEl.style.color = '#ff5555';
+    statusEl.textContent = '✗ Failed: ' + e.message;
+  }
+}
 function fmtDate(s) {
   if (!s) return '';
   return new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });

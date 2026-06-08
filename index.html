@@ -214,9 +214,12 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 }
 .sri-avatar.ep{background:linear-gradient(135deg,#1a3a1a,var(--green))}
 .sri-avatar.blog{background:linear-gradient(135deg,#3a1a00,var(--gold))}
+.sri-avatar.transcript{background:linear-gradient(135deg,#2a0a3a,#7c3aed)}
 .sri-info{flex:1;min-width:0}
 .sri-title{font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sri-sub{font-size:.65rem;color:var(--muted);margin-top:2px}
+.sri-excerpt{font-size:.72rem;color:rgba(255,255,255,.45);line-height:1.5;margin-top:4px}
+.sri-excerpt mark{background:rgba(124,58,237,.4);color:#fff;border-radius:2px;padding:0 2px}
 .sri-go{color:var(--muted);font-size:.9rem}
 
 /* ══════════════════════════════════════════════════════
@@ -2015,6 +2018,49 @@ function runSearch(q) {
       </div>`).join('');
   });
   container.innerHTML=html;
+
+  // Async: search Firestore transcripts and append results when ready
+  searchTranscripts(q);
+}
+
+// ── Transcript search (Firestore) ─────────────────────
+function getExcerpt(text, term) {
+  const lower = text.toLowerCase();
+  const idx   = lower.indexOf(term.toLowerCase());
+  if (idx === -1) return text.substring(0, 130) + '…';
+  const start = Math.max(0, idx - 75);
+  const end   = Math.min(text.length, idx + term.length + 75);
+  let ex = (start > 0 ? '…' : '') + text.substring(start, end) + (end < text.length ? '…' : '');
+  return ex.replace(new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>');
+}
+
+async function searchTranscripts(q) {
+  try {
+    const word = q.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (word.length < 2) return;
+    const db   = firebase.firestore();
+    const snap = await db.collection('transcripts').where('words', 'array-contains', word).get();
+    if (snap.empty) return;
+
+    // Only append if the search term hasn't changed while we were waiting
+    if (document.getElementById('search-input').value.trim().toLowerCase() !== q) return;
+
+    const container = document.getElementById('search-results');
+    let html = `<div class="search-cat-label">🎤 Transcripts</div>`;
+    html += snap.docs.map(doc => {
+      const d = doc.data();
+      const excerpt = getExcerpt(d.text, q);
+      return `<div class="search-result-item" onclick="window.open('${d.episodeUrl}','_blank')">
+        <div class="sri-avatar transcript">🎤</div>
+        <div class="sri-info">
+          <div class="sri-title">${d.episodeTitle}</div>
+          <div class="sri-excerpt">${excerpt}</div>
+        </div>
+        <span class="sri-go">›</span>
+      </div>`;
+    }).join('');
+    container.insertAdjacentHTML('beforeend', html);
+  } catch(e) { /* non-fatal */ }
 }
 
 /* ── Utilities ───────────────────────────────────── */
