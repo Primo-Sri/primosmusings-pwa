@@ -1597,7 +1597,7 @@ function renderGuestList(sport) {
           <div class="ep-row">
             <span class="ep-yr">${ep.year}</span>
             <span class="ep-row-title">${ep.title}</span>
-            <a class="ep-btn" href="${ep.url}" target="_blank">
+            <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
             </a>
           </div>`).join('')
@@ -1995,7 +1995,7 @@ function runSearch(q) {
     }
     g.episodes.forEach(ep => {
       if (ep.title.toLowerCase().includes(q)) {
-        res.push({type:'episode', title:ep.title, sub:`Guest: ${g.name} · ${ep.year}`, url:ep.url});
+        res.push({type:'episode', title:ep.title, sub:`Guest: ${g.name} · ${ep.year}`, url:spotifyLink(ep.url, ep.title)});
       }
     });
   });
