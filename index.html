@@ -1901,7 +1901,7 @@ function updateHomeLatest() {
   document.getElementById('home-latest-title').style.fontWeight = '';
   document.getElementById('home-latest-date').textContent = ep.pub;
   document.getElementById('home-latest-desc').textContent = ep.desc ? ep.desc + '…' : '';
-  const link = ep.link || 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
+  const link = spotifyLink(ep.link, ep.title);
   document.getElementById('home-latest-link').href = link;
   document.getElementById('home-latest-card').onclick = null;
 }
@@ -1919,7 +1919,7 @@ function renderEpCard(ep) {
     <div class="ep-title">${ep.title}</div>
     <div class="ep-meta-row">${tag}<span class="ep-date">${ep.pub}</span></div>
     ${ep.desc?`<div class="ep-desc">${ep.desc}…</div>`:''}
-    <a class="btn-ep-play" href="${ep.link||'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J'}" target="_blank">
+    <a class="btn-ep-play" href="${spotifyLink(ep.link, ep.title)}" target="_blank">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
     </a>
   </div>`;
@@ -2093,6 +2093,13 @@ async function searchTranscripts(q) {
 function cleanCDATA(s){return(s||'').replace(/^<!\[CDATA\[|\]\]>$/g,'').trim()}
 function stripTags(s){return(s||'').replace(/<[^>]+>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').trim()}
 function fmtDate(s){try{return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}catch{return s}}
+// Returns a listener-friendly Spotify URL. If link is already open.spotify.com use it;
+// otherwise search by title so the episode opens directly in the Spotify app.
+function spotifyLink(link, title) {
+  if (link && link.includes('open.spotify.com')) return link;
+  if (title) return 'https://open.spotify.com/search/' + encodeURIComponent(title);
+  return 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
+}
 
 /* ── Contact form ────────────────────────────────── */
 function submitContact(e) {
