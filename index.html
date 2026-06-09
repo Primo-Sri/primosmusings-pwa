@@ -1851,14 +1851,16 @@ async function loadEpisodes() {
     const items = await fetchEpisodeItems();
     if (!items.length) throw new Error('no items');
 
-    // Update live episode count
-    const countLabel = items.length + '+';
-    const stat  = document.getElementById('ep-count-stat');
-    const badge = document.getElementById('ep-count-badge');
-    const browse= document.getElementById('ep-count-browse');
-    if (stat)  stat.textContent  = countLabel;
-    if (badge) badge.textContent = countLabel + ' episodes';
-    if (browse)browse.textContent= 'Browse all ' + countLabel + ' episodes';
+    // Only update live episode count if we got the full feed (not rss2json's 10-item cap)
+    if (items.length > 15) {
+      const countLabel = items.length + '+';
+      const stat  = document.getElementById('ep-count-stat');
+      const badge = document.getElementById('ep-count-badge');
+      const browse= document.getElementById('ep-count-browse');
+      if (stat)  stat.textContent  = countLabel;
+      if (badge) badge.textContent = countLabel + ' episodes';
+      if (browse)browse.textContent= 'Browse all ' + countLabel + ' episodes';
+    }
 
     // Keep ALL episodes in memory for search + guest matching
     loadedEpisodes = items.map((item, i) => ({
