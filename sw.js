@@ -1,4 +1,4 @@
-const CACHE_NAME = 'primosmusings-v26';
+const CACHE_NAME = 'primosmusings-v27';
 const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
@@ -88,6 +88,11 @@ self.addEventListener('fetch', event => {
       });
     })
   );
+});
+
+// ── Skip waiting on demand (triggered by update banner) ───────
+self.addEventListener('message', event => {
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 // ── Push notifications ────────────────────────────────────────

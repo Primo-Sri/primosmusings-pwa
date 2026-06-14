@@ -150,6 +150,8 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
 /* ── Offline bar ────────────────────────────────────── */
 #offline-bar{display:none;background:#450a0a;color:#fca5a5;text-align:center;padding:5px;font-size:.7rem;font-weight:600;flex-shrink:0}
+#update-bar{display:none;background:var(--blue);color:#fff;text-align:center;padding:8px 12px;font-size:.75rem;font-weight:600;flex-shrink:0;gap:10px;align-items:center;justify-content:center}
+#update-bar button{background:#fff;color:var(--blue);border:none;border-radius:6px;padding:4px 12px;font-size:.75rem;font-weight:800;cursor:pointer}
 #offline-bar.show{display:block}
 
 /* ══════════════════════════════════════════════════════
@@ -704,6 +706,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 <div id="app">
 
   <div id="offline-bar">📵 You're offline</div>
+  <div id="update-bar">New version available &nbsp;<button onclick="activateUpdate()">Refresh</button></div>
   <div id="install-bar">
     <p>📲 Add Primosmusings to your home screen</p>
     <button class="btn-inst" id="btn-do-install">Install</button>
@@ -2110,20 +2113,37 @@ function submitContact(e) {
 }
 
 /* ── Service worker ──────────────────────────────── */
+let swWaiting = null;
+
+function activateUpdate() {
+  if (swWaiting) swWaiting.postMessage({ type: 'SKIP_WAITING' });
+}
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
-    // Check for a new SW version every 30 minutes (catches long-running sessions)
     setInterval(() => reg.update(), 30 * 60 * 1000);
+
+    const showBanner = (sw) => {
+      swWaiting = sw;
+      const bar = document.getElementById('update-bar');
+      if (bar) bar.style.display = 'flex';
+    };
+
+    if (reg.waiting) showBanner(reg.waiting);
+
+    reg.addEventListener('updatefound', () => {
+      const sw = reg.installing;
+      sw.addEventListener('statechange', () => {
+        if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+          showBanner(sw);
+        }
+      });
+    });
   });
 
-  // When a new SW takes control, reload so users get the latest HTML.
-  // The `refreshing` flag prevents an infinite reload loop.
   let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) {
-      refreshing = true;
-      window.location.reload();
-    }
+    if (!refreshing) { refreshing = true; window.location.reload(); }
   });
 }
 
