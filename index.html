@@ -2114,6 +2114,7 @@ function submitContact(e) {
 
 /* ── Service worker ──────────────────────────────── */
 let swWaiting = null;
+const appStartTime = Date.now();
 
 function activateUpdate() {
   if (swWaiting) swWaiting.postMessage({ type: 'SKIP_WAITING' });
@@ -2121,7 +2122,13 @@ function activateUpdate() {
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
-    setInterval(() => reg.update(), 30 * 60 * 1000);
+    // Check for updates every 10 minutes and whenever user returns to the app
+    setInterval(() => reg.update(), 10 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') reg.update();
+    });
+
+    const activateSilently = (sw) => sw.postMessage({ type: 'SKIP_WAITING' });
 
     const showBanner = (sw) => {
       swWaiting = sw;
@@ -2129,13 +2136,23 @@ if ('serviceWorker' in navigator) {
       if (bar) bar.style.display = 'flex';
     };
 
-    if (reg.waiting) showBanner(reg.waiting);
+    const handleWaiting = (sw) => {
+      // Fresh open (within 5s of page load) — activate silently, user won't notice
+      if (Date.now() - appStartTime < 5000) {
+        activateSilently(sw);
+      } else {
+        // Mid-session — show banner so we don't interrupt
+        showBanner(sw);
+      }
+    };
+
+    if (reg.waiting) handleWaiting(reg.waiting);
 
     reg.addEventListener('updatefound', () => {
       const sw = reg.installing;
       sw.addEventListener('statechange', () => {
         if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-          showBanner(sw);
+          handleWaiting(sw);
         }
       });
     });
