@@ -915,20 +915,43 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
       <p class="sec-label" style="margin-top:14px">Top Guests</p>
       <div class="top3-podium" id="top3-podium"></div>
-      <div class="sport-filter" id="sport-filter">
-        <button class="sport-pill active" onclick="filterGuests('All',this)">All</button>
-      </div>
-      <p class="sec-label" id="guests-label" style="margin-bottom:8px">All guests · ranked by appearances</p>
-      <div id="guests-list"></div>
+      <div id="sport-sections"></div>
     </section>
 
-    <!-- ══ BLOG ══════════════════════════════════════ -->
-    <section id="page-blog" class="page">
-      <div id="blog-loading" class="ep-loading"><div class="spin"></div><br>Loading posts…</div>
-      <div id="blog-list"></div>
-      <div id="blog-error" style="display:none" class="ep-loading">
-        <p style="margin-bottom:10px">Couldn't load posts.</p>
-        <a href="https://www.primosmusings.com/blogs" target="_blank" class="btn-read">Open Blog →</a>
+    <!-- ══ PRIMO ═════════════════════════════════════ -->
+    <section id="page-primo" class="page">
+      <div style="text-align:center;padding:24px 16px 16px">
+        <div style="width:72px;height:72px;font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#7a4f00,var(--gold));border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;color:#fff">SR</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#fff">Sridhar Srinivasan</div>
+        <div style="font-size:.78rem;color:var(--gold);font-weight:600;margin-top:3px">Primo · Host &amp; Creator</div>
+      </div>
+
+      <div class="guests-stats">
+        <div class="gstat"><div class="n" id="primo-ep-count">647+</div><div class="l">Episodes</div></div>
+        <div class="gstat"><div class="n">9</div><div class="l">Sports</div></div>
+        <div class="gstat"><div class="n">Since '23</div><div class="l">Est.</div></div>
+      </div>
+
+      <div style="padding:0 16px 24px">
+        <p class="sec-label" style="margin-top:14px">About</p>
+        <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:14px">Hosts every episode — solo takes, news bites, recaps &amp; guest interviews. What began as a hobby project covering the Australian Open has grown into a global sports podcast spanning Tennis, Golf, Cricket, NFL, NBA, Soccer, F1 &amp; more.</p>
+        <div class="sport-chips" style="margin-bottom:20px">
+          <span class="sport-chip">🎾 Tennis</span><span class="sport-chip">⛳ Golf</span>
+          <span class="sport-chip">🏏 Cricket</span><span class="sport-chip">🏈 NFL</span>
+          <span class="sport-chip">🏀 NBA</span><span class="sport-chip">⚽ Soccer</span>
+          <span class="sport-chip">🏎 F1</span><span class="sport-chip">⚾ Baseball</span>
+          <span class="sport-chip">🚴 Cycling</span>
+        </div>
+
+        <p class="sec-label">Listen on</p>
+        <div class="links-list">
+          <a class="link-row" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank"><span class="link-dot" style="background:#1DB954"></span><span class="link-name">Spotify</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://podcasts.apple.com/in/podcast/primosmusings/id1672851730" target="_blank"><span class="link-dot" style="background:#fc3c44"></span><span class="link-name">Apple Podcasts</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://www.youtube.com/playlist?list=PL15rJes1kJmHmPAQm7FRzX5VqAXi1slvX" target="_blank"><span class="link-dot" style="background:#FF0000"></span><span class="link-name">YT Music</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/primosmusings" target="_blank"><span class="link-dot" style="background:#FF9900"></span><span class="link-name">Amazon Music</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://www.iheart.com/podcast/269-primosmusings-143372825/" target="_blank"><span class="link-dot" style="background:#C6002B"></span><span class="link-name">iHeart Radio</span><span class="link-arrow">↗</span></a>
+          <a class="link-row" href="https://pca.st/0y890ls4" target="_blank"><span class="link-dot" style="background:#f43e37"></span><span class="link-name">Pocket Casts</span><span class="link-arrow">↗</span></a>
+        </div>
       </div>
     </section>
 
@@ -948,6 +971,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         <div class="more-item" onclick="showSub('contact')">
           <div class="more-icon-wrap" style="background:rgba(232,170,48,.1)">✉️</div>
           <div><div class="more-item-lbl">Contact Me</div><div class="more-item-sub">Drop Primo a message</div></div>
+          <span class="more-chevron">›</span>
+        </div>
+        <div class="more-item" onclick="showSub('blog')">
+          <div class="more-icon-wrap" style="background:rgba(255,255,255,.06)">📝</div>
+          <div><div class="more-item-lbl">Blog</div><div class="more-item-sub">Primo's latest posts</div></div>
           <span class="more-chevron">›</span>
         </div>
         <a class="more-item" href="https://www.primosmusings.com" target="_blank" style="text-decoration:none">
@@ -991,6 +1019,17 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
           <a class="link-row" href="https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/primosmusings" target="_blank"><span class="link-dot" style="background:#FF9900"></span><span class="link-name">Amazon Music</span><span class="link-arrow">↗</span></a>
           <a class="link-row" href="https://www.iheart.com/podcast/269-primosmusings-143372825/" target="_blank"><span class="link-dot" style="background:#C6002B"></span><span class="link-name">iHeart Radio</span><span class="link-arrow">↗</span></a>
           <a class="link-row" href="https://pca.st/0y890ls4" target="_blank"><span class="link-dot" style="background:#f43e37"></span><span class="link-name">Pocket Casts</span><span class="link-arrow">↗</span></a>
+        </div>
+      </div>
+
+      <div id="sub-blog" class="sub-page">
+        <button class="back-btn" onclick="hideSub()">‹ Back</button>
+        <p class="sec-label">Primo's Blog</p>
+        <div id="blog-loading" class="ep-loading"><div class="spin"></div><br>Loading posts…</div>
+        <div id="blog-list"></div>
+        <div id="blog-error" style="display:none" class="ep-loading">
+          <p style="margin-bottom:10px">Couldn't load posts.</p>
+          <a href="https://www.primosmusings.com/blogs" target="_blank" class="btn-read">Open Blog →</a>
         </div>
       </div>
 
@@ -1313,7 +1352,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
     <button class="nav-btn active" data-tab="home"   onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
     <button class="nav-btn"        data-tab="listen" onclick="switchTab('listen',this)"><span class="nav-icon">🎙</span><span class="nav-label">Listen</span></button>
     <button class="nav-btn"        data-tab="guests" onclick="switchTab('guests',this)"><span class="nav-icon">👥</span><span class="nav-label">Guests</span></button>
-    <button class="nav-btn"        data-tab="blog"   onclick="switchTab('blog',this)"><span class="nav-icon">📝</span><span class="nav-label">Blog</span></button>
+    <button class="nav-btn"        data-tab="primo"  onclick="switchTab('primo',this)"><span class="nav-icon">⭐</span><span class="nav-label">Primo</span></button>
     <button class="nav-btn"        data-tab="more"   onclick="switchTab('more',this)"><span class="nav-icon">☰</span><span class="nav-label">More</span></button>
     <button class="nav-btn"        data-tab="help"   onclick="switchTab('help',this)"><span class="nav-icon">❓</span><span class="nav-label">Help</span></button>
   </nav>
@@ -1329,7 +1368,6 @@ function switchTab(tab, btn) {
   document.getElementById('page-' + tab).classList.add('active');
   (btn || document.querySelector(`[data-tab="${tab}"]`)).classList.add('active');
   document.getElementById('main').scrollTo(0,0);
-  if (tab==='blog' && !blogLoaded) loadBlog();
   if (tab==='listen' && !epLoaded) loadEpisodes();
   history.replaceState(null,'','?tab='+tab);
 }
@@ -1348,6 +1386,7 @@ function showSub(id) {
   document.getElementById('more-menu').style.display='none';
   document.querySelectorAll('.sub-page').forEach(s=>s.classList.remove('active'));
   document.getElementById('sub-'+id).classList.add('active');
+  if (id === 'blog' && !blogLoaded) loadBlog();
 }
 function hideSub() {
   document.getElementById('more-menu').style.display='';
@@ -1555,85 +1594,67 @@ function renderPodium() {
     </div>`).join('');
 }
 
-function buildSportFilter() {
-  const sports = new Set();
-  GUESTS.forEach(g => g.sports.forEach(s => sports.add(s)));
-  const bar = document.getElementById('sport-filter');
-  [...sports].sort().forEach(s => {
-    const btn = document.createElement('button');
-    btn.className = 'sport-pill';
-    btn.textContent = (SPORT_EMOJI[s]||'') + ' ' + s;
-    btn.onclick = () => filterGuests(s, btn);
-    bar.appendChild(btn);
-  });
-}
-
-let activeFilter = 'All';
-
-function filterGuests(sport, btn) {
-  activeFilter = sport;
-  document.querySelectorAll('.sport-pill').forEach(p => p.classList.remove('active'));
-  btn.classList.add('active');
-  const label = document.getElementById('guests-label');
-  label.textContent = sport === 'All'
-    ? 'All guests · ranked by appearances'
-    : `${sport} guests · ranked by appearances`;
-  renderGuestList(sport);
-}
-
-function renderGuestList(sport) {
-  const filtered = sport === 'All'
-    ? SORTED_GUESTS
-    : SORTED_GUESTS.filter(g => g.sports.includes(sport));
-  document.getElementById('guests-list').innerHTML = filtered.map((g) => {
-    const globalRank = SORTED_GUESTS.indexOf(g);
-    const rankBadge = globalRank < 3
-      ? `<div class="rank-badge rank-${globalRank+1}">${globalRank+1}</div>`
-      : '';
-    const sports = g.sports.map(s =>
-      `<span class="guest-sport-tag ${SPORT_CLASS[s]||'b-nfl'}">${SPORT_EMOJI[s]||'🏆'} ${s}</span>`
-    ).join('');
-    const epCount = g.episodes.length;
-    const badge = epCount ? `${epCount} ep${epCount>1?'s':''}` : 'Guest';
-    const spotifyBtn = `<a class="spotify-btn" href="${g.spotify}" target="_blank">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.519-.972c3.632-1.102 8.147-.568 11.234 1.328a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.612z"/></svg>
-      Spotify
-    </a>`;
-    const epRows = epCount
-      ? g.episodes.map(ep=>`
-          <div class="ep-row">
-            <span class="ep-yr">${ep.year}</span>
-            <span class="ep-row-title">${ep.title}</span>
-            <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
-            </a>
-          </div>`).join('')
-      : `<div class="no-eps">Episodes linking soon · <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="color:var(--blue)">Browse show →</a></div>`;
-    const gid = 'gc-' + g.name.replace(/\s+/g,'-');
-    return `
-    <div class="guest-card" id="${gid}">
-      <div class="guest-card-header" onclick="toggleGuest('${gid}')">
-        <div class="guest-avatar">${g.init}</div>
-        <div class="guest-info">
-          <div class="guest-name" style="display:flex;align-items:center;gap:6px">${rankBadge}${g.name}</div>
-          <div class="guest-meta">
-            <span class="guest-ep-badge">${badge}</span>
-            <div style="display:flex;gap:4px;flex-wrap:wrap">${sports}</div>
-          </div>
-          ${spotifyBtn}
+function renderGuestCard(g) {
+  const globalRank = SORTED_GUESTS.indexOf(g);
+  const rankBadge = globalRank < 3
+    ? `<div class="rank-badge rank-${globalRank+1}">${globalRank+1}</div>`
+    : '';
+  const sports = g.sports.map(s =>
+    `<span class="guest-sport-tag ${SPORT_CLASS[s]||'b-nfl'}">${SPORT_EMOJI[s]||'🏆'} ${s}</span>`
+  ).join('');
+  const epCount = g.episodes.length;
+  const badge = epCount ? `${epCount} ep${epCount>1?'s':''}` : 'Guest';
+  const spotifyBtn = `<a class="spotify-btn" href="${g.spotify}" target="_blank">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.519-.972c3.632-1.102 8.147-.568 11.234 1.328a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.612z"/></svg>
+    Spotify
+  </a>`;
+  const epRows = epCount
+    ? g.episodes.map(ep=>`
+        <div class="ep-row">
+          <span class="ep-yr">${ep.year}</span>
+          <span class="ep-row-title">${ep.title}</span>
+          <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
+          </a>
+        </div>`).join('')
+    : `<div class="no-eps">Episodes linking soon · <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="color:var(--blue)">Browse show →</a></div>`;
+  return `
+  <div class="guest-card" data-guest="${g.name}">
+    <div class="guest-card-header" onclick="toggleGuest('${g.name}')">
+      <div class="guest-avatar">${g.init}</div>
+      <div class="guest-info">
+        <div class="guest-name" style="display:flex;align-items:center;gap:6px">${rankBadge}${g.name}</div>
+        <div class="guest-meta">
+          <span class="guest-ep-badge">${badge}</span>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">${sports}</div>
         </div>
-        <span class="guest-chevron">›</span>
+        ${spotifyBtn}
       </div>
-      <div class="guest-episodes"><div class="ep-divider"></div>${epRows}</div>
-    </div>`;
-  }).join('');
+      <span class="guest-chevron">›</span>
+    </div>
+    <div class="guest-episodes"><div class="ep-divider"></div>${epRows}</div>
+  </div>`;
+}
+
+function renderSportSections() {
+  const sportMap = {};
+  SORTED_GUESTS.forEach(g => {
+    g.sports.slice(0, 2).forEach(sport => {
+      if (!sportMap[sport]) sportMap[sport] = [];
+      sportMap[sport].push(g);
+    });
+  });
+  const sortedSports = Object.keys(sportMap).sort((a, b) => sportMap[b].length - sportMap[a].length);
+  document.getElementById('sport-sections').innerHTML = sortedSports.map(sport => `
+    <p class="sec-label" style="margin-top:14px">${SPORT_EMOJI[sport]||'🏆'} ${sport}</p>
+    ${sportMap[sport].map(g => renderGuestCard(g)).join('')}
+  `).join('');
 }
 
 function renderGuests() {
   SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
   renderPodium();
-  buildSportFilter();
-  renderGuestList('All');
+  renderSportSections();
   updateGuestStats();
 }
 
@@ -1682,22 +1703,23 @@ function enrichGuestsFromRSS() {
   if (updated) {
     SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
     renderPodium();
-    renderGuestList(activeFilter);
+    renderSportSections();
     updateGuestStats();
   }
 }
 
 function scrollToGuest(name) {
-  const gid = 'gc-' + name.replace(/\s+/g,'-');
-  const el = document.getElementById(gid);
-  if (el) {
-    el.scrollIntoView({behavior:'smooth', block:'center'});
-    el.classList.add('expanded');
+  const els = document.querySelectorAll(`[data-guest="${name}"]`);
+  if (els.length) {
+    els[0].scrollIntoView({behavior:'smooth', block:'center'});
+    els.forEach(el => el.classList.add('expanded'));
   }
 }
 
 function toggleGuest(id) {
-  document.getElementById(id).classList.toggle('expanded');
+  const byId = document.getElementById(id);
+  if (byId) { byId.classList.toggle('expanded'); return; }
+  document.querySelectorAll(`[data-guest="${id}"]`).forEach(el => el.classList.toggle('expanded'));
 }
 
 function toggleFaq(id) {
