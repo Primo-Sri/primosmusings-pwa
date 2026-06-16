@@ -915,7 +915,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
       <p class="sec-label" style="margin-top:14px">Top Guests</p>
       <div class="top3-podium" id="top3-podium"></div>
-      <div id="sport-sections"></div>
+      <div class="sport-filter" id="sport-filter">
+        <button class="sport-pill active" onclick="filterGuests('All',this)">All</button>
+      </div>
+      <p class="sec-label" id="guests-label" style="margin-bottom:8px">All guests · ranked by appearances</p>
+      <div id="guests-list"></div>
     </section>
 
     <!-- ══ PRIMO ═════════════════════════════════════ -->
@@ -1636,25 +1640,44 @@ function renderGuestCard(g) {
   </div>`;
 }
 
-function renderSportSections() {
-  const sportMap = {};
-  SORTED_GUESTS.forEach(g => {
-    g.sports.slice(0, 2).forEach(sport => {
-      if (!sportMap[sport]) sportMap[sport] = [];
-      sportMap[sport].push(g);
-    });
+function buildSportFilter() {
+  const sports = new Set();
+  GUESTS.forEach(g => g.sports.forEach(s => sports.add(s)));
+  const bar = document.getElementById('sport-filter');
+  bar.querySelectorAll('.sport-pill:not(:first-child)').forEach(b => b.remove());
+  [...sports].sort().forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'sport-pill';
+    btn.textContent = (SPORT_EMOJI[s]||'') + ' ' + s;
+    btn.onclick = () => filterGuests(s, btn);
+    bar.appendChild(btn);
   });
-  const sortedSports = Object.keys(sportMap).sort((a, b) => sportMap[b].length - sportMap[a].length);
-  document.getElementById('sport-sections').innerHTML = sortedSports.map(sport => `
-    <p class="sec-label" style="margin-top:14px">${SPORT_EMOJI[sport]||'🏆'} ${sport}</p>
-    ${sportMap[sport].map(g => renderGuestCard(g)).join('')}
-  `).join('');
+}
+
+let activeFilter = 'All';
+
+function filterGuests(sport, btn) {
+  activeFilter = sport;
+  document.querySelectorAll('.sport-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('guests-label').textContent = sport === 'All'
+    ? 'All guests · ranked by appearances'
+    : `${sport} guests · ranked by appearances`;
+  renderGuestList(sport);
+}
+
+function renderGuestList(sport) {
+  const filtered = sport === 'All'
+    ? SORTED_GUESTS
+    : SORTED_GUESTS.filter(g => g.sports.includes(sport));
+  document.getElementById('guests-list').innerHTML = filtered.map(g => renderGuestCard(g)).join('');
 }
 
 function renderGuests() {
   SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
   renderPodium();
-  renderSportSections();
+  buildSportFilter();
+  renderGuestList('All');
   updateGuestStats();
 }
 
@@ -1703,7 +1726,7 @@ function enrichGuestsFromRSS() {
   if (updated) {
     SORTED_GUESTS = [...GUESTS].sort((a,b) => b.episodes.length - a.episodes.length);
     renderPodium();
-    renderSportSections();
+    renderGuestList(activeFilter);
     updateGuestStats();
   }
 }
