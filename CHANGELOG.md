@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v38 — 2026-06-17
+- Added "Follow" button (Spotify green) to the mini player — drives Spotify follows while users listen in-app
+
 ## v37 — 2026-06-17
 - **Native audio player** — episodes now play directly in the app from the podcast feed's own audio files (same files Spotify plays)
 - Works for ALL episodes, not just ones with Spotify episode links

@@ -139,6 +139,13 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .mp-times{font-size:.62rem;color:var(--muted);margin-top:2px}
+.mp-follow{
+  display:flex;align-items:center;gap:4px;flex-shrink:0;
+  background:rgba(29,185,84,.12);color:var(--green);
+  border:1px solid rgba(29,185,84,.35);border-radius:16px;
+  padding:4px 10px;font-size:.62rem;font-weight:700;
+  text-decoration:none;white-space:nowrap;
+}
 #mp-seek{
   -webkit-appearance:none;appearance:none;width:100%;height:3px;
   background:#333;border-radius:3px;outline:none;margin:8px 0 4px;cursor:pointer;
@@ -1405,6 +1412,10 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         <div id="mp-title">Loading…</div>
         <div class="mp-times"><span id="mp-cur">0:00</span>&nbsp;/&nbsp;<span id="mp-dur">–:––</span></div>
       </div>
+      <a class="mp-follow" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" rel="noopener">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 01.207.857zm1.223-2.722a.78.78 0 01-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 01-.973-.519.781.781 0 01.519-.972c3.632-1.102 8.147-.568 11.234 1.328a.78.78 0 01.257 1.072zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.937.937 0 11-.543-1.793c3.532-1.072 9.404-.865 13.115 1.338a.937.937 0 01-.955 1.612z"/></svg>
+        Follow
+      </a>
     </div>
     <input type="range" id="mp-seek" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
   </div>
