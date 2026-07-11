@@ -4,6 +4,10 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v35 — 2026-06-17
+- Guest list now sorted by most recent episode year (most recently active guest first)
+- Top Guests podium still ranked by total appearances
+
 ## v34 — 2026-06-17
 - Moved platform note ("Episode links open in Spotify…") to top of guest list
 - Note includes a tap-through link to the Listen tab for other platforms

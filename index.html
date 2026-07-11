@@ -1661,15 +1661,22 @@ function filterGuests(sport, btn) {
   document.querySelectorAll('.sport-pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('guests-label').textContent = sport === 'All'
-    ? 'All guests · ranked by appearances'
-    : `${sport} guests · ranked by appearances`;
+    ? 'All guests · most recent first'
+    : `${sport} guests · most recent first`;
   renderGuestList(sport);
 }
 
+function latestYear(g) {
+  if (!g.episodes.length) return 0;
+  return Math.max(...g.episodes.map(e => e.year || 0));
+}
+
 function renderGuestList(sport) {
-  const filtered = sport === 'All'
+  const filtered = (sport === 'All'
     ? SORTED_GUESTS
-    : SORTED_GUESTS.filter(g => g.sports.includes(sport));
+    : SORTED_GUESTS.filter(g => g.sports.includes(sport)))
+    .slice()
+    .sort((a, b) => latestYear(b) - latestYear(a));
   document.getElementById('guests-list').innerHTML = filtered.map(g => renderGuestCard(g)).join('');
 }
 
