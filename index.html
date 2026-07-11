@@ -112,15 +112,44 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 /* ── Mini player ────────────────────────────────────── */
 #mini-player{
   display:none;flex-shrink:0;position:relative;
-  background:#0a0a0a;border-top:1px solid rgba(255,255,255,.07);
-  padding:6px 8px 4px;
+  background:#111;border-top:1px solid rgba(255,255,255,.08);
+  padding:10px 12px 4px;
 }
-#mini-player iframe{width:100%;height:80px;border:none;border-radius:12px;display:block}
 #mini-close{
   position:absolute;top:-12px;right:10px;z-index:5;
   width:24px;height:24px;border-radius:50%;
   background:#2a2a2a;color:#ccc;border:1px solid rgba(255,255,255,.15);
   font-size:.7rem;cursor:pointer;line-height:1;
+}
+.mp-row{display:flex;align-items:center;gap:10px}
+#mp-toggle{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:var(--green);color:#000;border:none;
+  font-size:1rem;cursor:pointer;line-height:1;font-family:inherit;
+}
+.mp-skip{
+  background:none;border:none;color:var(--muted);flex-shrink:0;
+  font-size:.95rem;cursor:pointer;padding:4px;line-height:1;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;
+}
+.mp-skip span{font-size:.5rem;font-weight:700;margin-top:-2px}
+.mp-info{flex:1;min-width:0}
+#mp-title{
+  font-size:.72rem;font-weight:700;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.mp-times{font-size:.62rem;color:var(--muted);margin-top:2px}
+#mp-seek{
+  -webkit-appearance:none;appearance:none;width:100%;height:3px;
+  background:#333;border-radius:3px;outline:none;margin:8px 0 4px;cursor:pointer;
+}
+#mp-seek::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:var(--green);cursor:pointer;
+}
+#mp-seek::-moz-range-thumb{
+  width:12px;height:12px;border-radius:50%;border:none;
+  background:var(--green);cursor:pointer;
 }
 
 /* ── Bottom nav ─────────────────────────────────────── */
@@ -1368,7 +1397,16 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
   <!-- Bottom Nav -->
   <div id="mini-player">
     <button id="mini-close" onclick="closePlayer()">✕</button>
-    <iframe id="player-frame" title="Episode player" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    <div class="mp-row">
+      <button class="mp-skip" onclick="skipAudio(-15)">↺<span>15</span></button>
+      <button id="mp-toggle" onclick="togglePlay()">▶</button>
+      <button class="mp-skip" onclick="skipAudio(15)">↻<span>15</span></button>
+      <div class="mp-info">
+        <div id="mp-title">Loading…</div>
+        <div class="mp-times"><span id="mp-cur">0:00</span>&nbsp;/&nbsp;<span id="mp-dur">–:––</span></div>
+      </div>
+    </div>
+    <input type="range" id="mp-seek" value="0" min="0" max="100" step="0.1" oninput="seekAudio(this.value)">
   </div>
 
   <nav id="bottom-nav">
@@ -1636,7 +1674,7 @@ function renderGuestCard(g) {
         <div class="ep-row">
           <span class="ep-yr">${ep.year}</span>
           <span class="ep-row-title">${ep.title}</span>
-          <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank" data-eplink="${(ep.url||'').replace(/"/g,'&quot;')}" onclick="return playEpisode(this)">
+          <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank" data-eptitle="${escAttr(ep.title)}" onclick="return playEpisode(this)">
             <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
           </a>
         </div>`).join('')
@@ -1852,6 +1890,7 @@ async function fetchEpisodeItems() {
       desc:  cleanCDATA(item.querySelector('description')?.textContent ||
              item.querySelector('summary')?.textContent || ''),
       dur:   item.querySelector('itunes\\:duration, duration')?.textContent?.trim() || '',
+      audio: item.querySelector('enclosure')?.getAttribute('url') || '',
     }));
   }
 
@@ -1904,6 +1943,7 @@ async function fetchEpisodeItems() {
           pub:   item.pubDate || '',
           desc:  item.description || item.content || '',
           dur:   '',
+          audio: item.enclosure?.link || '',
         }));
       }
     }
@@ -1950,6 +1990,7 @@ async function loadEpisodes() {
       pub:   fmtDate(item.pub),
       dur:   item.dur,
       link:  item.link,
+      audio: item.audio || '',
     }));
 
     saveCachedEpisodes(loadedEpisodes.slice(0, 30));
@@ -1982,7 +2023,8 @@ function updateHomeLatest() {
   const link = spotifyLink(ep.link, ep.title);
   const latestLink = document.getElementById('home-latest-link');
   latestLink.href = link;
-  latestLink.dataset.eplink = ep.link || '';
+  latestLink.dataset.audio = ep.audio || '';
+  latestLink.dataset.eptitle = ep.title || '';
   document.getElementById('home-latest-card').onclick = null;
 }
 
@@ -1999,7 +2041,7 @@ function renderEpCard(ep) {
     <div class="ep-title">${ep.title}</div>
     <div class="ep-meta-row">${tag}<span class="ep-date">${ep.pub}</span></div>
     ${ep.desc?`<div class="ep-desc">${ep.desc}…</div>`:''}
-    <a class="btn-ep-play" href="${spotifyLink(ep.link, ep.title)}" target="_blank" data-eplink="${(ep.link||'').replace(/"/g,'&quot;')}" onclick="return playEpisode(this)">
+    <a class="btn-ep-play" href="${spotifyLink(ep.link, ep.title)}" target="_blank" data-audio="${escAttr(ep.audio)}" data-eptitle="${escAttr(ep.title)}" onclick="return playEpisode(this)">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
     </a>
   </div>`;
@@ -2175,6 +2217,10 @@ function stripTags(s){return(s||'').replace(/<[^>]+>/g,'').replace(/&lt;/g,'<').
 function fmtDate(s){try{return new Date(s).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}catch{return s}}
 // Returns a listener-friendly Spotify URL. If link is already open.spotify.com use it;
 // otherwise search by title so the episode opens directly in the Spotify app.
+function escAttr(s) {
+  return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 function spotifyLink(link, title) {
   if (link && link.includes('open.spotify.com')) return link;
   if (title) return 'https://open.spotify.com/search/' + encodeURIComponent(title);
@@ -2182,23 +2228,101 @@ function spotifyLink(link, title) {
 }
 
 /* ── In-app mini player ──────────────────────────────
-   Episodes with an open.spotify.com/episode/ URL play inside the app
-   via Spotify's embed. Anything else follows the normal link. */
-function playEpisode(el) {
-  const link = el.dataset.eplink || '';
-  const m = link.match(/open\.spotify\.com\/episode\/([A-Za-z0-9]+)/);
-  if (!m) return true; // not embeddable — follow the href instead
+   Plays the episode's audio file straight from the RSS feed —
+   the same file Spotify and Apple Podcasts play. Episodes are
+   matched by title against the loaded feed; if no audio is
+   found the link falls through to Spotify as before. */
+let audioEl = null;
+let currentAudio = '';
 
-  const frame = document.getElementById('player-frame');
-  const src = 'https://open.spotify.com/embed/episode/' + m[1] + '?utm_source=generator&theme=0';
-  if (frame.getAttribute('src') !== src) frame.src = src;
+function fmtTime(s) {
+  if (!isFinite(s)) return '–:––';
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+
+function ensureAudio() {
+  if (audioEl) return audioEl;
+  audioEl = new Audio();
+  audioEl.preload = 'metadata';
+
+  audioEl.addEventListener('loadedmetadata', () => {
+    document.getElementById('mp-dur').textContent = fmtTime(audioEl.duration);
+  });
+  audioEl.addEventListener('timeupdate', () => {
+    document.getElementById('mp-cur').textContent = fmtTime(audioEl.currentTime);
+    if (audioEl.duration) {
+      document.getElementById('mp-seek').value = (audioEl.currentTime / audioEl.duration) * 100;
+    }
+  });
+  audioEl.addEventListener('play',  () => { document.getElementById('mp-toggle').textContent = '⏸'; });
+  audioEl.addEventListener('pause', () => { document.getElementById('mp-toggle').textContent = '▶'; });
+  audioEl.addEventListener('ended', () => { document.getElementById('mp-toggle').textContent = '▶'; });
+  return audioEl;
+}
+
+function findAudioByTitle(title) {
+  if (!title) return '';
+  const t = title.toLowerCase().trim();
+  const match = loadedEpisodes.find(e => e.title.toLowerCase().trim() === t);
+  return match?.audio || '';
+}
+
+function playEpisode(el) {
+  const audio = el.dataset.audio || findAudioByTitle(el.dataset.eptitle);
+  if (!audio) return true; // no audio found — follow the href instead
+
+  const a = ensureAudio();
+  const title = el.dataset.eptitle || 'Primosmusings';
+
+  if (currentAudio === audio) {
+    // Same episode — just toggle
+    a.paused ? a.play() : a.pause();
+  } else {
+    currentAudio = audio;
+    a.src = audio;
+    document.getElementById('mp-title').textContent = title;
+    document.getElementById('mp-cur').textContent = '0:00';
+    document.getElementById('mp-dur').textContent = '–:––';
+    document.getElementById('mp-seek').value = 0;
+    a.play().catch(() => {});
+  }
+
   document.getElementById('mini-player').style.display = 'block';
+
+  // Lock-screen / notification controls on phones
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title, artist: 'Primosmusings',
+      artwork: [{ src: 'icon-512.png', sizes: '512x512', type: 'image/png' }]
+    });
+    navigator.mediaSession.setActionHandler('play',  () => a.play());
+    navigator.mediaSession.setActionHandler('pause', () => a.pause());
+    navigator.mediaSession.setActionHandler('seekbackward', () => skipAudio(-15));
+    navigator.mediaSession.setActionHandler('seekforward',  () => skipAudio(15));
+  }
   return false; // stop the link from opening a new tab
 }
 
+function togglePlay() {
+  if (!audioEl) return;
+  audioEl.paused ? audioEl.play() : audioEl.pause();
+}
+
+function skipAudio(sec) {
+  if (!audioEl || !audioEl.duration) return;
+  audioEl.currentTime = Math.max(0, Math.min(audioEl.duration, audioEl.currentTime + sec));
+}
+
+function seekAudio(pct) {
+  if (!audioEl || !audioEl.duration) return;
+  audioEl.currentTime = (pct / 100) * audioEl.duration;
+}
+
 function closePlayer() {
+  if (audioEl) { audioEl.pause(); audioEl.src = ''; }
+  currentAudio = '';
   document.getElementById('mini-player').style.display = 'none';
-  document.getElementById('player-frame').src = 'about:blank';
 }
 
 /* ── Contact form ────────────────────────────────── */

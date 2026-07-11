@@ -4,6 +4,14 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v37 — 2026-06-17
+- **Native audio player** — episodes now play directly in the app from the podcast feed's own audio files (same files Spotify plays)
+- Works for ALL episodes, not just ones with Spotify episode links
+- Player bar: play/pause, ±15s skip, scrubber, episode title, close button
+- Lock-screen / notification controls on phones via Media Session API
+- Audio keeps playing while browsing other tabs
+- Replaces the v36 Spotify embed approach (which only covered a handful of episodes)
+
 ## v36 — 2026-06-17
 - **New: In-app mini player** — tapping Play on an episode with a Spotify episode link now opens an embedded player above the nav bar; audio plays inside the app while browsing other tabs
 - Episodes without a direct Spotify episode URL still open Spotify search as before
