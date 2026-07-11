@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v36 — 2026-06-17
+- **New: In-app mini player** — tapping Play on an episode with a Spotify episode link now opens an embedded player above the nav bar; audio plays inside the app while browsing other tabs
+- Episodes without a direct Spotify episode URL still open Spotify search as before
+- Close button (✕) dismisses the player and stops playback
+
 ## v35 — 2026-06-17
 - Guest list now sorted by most recent episode year (most recently active guest first)
 - Top Guests podium still ranked by total appearances

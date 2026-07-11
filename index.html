@@ -109,6 +109,20 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 }
 .sec-label:first-child{margin-top:0}
 
+/* ── Mini player ────────────────────────────────────── */
+#mini-player{
+  display:none;flex-shrink:0;position:relative;
+  background:#0a0a0a;border-top:1px solid rgba(255,255,255,.07);
+  padding:6px 8px 4px;
+}
+#mini-player iframe{width:100%;height:80px;border:none;border-radius:12px;display:block}
+#mini-close{
+  position:absolute;top:-12px;right:10px;z-index:5;
+  width:24px;height:24px;border-radius:50%;
+  background:#2a2a2a;color:#ccc;border:1px solid rgba(255,255,255,.15);
+  font-size:.7rem;cursor:pointer;line-height:1;
+}
+
 /* ── Bottom nav ─────────────────────────────────────── */
 #bottom-nav{
   background:rgba(10,10,10,.95);
@@ -774,7 +788,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </div>
         <h3 id="home-latest-title" style="color:var(--muted);font-size:.9rem;font-weight:500">Loading latest episode…</h3>
         <p id="home-latest-desc"></p>
-        <a id="home-latest-link" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="text-decoration:none">
+        <a id="home-latest-link" href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" target="_blank" style="text-decoration:none" onclick="return playEpisode(this)">
           <button class="btn-play-now">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Listen Now
@@ -1352,6 +1366,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
   </main>
 
   <!-- Bottom Nav -->
+  <div id="mini-player">
+    <button id="mini-close" onclick="closePlayer()">✕</button>
+    <iframe id="player-frame" title="Episode player" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+
   <nav id="bottom-nav">
     <button class="nav-btn active" data-tab="home"   onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
     <button class="nav-btn"        data-tab="listen" onclick="switchTab('listen',this)"><span class="nav-icon">🎙</span><span class="nav-label">Listen</span></button>
@@ -1617,7 +1636,7 @@ function renderGuestCard(g) {
         <div class="ep-row">
           <span class="ep-yr">${ep.year}</span>
           <span class="ep-row-title">${ep.title}</span>
-          <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank">
+          <a class="ep-btn" href="${spotifyLink(ep.url, ep.title)}" target="_blank" data-eplink="${(ep.url||'').replace(/"/g,'&quot;')}" onclick="return playEpisode(this)">
             <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
           </a>
         </div>`).join('')
@@ -1961,7 +1980,9 @@ function updateHomeLatest() {
   document.getElementById('home-latest-date').textContent = ep.pub;
   document.getElementById('home-latest-desc').textContent = ep.desc ? ep.desc + '…' : '';
   const link = spotifyLink(ep.link, ep.title);
-  document.getElementById('home-latest-link').href = link;
+  const latestLink = document.getElementById('home-latest-link');
+  latestLink.href = link;
+  latestLink.dataset.eplink = ep.link || '';
   document.getElementById('home-latest-card').onclick = null;
 }
 
@@ -1978,7 +1999,7 @@ function renderEpCard(ep) {
     <div class="ep-title">${ep.title}</div>
     <div class="ep-meta-row">${tag}<span class="ep-date">${ep.pub}</span></div>
     ${ep.desc?`<div class="ep-desc">${ep.desc}…</div>`:''}
-    <a class="btn-ep-play" href="${spotifyLink(ep.link, ep.title)}" target="_blank">
+    <a class="btn-ep-play" href="${spotifyLink(ep.link, ep.title)}" target="_blank" data-eplink="${(ep.link||'').replace(/"/g,'&quot;')}" onclick="return playEpisode(this)">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
     </a>
   </div>`;
@@ -2158,6 +2179,26 @@ function spotifyLink(link, title) {
   if (link && link.includes('open.spotify.com')) return link;
   if (title) return 'https://open.spotify.com/search/' + encodeURIComponent(title);
   return 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
+}
+
+/* ── In-app mini player ──────────────────────────────
+   Episodes with an open.spotify.com/episode/ URL play inside the app
+   via Spotify's embed. Anything else follows the normal link. */
+function playEpisode(el) {
+  const link = el.dataset.eplink || '';
+  const m = link.match(/open\.spotify\.com\/episode\/([A-Za-z0-9]+)/);
+  if (!m) return true; // not embeddable — follow the href instead
+
+  const frame = document.getElementById('player-frame');
+  const src = 'https://open.spotify.com/embed/episode/' + m[1] + '?utm_source=generator&theme=0';
+  if (frame.getAttribute('src') !== src) frame.src = src;
+  document.getElementById('mini-player').style.display = 'block';
+  return false; // stop the link from opening a new tab
+}
+
+function closePlayer() {
+  document.getElementById('mini-player').style.display = 'none';
+  document.getElementById('player-frame').src = 'about:blank';
 }
 
 /* ── Contact form ────────────────────────────────── */
