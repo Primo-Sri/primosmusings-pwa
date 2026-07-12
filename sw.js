@@ -1,4 +1,4 @@
-const CACHE_NAME = 'primosmusings-v40';
+const CACHE_NAME = 'primosmusings-v41';
 const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',

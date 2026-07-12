@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v41 — 2026-06-17
+- Search results now play episodes in the in-app player instead of opening a generic Spotify page
+- Applies to episode results, guest episode results, and transcript results
+- Episodes not found in the feed still fall back to a Spotify link
+
 ## v40 — 2026-06-17
 - Listen tab "By Sport" view now sorts episodes by actual air date (matched from the RSS feed), newest first
 - Episode cards show the full air date instead of just the year when available

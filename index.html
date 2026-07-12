@@ -2132,6 +2132,21 @@ document.getElementById('search-input').addEventListener('input', function() {
   runSearch(q);
 });
 
+let _searchRes = [];
+
+// Handle a search result tap: guests jump to their card, episodes play
+// in the mini player (falling back to the Spotify link), blogs open in a tab.
+function searchGo(i) {
+  const r = _searchRes[i];
+  if (!r) return;
+  if (r.action) { r.action(); return; }
+  if (r.type === 'episode' || r.type === 'transcript') {
+    const fake = { dataset: { eptitle: r.title, audio: '' } };
+    if (playEpisode(fake) === false) { closeSearch(); return; }
+  }
+  window.open(r.url, '_blank');
+}
+
 function runSearch(q) {
   const res = [];
 
@@ -2151,7 +2166,7 @@ function runSearch(q) {
   loadedEpisodes.forEach(ep => {
     if (ep.title.toLowerCase().includes(q) || ep.desc.toLowerCase().includes(q)) {
       if (!res.find(r=>r.title===ep.title)) {
-        res.push({type:'episode', title:ep.title, sub:`🎙 Primo (Sri) · ${ep.pub}`, url:ep.link});
+        res.push({type:'episode', title:ep.title, sub:`🎙 Primo (Sri) · ${ep.pub}`, url:spotifyLink(ep.link, ep.title)});
       }
     }
   });
@@ -2169,6 +2184,9 @@ function runSearch(q) {
     return;
   }
 
+  _searchRes = res;
+  res.forEach((r, i) => { r._i = i; });
+
   const groups = {guest:[], episode:[], blog:[]};
   res.forEach(r=>groups[r.type].push(r));
   const labels = {guest:'Guests',episode:'Episodes',blog:'Blog Posts'};
@@ -2179,7 +2197,7 @@ function runSearch(q) {
     if (!groups[type].length) return;
     html+=`<div class="search-cat-label">${icons[type]} ${labels[type]}</div>`;
     html+=groups[type].map(r=>`
-      <div class="search-result-item" onclick="${r.action?`(${r.action.toString()})()`:`window.open('${r.url}','_blank')`}">
+      <div class="search-result-item" onclick="searchGo(${r._i})">
         <div class="sri-avatar ${type}">
           ${type==='guest'?r.title.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase().slice(0,2):type==='episode'?'▶':'📝'}
         </div>
@@ -2223,7 +2241,8 @@ async function searchTranscripts(q) {
     html += snap.docs.map(doc => {
       const d = doc.data();
       const excerpt = getExcerpt(d.text, q);
-      return `<div class="search-result-item" onclick="window.open('${d.episodeUrl}','_blank')">
+      const idx = _searchRes.push({ type:'transcript', title:d.episodeTitle, url:spotifyLink(d.episodeUrl, d.episodeTitle) }) - 1;
+      return `<div class="search-result-item" onclick="searchGo(${idx})">
         <div class="sri-avatar transcript">🎤</div>
         <div class="sri-info">
           <div class="sri-title">${d.episodeTitle}</div>
