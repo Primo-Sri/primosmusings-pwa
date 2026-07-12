@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v39 — 2026-06-17
+- Follow button now adapts on narrow screens (installed app): icon-only circle so it never gets squeezed
+
 ## v38 — 2026-06-17
 - Added "Follow" button (Spotify green) to the mini player — drives Spotify follows while users listen in-app
 
