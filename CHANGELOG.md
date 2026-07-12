@@ -4,6 +4,10 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v40 — 2026-06-17
+- Listen tab "By Sport" view now sorts episodes by actual air date (matched from the RSS feed), newest first
+- Episode cards show the full air date instead of just the year when available
+
 ## v39 — 2026-06-17
 - Follow button now adapts on narrow screens (installed app): icon-only circle so it never gets squeezed
 

@@ -1849,9 +1849,16 @@ function filterSportEps(sport, btn) {
   activeSport = sport;
   document.querySelectorAll('#sport-chip-bar .sport-chip').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  // Match each tagged episode to the RSS feed to get its exact air date
+  const feedByTitle = {};
+  loadedEpisodes.forEach(fe => { feedByTitle[fe.title.toLowerCase().trim()] = fe; });
   const eps = TAGGED_EPISODES
     .filter(e => e.tags.includes(sport))
-    .sort((a, b) => b.year - a.year);
+    .map(e => {
+      const feed = feedByTitle[e.title.toLowerCase().trim()];
+      return { ...e, ts: feed?.ts || 0, pub: feed?.pub || '' };
+    })
+    .sort((a, b) => (b.ts - a.ts) || (b.year - a.year));
   const emoji = SPORT_EMOJI[sport] || '🎙';
   document.getElementById('sport-ep-list').innerHTML = eps.length
     ? eps.map(e => `
@@ -1859,7 +1866,7 @@ function filterSportEps(sport, btn) {
           <div class="sport-ep-icon">${emoji}</div>
           <div class="sport-ep-body">
             <div class="sport-ep-title">${e.title}</div>
-            <div class="sport-ep-meta">${e.guests ? 'with ' + e.guests + ' &nbsp;·&nbsp; ' : ''}${e.year}</div>
+            <div class="sport-ep-meta">${e.guests ? 'with ' + e.guests + ' &nbsp;·&nbsp; ' : ''}${e.pub || e.year}</div>
           </div>
           <div class="sport-ep-arrow">↗</div>
         </a>`).join('')
@@ -2005,6 +2012,7 @@ async function loadEpisodes() {
       title: item.title,
       desc:  stripTags(item.desc).substring(0, 160),
       pub:   fmtDate(item.pub),
+      ts:    Date.parse(item.pub) || 0,
       dur:   item.dur,
       link:  item.link,
       audio: item.audio || '',
