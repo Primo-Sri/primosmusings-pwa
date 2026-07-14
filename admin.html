@@ -112,6 +112,11 @@ body {
 <!-- ── Admin screen ──────────────────────────────── -->
 <div id="admin-screen">
   <button id="sign-out-btn" onclick="signOut()">Sign out</button>
+
+  <p class="page-title">📊 Top Played (in-app)</p>
+  <p class="page-sub">Plays inside your app since v42 — Spotify dashboard has platform-wide stats</p>
+  <div id="stats-list" style="margin-bottom:28px"><span style="color:rgba(255,255,255,.35);font-size:.85rem">Loading…</span></div>
+
   <p class="page-title">🎙 Tag a Guest</p>
   <p class="page-sub">Tap an episode to add or update its guest</p>
   <div id="loading-msg">Loading recent episodes…</div>
@@ -212,6 +217,8 @@ function signOut() {
 async function loadAdminData() {
   if (typeof firebase === 'undefined') { loadRSS(); return; }
 
+  loadPlayStats();
+
   try {
     db = firebase.firestore();
 
@@ -243,6 +250,33 @@ async function loadAdminData() {
   // No Firestore cache yet — fall back to RSS proxies.
   // Cache is populated the first time you open the main app.
   loadRSS();
+}
+
+// ── Play stats (in-app analytics) ───────────────────────────────────────
+async function loadPlayStats() {
+  const el = document.getElementById('stats-list');
+  try {
+    const snap = await firebase.firestore()
+      .collection('playStats').orderBy('count', 'desc').limit(10).get();
+    if (snap.empty) {
+      el.innerHTML = '<span style="color:rgba(255,255,255,.35);font-size:.85rem">No plays recorded yet — stats appear once listeners start using the in-app player.</span>';
+      return;
+    }
+    let total = 0;
+    snap.forEach(d => total += (d.data().count || 0));
+    el.innerHTML = snap.docs.map((doc, i) => {
+      const d = doc.data();
+      const when = d.lastPlayed?.toDate ? d.lastPlayed.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e1e1e">
+        <span style="color:#e8aa30;font-weight:800;font-size:.8rem;width:18px">${i+1}</span>
+        <span style="flex:1;font-size:.82rem;line-height:1.35">${d.title}</span>
+        <span style="color:#1DB954;font-weight:800;font-size:.85rem;white-space:nowrap">${d.count || 0}×</span>
+        <span style="color:rgba(255,255,255,.3);font-size:.7rem;white-space:nowrap">${when}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<span style="color:rgba(255,255,255,.35);font-size:.85rem">Stats unavailable.</span>';
+  }
 }
 
 // ── RSS fallback (rss2json first, then XML proxies) ─────────────────────

@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v42 — 2026-06-17
+- **In-app play analytics** — every play in the app is counted per episode in Firestore (playStats collection)
+- Admin page shows "Top Played" — top 10 episodes by in-app plays with play count and last-played date
+- Firestore rules updated for the playStats collection (needs manual rules deploy)
+
 ## v41 — 2026-06-17
 - Search results now play episodes in the in-app player instead of opening a generic Spotify page
 - Applies to episode results, guest episode results, and transcript results

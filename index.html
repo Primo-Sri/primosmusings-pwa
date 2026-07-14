@@ -2330,6 +2330,7 @@ function playEpisode(el) {
     document.getElementById('mp-dur').textContent = '–:––';
     document.getElementById('mp-seek').value = 0;
     a.play().catch(() => {});
+    logPlay(title);
   }
 
   document.getElementById('mini-player').style.display = 'block';
@@ -2346,6 +2347,21 @@ function playEpisode(el) {
     navigator.mediaSession.setActionHandler('seekforward',  () => skipAudio(15));
   }
   return false; // stop the link from opening a new tab
+}
+
+// Count each play in Firestore — one doc per episode, count increments.
+// Fire-and-forget: analytics must never block or break playback.
+function logPlay(title) {
+  try {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return;
+    const id = title.toLowerCase().trim().replace(/\//g, '-').substring(0, 300);
+    if (!id) return;
+    firebase.firestore().collection('playStats').doc(id).set({
+      title: title,
+      count: firebase.firestore.FieldValue.increment(1),
+      lastPlayed: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).catch(() => {});
+  } catch (e) {}
 }
 
 function togglePlay() {

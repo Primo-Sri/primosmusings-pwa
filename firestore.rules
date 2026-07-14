@@ -15,5 +15,18 @@ service cloud.firestore {
       allow write: if true;
     }
 
+    // Transcripts — public read (search), auth-only write (admin upload)
+    match /transcripts/{doc} {
+      allow read:  if true;
+      allow write: if request.auth != null;
+    }
+
+    // Play stats — incremented by the main app on every play (no auth),
+    // read by admin for analytics
+    match /playStats/{doc} {
+      allow read:  if true;
+      allow write: if true;
+    }
+
   }
 }
