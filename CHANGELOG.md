@@ -4,6 +4,12 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v43 — 2026-06-17
+- **Trending section on Home tab** — visible to all users
+  - All-time total plays badge (manual figure, update via `MANUAL_TOTAL_PLAYS` in index.html — Sri updates weekly)
+  - Live Top 5 most-played episodes pulled from in-app playStats, tap to play
+- Same play data now powers both the public Trending section and the admin Top Played view
+
 ## v42 — 2026-06-17
 - **In-app play analytics** — every play in the app is counted per episode in Firestore (playStats collection)
 - Admin page shows "Top Played" — top 10 episodes by in-app plays with play count and last-played date

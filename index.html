@@ -344,6 +344,21 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .desc-card p:last-child{margin-bottom:0}
 .desc-card strong{color:#fff}
 
+.trend-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;margin-bottom:14px;
+}
+.trend-total{
+  display:flex;align-items:baseline;gap:8px;
+  padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border);
+}
+.trend-total-n{font-size:1.3rem;font-weight:800;color:var(--gold)}
+.trend-total-l{font-size:.68rem;color:var(--muted)}
+.trend-row{display:flex;align-items:center;gap:10px;padding:7px 0}
+.trend-rank{font-size:.75rem;font-weight:800;color:var(--gold);width:16px;flex-shrink:0}
+.trend-title{flex:1;font-size:.78rem;line-height:1.35;min-width:0}
+.trend-count{font-size:.72rem;font-weight:700;color:var(--green);white-space:nowrap;flex-shrink:0}
+
 .sport-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
 .sport-chip{
   background:rgba(26,115,232,.12);color:var(--blue2);
@@ -841,6 +856,15 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
       <div class="desc-card">
         <p>It all started in <strong>Jan 2023</strong> during the Australian Open Tennis by <strong>Primo a.k.a Sri Srinivasan</strong>. Since then, Primo has been breaking down sports across the world.</p>
         <p>Sharp perspectives, efficient story-telling, and compelling guests who bring expertise and fresh viewpoints. <strong>If it matters in sports, Primosmusings is covering it.</strong></p>
+      </div>
+
+      <p class="sec-label" style="margin-top:14px">Trending</p>
+      <div class="trend-card">
+        <div class="trend-total">
+          <span class="trend-total-n" id="trend-total-n">8,172</span>
+          <span class="trend-total-l">total plays · updated <span id="trend-total-date">weekly</span></span>
+        </div>
+        <div id="trend-list"><span style="color:var(--muted);font-size:.78rem">Loading…</span></div>
       </div>
 
       <div class="sport-chips">
@@ -1457,6 +1481,7 @@ window.addEventListener('DOMContentLoaded', () => {
   renderGuests();
   // preload episodes for home tab latest card
   if (!epLoaded) loadEpisodes();
+  loadTrending();
 });
 
 /* ── More sub-pages ──────────────────────────────── */
@@ -2347,6 +2372,39 @@ function playEpisode(el) {
     navigator.mediaSession.setActionHandler('seekforward',  () => skipAudio(15));
   }
   return false; // stop the link from opening a new tab
+}
+
+/* ── Trending (Home tab) ─────────────────────────────
+   All-time total is a manual figure Sri updates periodically —
+   Spotify's own totals aren't available via any public API.
+   The top-5 list below it is live, pulled from in-app play counts. */
+const MANUAL_TOTAL_PLAYS = 8172;
+const MANUAL_TOTAL_DATE  = '2026-06-17';
+
+function loadTrending() {
+  document.getElementById('trend-total-n').textContent = MANUAL_TOTAL_PLAYS.toLocaleString();
+  document.getElementById('trend-total-date').textContent =
+    new Date(MANUAL_TOTAL_DATE).toLocaleDateString('en-US', {month:'short', day:'numeric'});
+
+  const list = document.getElementById('trend-list');
+  try {
+    if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('no firebase');
+    firebase.firestore().collection('playStats').orderBy('count', 'desc').limit(5).get()
+      .then(snap => {
+        if (snap.empty) { list.innerHTML = '<span style="color:var(--muted);font-size:.78rem">No plays yet — be the first to hit Play!</span>'; return; }
+        list.innerHTML = snap.docs.map((doc, i) => {
+          const d = doc.data();
+          return `<div class="trend-row" onclick="playEpisode({dataset:{eptitle:${JSON.stringify(d.title)},audio:''}})">
+            <span class="trend-rank">${i+1}</span>
+            <span class="trend-title">${d.title}</span>
+            <span class="trend-count">${(d.count||0).toLocaleString()} plays</span>
+          </div>`;
+        }).join('');
+      })
+      .catch(() => { list.innerHTML = '<span style="color:var(--muted);font-size:.78rem">Stats unavailable.</span>'; });
+  } catch (e) {
+    list.innerHTML = '<span style="color:var(--muted);font-size:.78rem">Stats unavailable.</span>';
+  }
 }
 
 // Count each play in Firestore — one doc per episode, count increments.
