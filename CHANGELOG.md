@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v45 — 2026-06-17
+- Updated all-time plays total to 8,491 (weekly manual figure)
+- Trending label now reads "plays & downloads" to match how Sri tracks the number
+- Added ENHANCEMENTS.md — backlog of parked ideas (batch episode tagging, Home tab shelves)
+
 ## v44 — 2026-06-17
 - **Admin: tag multiple guests on one episode** — each episode now shows removable guest chips instead of one text field
 - Type a name and hit "Add guest" (or Enter) to add another guest to the same episode
