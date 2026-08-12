@@ -4,6 +4,12 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v44 — 2026-06-17
+- **Admin: tag multiple guests on one episode** — each episode now shows removable guest chips instead of one text field
+- Type a name and hit "Add guest" (or Enter) to add another guest to the same episode
+- Header badge shows "✓ 3 guests" when an episode has more than one
+- Main app already supported multiple guest tags per episode — this closes the gap on the admin side
+
 ## v43 — 2026-06-17
 - **Trending section on Home tab** — visible to all users
   - All-time total plays badge (manual figure, update via `MANUAL_TOTAL_PLAYS` in index.html — Sri updates weekly)

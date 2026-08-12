@@ -80,6 +80,18 @@ body {
   border: 1.5px solid #2a2a2a; border-radius: 10px;
   padding: 11px 18px; font-size: .9rem; cursor: pointer;
 }
+.guest-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.guest-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(232,170,48,.12); color: #e8aa30;
+  border: 1px solid rgba(232,170,48,.3); border-radius: 20px;
+  padding: 5px 6px 5px 12px; font-size: .8rem; font-weight: 600;
+}
+.guest-chip button {
+  background: rgba(232,170,48,.2); border: none; color: #e8aa30;
+  width: 18px; height: 18px; border-radius: 50%; font-size: .7rem;
+  cursor: pointer; line-height: 1; flex-shrink: 0;
+}
 .confirm-msg { font-size: .8rem; color: #4caf50; margin-top: 10px; display: none; }
 .srt-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid #1e1e1e; }
 .srt-row label { font-size: .72rem; color: rgba(255,255,255,.35); display: block; margin-bottom: 8px; }
@@ -168,7 +180,7 @@ const PROXIES  = [
 
 let db;
 let episodes  = [];  // { title, url, pub, year }
-let tagsByUrl = {};  // url → { id, guestName }
+let tagsByUrl = {};  // url → [{ id, guestName }, …]  — an episode can have multiple guests
 
 // ── Auth ──────────────────────────────────────────────────────────────
 // Firebase Auth handles login — credentials are verified server-side,
@@ -230,7 +242,9 @@ async function loadAdminData() {
 
     tagsSnap.forEach(doc => {
       const d = doc.data();
-      if (d.episodeUrl) tagsByUrl[d.episodeUrl] = { id: doc.id, guestName: d.guestName };
+      if (!d.episodeUrl) return;
+      if (!tagsByUrl[d.episodeUrl]) tagsByUrl[d.episodeUrl] = [];
+      tagsByUrl[d.episodeUrl].push({ id: doc.id, guestName: d.guestName });
     });
 
     const cached = cacheDoc.exists ? (cacheDoc.data().episodes || []) : [];
@@ -334,23 +348,23 @@ async function loadRSS() {
 function renderEpisodeList() {
   document.getElementById('loading-msg').style.display = 'none';
   document.getElementById('ep-list').innerHTML = episodes.map((ep, i) => {
-    const tag    = tagsByUrl[ep.url];
-    const tagged = !!tag;
+    const tags   = tagsByUrl[ep.url] || [];
+    const tagged = tags.length > 0;
+    const badgeText = tagged ? (tags.length > 1 ? `✓ ${tags.length} guests` : `✓ ${tags[0].guestName}`) : '';
     return `
       <div class="ep-card${tagged ? ' tagged' : ''}" id="card-${i}">
         <div class="ep-header" onclick="toggleCard(${i})">
           <span class="ep-date">${ep.pub}</span>
           <span class="ep-title">${ep.title}</span>
-          ${tagged ? `<span class="ep-badge">✓ ${tag.guestName}</span>` : ''}
+          ${tagged ? `<span class="ep-badge">${badgeText}</span>` : ''}
         </div>
         <div class="ep-body">
-          <label>Guest name</label>
+          <label>Guests</label>
+          <div class="guest-chips" id="chips-${i}">${renderChips(tags, i)}</div>
           <input type="text" id="guest-${i}" list="guest-names"
-                 placeholder="Choose or type a guest name"
-                 value="${tagged ? escHtml(tag.guestName) : ''}">
+                 placeholder="Add a guest name" onkeydown="if(event.key==='Enter'){event.preventDefault();saveTag(${i});}">
           <div class="btn-row">
-            <button class="save-btn"   onclick="saveTag(${i})">Save</button>
-            ${tagged ? `<button class="remove-btn" onclick="removeTag(${i})">Remove</button>` : ''}
+            <button class="save-btn"   onclick="saveTag(${i})">Add guest</button>
           </div>
           <div class="confirm-msg" id="confirm-${i}"></div>
           <div class="srt-row">
@@ -362,6 +376,12 @@ function renderEpisodeList() {
         </div>
       </div>`;
   }).join('');
+}
+
+function renderChips(tags, idx) {
+  return tags.map(t => `
+    <span class="guest-chip">${escHtml(t.guestName)}<button onclick="removeGuestTag(${idx},'${t.id}')" title="Remove">✕</button></span>
+  `).join('');
 }
 
 function toggleCard(idx) {
@@ -376,12 +396,19 @@ function toggleCard(idx) {
   }
 }
 
-// ── Save ────────────────────────────────────────────────────────────────
+// ── Save (adds a guest — an episode can have several) ────────────────────
 async function saveTag(idx) {
   if (!db) { alert('Still connecting to database — wait a moment and try again.'); return; }
   const ep        = episodes[idx];
-  const guestName = document.getElementById('guest-' + idx).value.trim();
+  const input     = document.getElementById('guest-' + idx);
+  const guestName = input.value.trim();
   if (!guestName) { alert('Enter a guest name first.'); return; }
+
+  const existing = tagsByUrl[ep.url] || [];
+  if (existing.some(t => t.guestName.toLowerCase() === guestName.toLowerCase())) {
+    alert(guestName + ' is already tagged on this episode.');
+    return;
+  }
 
   const data = {
     guestName,
@@ -393,55 +420,64 @@ async function saveTag(idx) {
   };
 
   try {
-    const existing = tagsByUrl[ep.url];
-    if (existing) {
-      await db.collection('episodeTags').doc(existing.id).set(data);
-      tagsByUrl[ep.url].guestName = guestName;
-    } else {
-      const ref = await db.collection('episodeTags').add(data);
-      tagsByUrl[ep.url] = { id: ref.id, guestName };
-    }
+    const ref = await db.collection('episodeTags').add(data);
+    if (!tagsByUrl[ep.url]) tagsByUrl[ep.url] = [];
+    tagsByUrl[ep.url].push({ id: ref.id, guestName });
+
+    document.getElementById('chips-' + idx).innerHTML = renderChips(tagsByUrl[ep.url], idx);
+    input.value = '';
     showConfirm(idx, '✓ Saved! Guest tagged successfully.');
     document.getElementById('card-' + idx).classList.add('tagged');
+    refreshBadge(idx);
   } catch(e) {
     alert('Save failed: ' + e.message);
   }
 }
 
-// ── Remove ──────────────────────────────────────────────────────────────
-async function removeTag(idx) {
+// ── Remove one guest from an episode ──────────────────────────────────────
+async function removeGuestTag(idx, tagId) {
   if (!confirm('Remove this guest tag?')) return;
-  const ep  = episodes[idx];
-  const tag = tagsByUrl[ep.url];
-  if (!tag) return;
+  const ep = episodes[idx];
 
   try {
-    await db.collection('episodeTags').doc(tag.id).delete();
-    delete tagsByUrl[ep.url];
+    await db.collection('episodeTags').doc(tagId).delete();
+    tagsByUrl[ep.url] = (tagsByUrl[ep.url] || []).filter(t => t.id !== tagId);
+    if (!tagsByUrl[ep.url].length) delete tagsByUrl[ep.url];
+
+    document.getElementById('chips-' + idx).innerHTML = renderChips(tagsByUrl[ep.url] || [], idx);
     showConfirm(idx, '✓ Removed.');
-    document.getElementById('card-' + idx).classList.remove('tagged');
+    if (!tagsByUrl[ep.url]) document.getElementById('card-' + idx).classList.remove('tagged');
+    refreshBadge(idx);
   } catch(e) {
     alert('Remove failed: ' + e.message);
   }
 }
 
+// ── Keep the header badge in sync with the chip list ──────────────────────
+function refreshBadge(idx) {
+  const card  = document.getElementById('card-' + idx);
+  const tags  = tagsByUrl[episodes[idx].url] || [];
+  let badge   = card.querySelector('.ep-badge');
+  if (!tags.length) { badge?.remove(); return; }
+  const text = tags.length > 1 ? `✓ ${tags.length} guests` : `✓ ${tags[0].guestName}`;
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'ep-badge';
+    card.querySelector('.ep-header').appendChild(badge);
+  }
+  badge.textContent = text;
+}
+
 // ── Refresh badges after Firestore loads (if episodes already rendered) ──
 function applyTagBadges() {
   episodes.forEach((ep, i) => {
-    const tag  = tagsByUrl[ep.url];
+    const tags = tagsByUrl[ep.url];
     const card = document.getElementById('card-' + i);
-    if (!card || !tag) return;
+    if (!card || !tags || !tags.length) return;
     card.classList.add('tagged');
-    // Inject badge if not already there
-    if (!card.querySelector('.ep-badge')) {
-      const badge = document.createElement('span');
-      badge.className = 'ep-badge';
-      badge.textContent = '✓ ' + tag.guestName;
-      card.querySelector('.ep-header').appendChild(badge);
-    }
-    // Prefill input
-    const input = document.getElementById('guest-' + i);
-    if (input && !input.value) input.value = tag.guestName;
+    refreshBadge(i);
+    const chips = document.getElementById('chips-' + i);
+    if (chips) chips.innerHTML = renderChips(tags, i);
   });
 }
 
