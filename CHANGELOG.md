@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v46 — 2026-09-06
+- Updated all-time plays total to 8,826 (weekly manual figure)
+
 ## v45 — 2026-06-17
 - Updated all-time plays total to 8,491 (weekly manual figure)
 - Trending label now reads "plays & downloads" to match how Sri tracks the number
