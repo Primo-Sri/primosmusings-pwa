@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## admin — 2026-09-07
+- Added a "↻ Refresh" button on admin.html's Tag a Guest section
+- Pulls episodes live from the RSS feed on demand, instead of waiting for the main app to refresh the Firestore cache
+- Fixes the "new episode doesn't show up in admin" issue right after publishing
+
 ## v46 — 2026-09-06
 - Updated all-time plays total to 8,826 (weekly manual figure)
 

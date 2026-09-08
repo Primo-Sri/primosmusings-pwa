@@ -129,8 +129,18 @@ body {
   <p class="page-sub">Plays inside your app since v42 — Spotify dashboard has platform-wide stats</p>
   <div id="stats-list" style="margin-bottom:28px"><span style="color:rgba(255,255,255,.35);font-size:.85rem">Loading…</span></div>
 
-  <p class="page-title">🎙 Tag a Guest</p>
-  <p class="page-sub">Tap an episode to add or update its guest</p>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div>
+      <p class="page-title">🎙 Tag a Guest</p>
+      <p class="page-sub" style="margin-bottom:0">Tap an episode to add or update its guest</p>
+    </div>
+    <button id="refresh-btn" onclick="refreshEpisodes()"
+      style="background:transparent;color:#e8aa30;border:1.5px solid #e8aa30;border-radius:10px;
+             padding:8px 14px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap">
+      ↻ Refresh
+    </button>
+  </div>
+  <p class="page-sub" id="refresh-status" style="margin-top:6px"></p>
   <div id="loading-msg">Loading recent episodes…</div>
   <div id="error-msg"></div>
   <div id="ep-list"></div>
@@ -291,6 +301,34 @@ async function loadPlayStats() {
   } catch(e) {
     el.innerHTML = '<span style="color:rgba(255,255,255,.35);font-size:.85rem">Stats unavailable.</span>';
   }
+}
+
+// ── Manual refresh — bypasses the Firestore cache and pulls live from RSS.
+// Use this right after publishing a new episode so it shows up immediately,
+// instead of waiting for someone to open the main app first.
+async function refreshEpisodes() {
+  const btn    = document.getElementById('refresh-btn');
+  const status = document.getElementById('refresh-status');
+  btn.disabled = true;
+  btn.textContent = '↻ Refreshing…';
+  status.textContent = 'Fetching latest episodes from RSS…';
+
+  document.getElementById('error-msg').style.display = 'none';
+  await loadRSS();
+
+  // loadRSS shows its own error-msg box if every source failed — check that
+  // instead of relying on a thrown error, since loadRSS never throws.
+  const failed = document.getElementById('error-msg').style.display === 'block';
+  if (failed) {
+    status.textContent = 'Refresh failed — try again in a moment.';
+    status.style.color = '#ff5555';
+  } else {
+    status.textContent = '✓ Episode list refreshed — new episodes should appear above.';
+    status.style.color = '#4caf50';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '↻ Refresh';
 }
 
 // ── RSS fallback (rss2json first, then XML proxies) ─────────────────────
