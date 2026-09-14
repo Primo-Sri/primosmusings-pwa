@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v47 — 2026-09-14
+- Updated all-time plays total to 8,969 (weekly manual figure)
+
 ## admin — 2026-09-07
 - Added a "↻ Refresh" button on admin.html's Tag a Guest section
 - Pulls episodes live from the RSS feed on demand, instead of waiting for the main app to refresh the Firestore cache
