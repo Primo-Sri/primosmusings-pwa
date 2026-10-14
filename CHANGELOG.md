@@ -4,6 +4,12 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## SEO pages + docs — 2026-10-13
+- **Fixed "Listen on Spotify" on all 743 episode pages.** They linked to podcasters.spotify.com, which sends listeners to a creator login page. The generator now uses a real open.spotify.com link when there is one, otherwise a Spotify search for the episode title (same rule the app uses)
+- WORKFLOW.md: added the "Refresh the SEO Pages" step for every new episode, and added `episodes/` + `sitemap.xml` to the push commands
+- FILE-INVENTORY.md: listed the SEO files (`episodes/`, generator script, sitemap, robots.txt, Search Console check file)
+- Confirmed the generator is repeatable: a rerun with no new episodes changes nothing in git
+
 ## v48 — 2026-10-13
 - Added a crawlable "Episode archive" link block at the bottom of the Home tab, pointing to /episodes/ so search engines can discover every episode page
 - SEO head tags (description, canonical, Open Graph, Twitter card, PodcastSeries JSON-LD) now ship with this release

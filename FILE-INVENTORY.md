@@ -28,6 +28,11 @@
 | `apple-touch-icon.png` | iOS home screen icon | — |
 | `index-redirect.html` | Redirect page (legacy, not part of main app) | — |
 | `github-upload.html` | GitHub upload utility page (excluded from Firebase deploy) | — |
+| `episodes/` | One crawlable page per episode (743) plus an index, for Google. Built by the generator script — don't edit by hand | Oct 2026 |
+| `scripts/generate-episodes.mjs` | Rebuilds `episodes/` and `sitemap.xml` from the podcast RSS feed. Run: `node scripts/generate-episodes.mjs` | Oct 2026 |
+| `sitemap.xml` | Lists the home page, `/episodes/` and every episode page for search engines. Rewritten by the generator | Oct 2026 |
+| `robots.txt` | Lets search engines crawl everything and points them to the sitemap | Oct 2026 |
+| `google0e92640586a1d1a5.html` | Google Search Console ownership check. Do not delete or Search Console loses access | Oct 2026 |
 | `CHANGELOG.md` | Change history for this project | May 2026 |
 | `FILE-INVENTORY.md` | This file | May 2026 |
 

@@ -1,5 +1,8 @@
 # Primosmusings — Episode Publishing Workflow
 
+> **Every new episode, in every scenario below, also needs the SEO step.**
+> See **Every New Episode — Refresh the SEO Pages** near the bottom.
+
 ---
 
 ## Scenario A: New Episode with a NEW Guest
@@ -29,7 +32,7 @@ Claude will:
 ### Step 3 — Push to GitHub
 
 ```
-git add index.html sw.js
+git add index.html sw.js episodes sitemap.xml
 git commit -m "Episode 649"
 git push origin master
 ```
@@ -118,7 +121,7 @@ No changes needed to `admin.html` — the guest name is already in the dropdown.
 ### Step 3 — Push to GitHub
 
 ```
-git add index.html sw.js
+git add index.html sw.js episodes sitemap.xml
 git commit -m "Add episode [number] — [Guest Name]"
 git push origin master
 ```
@@ -152,10 +155,34 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ---
 
+## Every New Episode — Refresh the SEO Pages
+
+Every episode has its own page at `primosmusings.web.app/episodes/`, so Google can find it.
+A script builds those pages from the podcast feed. They do **not** update on their own.
+
+Do this for every new episode, guest or solo. Wait until the episode shows up in the app's
+Listen tab (that means the feed has it), then tell Claude:
+
+> "New episode is up. Refresh the SEO pages."
+
+Claude will:
+- Run `node scripts/generate-episodes.mjs` in the project folder
+- Check the page count went **up** by the number of new episodes (it should never go down)
+- Add `episodes/` and `sitemap.xml` to the commit, then ask you before pushing
+
+Good to know:
+- The script deletes and rebuilds every page in `episodes/` each run. That is normal. Git only shows what really changed.
+- It only reads the public feed. No login, no keys.
+- Always commit `episodes/` and `sitemap.xml` together with the rest. The live site is built from git, so pages that aren't committed never go live.
+- Once in a while, open Google Search Console and resubmit `sitemap.xml` so Google rereads it sooner.
+
+---
+
 ## Quick Reference
 
 | What changed | Files to update | Also do |
 |---|---|---|
+| Any new episode | `episodes/` · `sitemap.xml` (built by `scripts/generate-episodes.mjs`) | Tell Claude: "Refresh the SEO pages" |
 | New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
 | Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
 | Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |

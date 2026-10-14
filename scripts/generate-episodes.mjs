@@ -86,7 +86,13 @@ function episodeHtml(ep, slug) {
   const titleEsc = escapeHtml(ep.title);
   const canonical = `${SITE}/episodes/${slug}.html`;
   const pubIso = ep.pubDate ? new Date(ep.pubDate).toISOString() : '';
-  const listenSpotify = ep.link || SPOTIFY_SHOW;
+  // podcasters.spotify.com links send listeners to a creator login page, so only
+  // trust real open.spotify.com links. Otherwise search by title (same rule as the app).
+  const listenSpotify = /^https:\/\/open\.spotify\.com\//.test(ep.link)
+    ? ep.link
+    : ep.title
+      ? `https://open.spotify.com/search/${encodeURIComponent(ep.title)}`
+      : SPOTIFY_SHOW;
   const bodyDesc = ep.description && /<[a-z][\s\S]*>/i.test(ep.description)
     ? ep.description
     : `<p>${escapeHtml(plain)}</p>`;
