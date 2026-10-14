@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v49 — 2026-10-13
+- Updated all-time plays total to 10,677 (manual figure)
+
 ## SEO pages + docs — 2026-10-13
 - **Fixed "Listen on Spotify" on all 743 episode pages.** They linked to podcasters.spotify.com, which sends listeners to a creator login page. The generator now uses a real open.spotify.com link when there is one, otherwise a Spotify search for the episode title (same rule the app uses)
 - WORKFLOW.md: added the "Refresh the SEO Pages" step for every new episode, and added `episodes/` + `sitemap.xml` to the push commands
