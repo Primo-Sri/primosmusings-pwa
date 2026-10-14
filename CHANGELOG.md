@@ -4,6 +4,10 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v48 — 2026-10-13
+- Added a crawlable "Episode archive" link block at the bottom of the Home tab, pointing to /episodes/ so search engines can discover every episode page
+- SEO head tags (description, canonical, Open Graph, Twitter card, PodcastSeries JSON-LD) now ship with this release
+
 ## v47 — 2026-09-14
 - Updated all-time plays total to 8,969 (weekly manual figure)
 
