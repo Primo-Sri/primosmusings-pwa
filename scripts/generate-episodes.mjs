@@ -222,11 +222,24 @@ ${list}
 
 async function main() {
   console.log('Fetching RSS…');
-  const res = await fetch(RSS_URL);
+  const res = await fetch(RSS_URL, { signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`RSS HTTP ${res.status}`);
   const xml = await res.text();
   const items = parseItems(xml);
   console.log(`Parsed ${items.length} episodes`);
+
+  // Safety check for unattended runs: this script deletes every page before rebuilding.
+  // If the feed comes back empty or short (outage, blocked request, error page),
+  // stop now instead of wiping the archive. ALLOW_SHRINK=1 overrides it on purpose.
+  const existingPages = fs.existsSync(OUT_DIR)
+    ? fs.readdirSync(OUT_DIR).filter((f) => f.endsWith('.html') && f !== 'index.html').length
+    : 0;
+  if (items.length === 0 || (items.length < existingPages && !process.env.ALLOW_SHRINK)) {
+    throw new Error(
+      `Refusing to rebuild: the feed has ${items.length} episodes but ${existingPages} pages already exist. ` +
+        `If episodes were really removed, rerun with ALLOW_SHRINK=1.`
+    );
+  }
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -275,5 +288,7 @@ async function main() {
 
 main().catch((e) => {
   console.error(e);
-  process.exit(1);
+  // exitCode (not process.exit) lets open network connections close first;
+  // calling process.exit right after fetch crashes Node on Windows.
+  process.exitCode = 1;
 });

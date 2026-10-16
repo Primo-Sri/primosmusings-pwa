@@ -2,18 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://primosmusings.web.app/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://primosmusings.web.app/episodes/</loc>
-    <lastmod>2026-10-14</lastmod>
+    <lastmod>2026-10-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://primosmusings.web.app/episodes/2025-26-nfl-season-week-5-recap-49ers-stay-unbeaten-clock-mismanagement-galore-i-ne3qe6ud.html</loc>
+    <loc>https://primosmusings.web.app/episodes/primos-news-bites-oct-14-edition-rays-gets-one-back-drama-in-shanghai-ie3qg6n6.html</loc>
+    <lastmod>2026-10-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://primosmusings.web.app/episodes/2026-27-nfl-season-week-5-recap-49ers-stay-unbeaten-clock-mismanagement-galore-i-ne3qe6ud.html</loc>
     <lastmod>2026-10-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

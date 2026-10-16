@@ -4,6 +4,13 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## Nightly SEO refresh — 2026-10-16
+- **New GitHub job** (`.github/workflows/daily-seo-refresh.yml`) rebuilds the `/episodes/` pages every night at ~10 PM Eastern. If any page changed, it commits the pages to `master` and deploys. Otherwise it does nothing. It has a manual "Run workflow" button
+- Checks that `sitemap.xml`, `robots.txt`, the Google check file and the episodes index exist before it commits or deploys
+- Generator script: refuses to rebuild if the feed returns fewer episodes than we have pages (stops a feed glitch wiping the archive); 30-second feed timeout; exits cleanly on errors (fixes a Node crash on Windows)
+- Brought the pages generated and deployed by hand on Oct 15 into git (Oct 14 News Bites, renamed Week 5 recap), so a normal push no longer removes them
+- WORKFLOW.md: the SEO section is now "automatic, nothing to do"; push commands no longer include `episodes/` or `sitemap.xml`
+
 ## v49 — 2026-10-13
 - Updated all-time plays total to 10,677 (manual figure)
 

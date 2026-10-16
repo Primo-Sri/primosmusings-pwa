@@ -1,7 +1,7 @@
 # Primosmusings — Episode Publishing Workflow
 
-> **Every new episode, in every scenario below, also needs the SEO step.**
-> See **Every New Episode — Refresh the SEO Pages** near the bottom.
+> **SEO episode pages update themselves every night.** You don't do anything for them.
+> See **SEO Pages — Automatic, Nothing To Do** near the bottom.
 
 ---
 
@@ -32,7 +32,7 @@ Claude will:
 ### Step 3 — Push to GitHub
 
 ```
-git add index.html sw.js episodes sitemap.xml
+git add index.html sw.js
 git commit -m "Episode 649"
 git push origin master
 ```
@@ -121,7 +121,7 @@ No changes needed to `admin.html` — the guest name is already in the dropdown.
 ### Step 3 — Push to GitHub
 
 ```
-git add index.html sw.js episodes sitemap.xml
+git add index.html sw.js
 git commit -m "Add episode [number] — [Guest Name]"
 git push origin master
 ```
@@ -155,25 +155,28 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ---
 
-## Every New Episode — Refresh the SEO Pages
+## SEO Pages — Automatic, Nothing To Do
 
 Every episode has its own page at `primosmusings.web.app/episodes/`, so Google can find it.
-A script builds those pages from the podcast feed. They do **not** update on their own.
+**A GitHub job rebuilds those pages every night at about 10 PM Eastern** (9 PM after the clocks
+change on Nov 1). It is the file `.github/workflows/daily-seo-refresh.yml`.
 
-Do this for every new episode, guest or solo. Wait until the episode shows up in the app's
-Listen tab (that means the feed has it), then tell Claude:
+Each night it:
+1. Reads the podcast feed and rebuilds every episode page
+2. Does nothing if no episode page changed (no commit, no deploy)
+3. If there are new episodes: checks that `sitemap.xml`, `robots.txt`, the Google check file and the episodes index are all still there, commits the new pages to `master`, and deploys
 
-> "New episode is up. Refresh the SEO pages."
-
-Claude will:
-- Run `node scripts/generate-episodes.mjs` in the project folder
-- Check the page count went **up** by the number of new episodes (it should never go down)
-- Add `episodes/` and `sitemap.xml` to the commit, then ask you before pushing
+**Do not run `node scripts/generate-episodes.mjs` or `firebase deploy` by hand.** Deploying from
+your folder puts pages on the live site that git doesn't have, and the next normal push removes
+them. That already happened once (Oct 15). Let the job do it.
 
 Good to know:
-- The script deletes and rebuilds every page in `episodes/` each run. That is normal. Git only shows what really changed.
-- It only reads the public feed. No login, no keys.
-- Always commit `episodes/` and `sitemap.xml` together with the rest. The live site is built from git, so pages that aren't committed never go live.
+- A new episode appears in `/episodes/` the night it is published, not instantly.
+- Need it sooner? GitHub → Actions → **Daily SEO episode pages** → **Run workflow**. Or ask Claude to trigger it.
+- If a run fails, GitHub emails you and the log is in the Actions tab. A failed run never deploys.
+- The script refuses to rebuild if the feed returns fewer episodes than we already have pages for. That stops a feed glitch from wiping the archive. If episodes were really removed, run it with `ALLOW_SHRINK=1`.
+- Because the job commits to `master`, Claude pulls before pushing app changes.
+- When you edit an episode title on Spotify, its page address changes and the old address stops working.
 - Once in a while, open Google Search Console and resubmit `sitemap.xml` so Google rereads it sooner.
 
 ---
@@ -182,7 +185,7 @@ Good to know:
 
 | What changed | Files to update | Also do |
 |---|---|---|
-| Any new episode | `episodes/` · `sitemap.xml` (built by `scripts/generate-episodes.mjs`) | Tell Claude: "Refresh the SEO pages" |
+| Any new episode (SEO pages) | Nothing — built automatically every night (~10 PM ET) | Don't run the generator or `firebase deploy` by hand |
 | New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
 | Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
 | Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |

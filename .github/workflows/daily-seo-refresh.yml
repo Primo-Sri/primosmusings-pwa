@@ -1,0 +1,82 @@
+name: Daily SEO episode pages
+
+# Rebuilds the /episodes/ pages from the podcast feed every day.
+# Only commits and deploys when an episode page actually changed.
+# Run it by hand any time: GitHub > Actions > "Daily SEO episode pages" > Run workflow.
+
+on:
+  schedule:
+    # Late evening, so the day's episodes have reached the feed before we rebuild.
+    # GitHub uses UTC. 02:00 UTC = 10:00 PM Eastern in summer, 9:00 PM after the clocks change (Nov 1).
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+# Lets the job commit the rebuilt pages back to master.
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rebuild episode pages from the feed
+        run: node scripts/generate-episodes.mjs
+
+      - name: Check whether any episode page changed
+        id: changes
+        run: |
+          # sitemap.xml gets a new date every day, so only the episode pages count.
+          if [ -n "$(git status --porcelain episodes)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git status --porcelain episodes | sed 's/^/  /'
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            git checkout -- sitemap.xml
+            echo "No new or changed episode pages. Nothing to commit or deploy."
+          fi
+
+      - name: Make sure the SEO files are all still there
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          for f in sitemap.xml robots.txt google0e92640586a1d1a5.html episodes/index.html; do
+            if [ ! -s "$f" ]; then
+              echo "Missing or empty: $f. Stopping before commit and deploy."
+              exit 1
+            fi
+          done
+          if ! grep -q '<loc>' sitemap.xml; then
+            echo "sitemap.xml has no URLs. Stopping before commit and deploy."
+            exit 1
+          fi
+          echo "SEO files look good."
+
+      - name: Commit the new pages
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add episodes sitemap.xml
+          git commit -m "Daily SEO refresh: update episode pages"
+          git push origin master
+
+      - name: Authenticate to Google Cloud
+        if: steps.changes.outputs.changed == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Install Firebase CLI
+        if: steps.changes.outputs.changed == 'true'
+        run: npm install -g firebase-tools@13
+
+      - name: Deploy to Firebase Hosting
+        if: steps.changes.outputs.changed == 'true'
+        run: firebase deploy --only hosting --project primosmusings-b47f7
