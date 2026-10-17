@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Primos Daily Bite | Primosmusings</title>
+<meta name="description" content="Primos Daily Bite, the morning sports newsletter from Primosmusings: last night's scores, today's big games and what's on TV, with the matching Primos News Bites episode.">
+<link rel="canonical" id="canonical" href="https://primosmusings.web.app/daily/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Primosmusings">
+<meta property="og:title" content="Primos Daily Bite">
+<meta property="og:description" content="The morning sports newsletter from Primosmusings, with the matching Primos News Bites episode.">
+<meta property="og:url" content="https://primosmusings.web.app/daily/">
+<meta property="og:image" content="https://primosmusings.web.app/icon-512.png">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{
+  --bg:#000;--card:#141414;--card2:#1e1e1e;--border:#282828;
+  --muted:#888;--text:#f0f0f0;--blue2:#4d9ef7;--gold:#e8aa30;--green:#1DB954;
+  --radius:14px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--text);line-height:1.5;
+  font-family:-apple-system,'SF Pro Display','Segoe UI',Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--blue2)}
+[hidden]{display:none!important}
+
+.wrap{
+  max-width:560px;margin:0 auto;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(48px + env(safe-area-inset-bottom,0px));
+}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.back{font-size:.8rem;font-weight:600;text-decoration:none}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none}
+.brand img{width:28px;height:28px;border-radius:7px}
+.brand span{font-size:.7rem;font-weight:800;letter-spacing:.06em;color:#fff}
+
+.eyebrow{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+h1{font-size:1.6rem;font-weight:800;line-height:1.15;margin:4px 0 2px;text-wrap:balance}
+.issue-date{font-size:.85rem;color:var(--muted);min-height:1.3em}
+
+.headline{font-size:.95rem;color:#fff;line-height:1.45;margin:10px 0 14px;text-wrap:pretty}
+.issue-img{
+  display:block;width:100%;height:auto;
+  border-radius:var(--radius);border:1px solid var(--border);background:var(--card);
+}
+.skeleton{
+  margin-top:14px;aspect-ratio:9/16;border-radius:var(--radius);
+  background:linear-gradient(100deg,#141414 30%,#1e1e1e 50%,#141414 70%);
+  background-size:300% 100%;animation:shimmer 1.4s infinite linear;
+}
+@keyframes shimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+
+.listen{
+  background:linear-gradient(135deg,#051830 0%,#0a1f35 100%);
+  border:1px solid rgba(29,185,84,.25);border-radius:var(--radius);
+  padding:14px;margin:14px 0 0;
+}
+.listen-label{font-size:.62rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em}
+.listen-title{font-size:.88rem;font-weight:700;color:#fff;line-height:1.35;margin:4px 0 10px}
+.listen audio{display:block;width:100%;height:40px}
+.listen-note{font-size:.8rem;color:rgba(255,255,255,.65);margin-top:4px}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border-radius:20px;padding:8px 14px;
+  font-size:.78rem;font-weight:700;font-family:inherit;
+  text-decoration:none;cursor:pointer;border:1px solid #333;
+  background:var(--card2);color:#fff;
+}
+.btn-follow{background:rgba(29,185,84,.12);color:var(--green);border-color:rgba(29,185,84,.35)}
+.share-note{font-size:.75rem;color:var(--green);align-self:center}
+
+.sec-label{
+  font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  padding:0 2px 8px;margin:30px 0 4px;border-bottom:1px solid var(--border);
+}
+.month{font-size:.72rem;font-weight:700;color:var(--gold);margin:16px 0 6px}
+.archive ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.archive a{
+  display:flex;gap:12px;align-items:baseline;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;text-decoration:none;color:var(--text);
+}
+.archive a[aria-current="page"]{border-color:rgba(232,170,48,.45);background:rgba(232,170,48,.06)}
+.archive .d{font-size:.75rem;font-weight:700;color:#fff;white-space:nowrap;min-width:84px;font-variant-numeric:tabular-nums}
+.archive .h{
+  font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.4;
+  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+}
+
+.state{
+  margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 16px;text-align:center;color:var(--muted);font-size:.88rem;
+}
+.state .btn{margin-top:12px}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--blue2);outline-offset:2px}
+footer{margin-top:32px;font-size:.72rem;color:#666;text-align:center}
+@media (prefers-reduced-motion:reduce){.skeleton{animation:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="topbar">
+    <a class="back" href="/">‹ Primosmusings app</a>
+    <a class="brand" href="/" aria-label="Primosmusings home"><img src="/logo.jpg" alt=""><span>PRIMOSMUSINGS</span></a>
+  </div>
+
+  <div class="eyebrow" id="eyebrow">Morning sports newsletter</div>
+  <h1>Primos Daily Bite</h1>
+  <div class="issue-date" id="issue-date"></div>
+
+  <section id="issue" aria-live="polite">
+    <div class="skeleton" role="img" aria-label="Loading the issue"></div>
+  </section>
+
+  <nav class="archive" id="archive" aria-label="Past issues" hidden>
+    <p class="sec-label">Past issues</p>
+    <div id="archive-list"></div>
+  </nav>
+
+  <footer>Primos Daily Bite from <a href="/">Primosmusings</a>, the global sports podcast by Sri Srinivasan (Primo).</footer>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:            "AIzaSyCL_ROFX3JzviTBJ4plAFFjvoCDzCheZ1E",
+  authDomain:        "primosmusings-b47f7.firebaseapp.com",
+  projectId:         "primosmusings-b47f7",
+  storageBucket:     "primosmusings-b47f7.firebasestorage.app",
+  messagingSenderId: "60238815621",
+  appId:             "1:60238815621:web:ff7c622820f162cf6864ec"
+});
+
+// Each issue is two Firestore docs keyed by date (YYYY-MM-DD), written from admin.html:
+//   dailyBites/{date}       small: date + headline (the archive list reads only these)
+//   dailyBiteImages/{date}  big: the newsletter image
+const SITE         = 'https://primosmusings.web.app';
+const RSS_URL      = 'https://primosmusings-rss.primosmusings.workers.dev/';
+const SPOTIFY_SHOW = 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
+const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+const issueEl = document.getElementById('issue');
+
+// Builds an element safely. Text is added as text, never as HTML,
+// so a headline can't break the page.
+function el(tag, attrs, ...kids) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs || {})) {
+    if (value == null || value === false) continue;
+    if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) node.append(kid);
+  return node;
+}
+
+// Issue dates are plain "YYYY-MM-DD" strings. Format them in UTC so the
+// day never shifts by one for readers in other time zones.
+function prettyDate(iso, options) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { ...options, timeZone: 'UTC' });
+}
+const longDate  = iso => prettyDate(iso, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+const shortDate = iso => prettyDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
+
+function localToday() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+// The day an episode was published, in Eastern time, as YYYY-MM-DD.
+function etDate(pub) {
+  const t = Date.parse(pub);
+  if (isNaN(t)) return '';
+  const p = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(new Date(t)).forEach(x => { p[x.type] = x.value; });
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+// Finds that day's News Bites episode: first by Eastern publish date, then by
+// a date in the title ("Oct 17", "October 17") published within a few days.
+function findNewsBites(items, isoDate) {
+  const bites = items.filter(i => /news\s*bites/i.test(i.title));
+  const sameDay = bites.find(i => etDate(i.pub) === isoDate);
+  if (sameDay) return sameDay;
+  const [, m, d] = isoDate.split('-').map(Number);
+  const nearby = Date.parse(isoDate + 'T12:00:00Z');
+  const re = new RegExp(`\\b${MONTHS[m - 1]}[a-z]*\\.?\\s+${d}\\b`, 'i');
+  return bites.find(i => re.test(i.title) && Math.abs(Date.parse(i.pub) - nearby) < 3 * 86400000) || null;
+}
+
+async function loadFeed() {
+  try {
+    const signal = AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined;
+    const res = await fetch(RSS_URL, { signal });
+    if (!res.ok) return [];
+    const doc = new DOMParser().parseFromString(await res.text(), 'text/xml');
+    return [...doc.querySelectorAll('item')].map(item => ({
+      title: (item.querySelector('title')?.textContent || '').trim(),
+      pub:   item.querySelector('pubDate')?.textContent || '',
+      audio: item.querySelector('enclosure')?.getAttribute('url') || '',
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+function showState(message, withRetry) {
+  issueEl.replaceChildren(el('div', { class: 'state' },
+    el('p', {}, message),
+    withRetry ? el('button', { class: 'btn', type: 'button', onclick: () => location.reload() }, 'Try again') : null
+  ));
+}
+
+function setHead(issue, isNewest) {
+  const url = isNewest ? `${SITE}/daily/` : `${SITE}/daily/?d=${issue.date}`;
+  document.title = `Primos Daily Bite, ${prettyDate(issue.date, { month: 'short', day: 'numeric', year: 'numeric' })} | Primosmusings`;
+  document.getElementById('canonical').setAttribute('href', url);
+  if (issue.headline) document.querySelector('meta[name="description"]').setAttribute('content', `Primos Daily Bite for ${longDate(issue.date)}: ${issue.headline}`);
+}
+
+async function share(issue, noteEl) {
+  const url = `${SITE}/daily/?d=${issue.date}`;
+  const title = `Primos Daily Bite, ${longDate(issue.date)}`;
+  if (navigator.share) {
+    try { await navigator.share({ title, text: issue.headline || title, url }); } catch (e) { /* closed the share sheet */ }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    noteEl.textContent = 'Link copied';
+  } catch (e) {
+    window.prompt('Copy this link:', url);
+  }
+}
+
+function renderIssue(issue, image, eyebrowText) {
+  document.getElementById('eyebrow').textContent = eyebrowText;
+  document.getElementById('issue-date').textContent = longDate(issue.date);
+  const shareNote = el('span', { class: 'share-note', role: 'status' });
+  issueEl.replaceChildren(
+    issue.headline ? el('p', { class: 'headline' }, issue.headline) : null,
+    image
+      ? el('img', {
+          class: 'issue-img', src: image, decoding: 'async',
+          width: issue.width, height: issue.height,
+          alt: `Primos Daily Bite for ${longDate(issue.date)}${issue.headline ? ': ' + issue.headline : ''}`,
+        })
+      : el('div', { class: 'state' }, "This issue's image is missing."),
+    el('div', { class: 'listen', id: 'listen' },
+      el('div', { class: 'listen-label' }, '🎧 Primos News Bites'),
+      el('p', { class: 'listen-note' }, "Finding this day's episode…")
+    ),
+    el('div', { class: 'actions' },
+      el('button', { class: 'btn', type: 'button', onclick: () => share(issue, shareNote) }, '↗ Share this issue'),
+      shareNote
+    )
+  );
+}
+
+function renderListen(episode, isoDate) {
+  const box = document.getElementById('listen');
+  if (!box) return;
+  const follow = el('a', { class: 'btn btn-follow', href: SPOTIFY_SHOW, target: '_blank', rel: 'noopener' }, 'Follow on Spotify');
+  if (episode && episode.audio) {
+    box.replaceChildren(
+      el('div', { class: 'listen-label' }, "🎧 This day's News Bites"),
+      el('p', { class: 'listen-title' }, episode.title),
+      el('audio', { controls: '', preload: 'none', src: episode.audio }, 'Your browser cannot play this audio.'),
+      el('div', { class: 'actions' }, follow)
+    );
+    return;
+  }
+  const note = isoDate === localToday()
+    ? "Today's News Bites episode isn't out yet. It usually lands by 9 AM Eastern."
+    : 'No News Bites episode found for this day.';
+  box.replaceChildren(
+    el('div', { class: 'listen-label' }, '🎧 Primos News Bites'),
+    el('p', { class: 'listen-note' }, note),
+    el('div', { class: 'actions' },
+      el('a', { class: 'btn', href: '/episodes/' }, 'Browse all episodes'),
+      follow
+    )
+  );
+}
+
+function renderArchive(issues, currentDate) {
+  if (issues.length < 2) return;
+  const list = document.getElementById('archive-list');
+  let month = '';
+  let ul = null;
+  for (const issue of issues) {
+    const key = issue.date.slice(0, 7);
+    if (key !== month) {
+      month = key;
+      list.append(el('p', { class: 'month' }, prettyDate(key + '-01', { month: 'long', year: 'numeric' })));
+      ul = el('ul');
+      list.append(ul);
+    }
+    ul.append(el('li', {},
+      el('a', { href: `/daily/?d=${issue.date}`, 'aria-current': issue.date === currentDate ? 'page' : null },
+        el('span', { class: 'd' }, shortDate(issue.date)),
+        el('span', { class: 'h' }, issue.headline || '')
+      )
+    ));
+  }
+  document.getElementById('archive').hidden = false;
+}
+
+async function main() {
+  const db = firebase.firestore();
+  const param = new URLSearchParams(location.search).get('d');
+  const wanted = /^\d{4}-\d{2}-\d{2}$/.test(param || '') ? param : null;
+
+  let issues;
+  try {
+    const snap = await db.collection('dailyBites').orderBy('date', 'desc').limit(120).get();
+    issues = snap.docs.map(d => d.data()).filter(x => x && x.date);
+  } catch (e) {
+    showState("Couldn't load the Daily Bite. Check your connection and try again.", true);
+    return;
+  }
+  if (!issues.length) { showState('The first issue is coming soon.', false); return; }
+
+  let current = wanted ? issues.find(i => i.date === wanted) : issues[0];
+  if (wanted && !current) {
+    // Older than the 120 most recent issues: look it up directly.
+    try {
+      const old = await db.collection('dailyBites').doc(wanted).get();
+      if (old.exists) current = old.data();
+    } catch (e) { /* treated as not found below */ }
+  }
+  renderArchive(issues, current && current.date);
+  if (!current) { showState("There's no Daily Bite for that date. Pick one from the past issues below.", false); return; }
+
+  const isNewest = current.date === issues[0].date;
+  const eyebrowText = !isNewest ? 'From the archive'
+    : current.date === localToday() ? "Today's issue" : 'Latest issue';
+  setHead(current, isNewest && !wanted);
+
+  const feedPromise = loadFeed();
+  let image = '';
+  try {
+    const imgSnap = await db.collection('dailyBiteImages').doc(current.date).get();
+    if (imgSnap.exists) image = imgSnap.data().image || '';
+  } catch (e) { /* shows the "image is missing" note */ }
+  renderIssue(current, image, eyebrowText);
+  renderListen(findNewsBites(await feedPromise, current.date), current.date);
+}
+
+main();
+</script>
+</body>
+</html>

@@ -103,6 +103,43 @@ body {
 .srt-btn:active { background: rgba(255,255,255,.05); }
 .srt-status { font-size: .78rem; display: block; margin-top: 8px; min-height: 18px; }
 
+/* ── Daily Bite ───────────────────── */
+.bite-box {
+  background: #141414; border: 1.5px solid #222; border-radius: 14px;
+  padding: 14px; margin-bottom: 28px;
+}
+.bite-box label { font-size: .72rem; color: rgba(255,255,255,.4); display: block; margin: 14px 0 6px; }
+.bite-box label:first-child { margin-top: 0; }
+.bite-box input[type=text], .bite-box input[type=date] {
+  width: 100%; background: #0e0e0e; border: 1.5px solid #2a2a2a;
+  border-radius: 10px; color: #fff; font-size: 1rem;
+  padding: 11px 14px; outline: none; color-scheme: dark; font-family: inherit;
+}
+.bite-box input:focus { border-color: #e8aa30; }
+#bite-preview {
+  display: block; width: 100%; max-height: 380px; margin-top: 10px;
+  object-fit: contain; object-position: top; border-radius: 10px; background: #0e0e0e;
+}
+#bite-preview[hidden] { display: none; }
+.bite-info   { font-size: .75rem; color: rgba(255,255,255,.45); margin-top: 6px; min-height: 18px; }
+.bite-actions { display: flex; gap: 8px; margin-top: 16px; }
+.bite-status { font-size: .82rem; margin-top: 10px; min-height: 20px; line-height: 1.45; }
+.bite-status.ok  { color: #4caf50; }
+.bite-status.err { color: #ff5555; }
+.bite-status a   { color: #e8aa30; }
+.bite-recent-title { font-size: .72rem; color: rgba(255,255,255,.4); margin: 18px 0 4px; }
+.bite-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid #1e1e1e; font-size: .8rem;
+}
+.bite-row .d { color: #e8aa30; font-weight: 700; white-space: nowrap; min-width: 58px; }
+.bite-row .h { flex: 1; color: rgba(255,255,255,.7); line-height: 1.35; min-width: 0; }
+.bite-row a, .bite-row button {
+  font-size: .72rem; white-space: nowrap; background: transparent; cursor: pointer;
+  border: 1px solid #2a2a2a; border-radius: 8px; padding: 5px 9px;
+  color: rgba(255,255,255,.6); text-decoration: none; font-family: inherit;
+}
+
 #loading-msg { color: rgba(255,255,255,.45); font-size: .9rem; padding: 24px 0; }
 #error-msg   { color: #ff5555; font-size: .9rem; padding: 24px 0; display: none; }
 </style>
@@ -124,6 +161,30 @@ body {
 <!-- ── Admin screen ──────────────────────────────── -->
 <div id="admin-screen">
   <button id="sign-out-btn" onclick="signOut()">Sign out</button>
+
+  <p class="page-title">📰 Daily Bite</p>
+  <p class="page-sub">Publish the day's newsletter. It's live at primosmusings.web.app/daily/ the moment you tap Publish.</p>
+  <div class="bite-box">
+    <label>Newsletter image</label>
+    <input type="file" id="bite-file" accept="image/*" style="display:none" onchange="pickBiteImage()">
+    <button class="srt-btn" type="button" onclick="document.getElementById('bite-file').click()">🖼 Choose image</button>
+    <img id="bite-preview" alt="Preview of the chosen newsletter image" hidden>
+    <div class="bite-info" id="bite-info"></div>
+
+    <label for="bite-headline">One-line headline (Google can't read the image, so this is what it reads)</label>
+    <input type="text" id="bite-headline" maxlength="160"
+           placeholder="Champs clash at noon, Spain owns Shanghai, Kartal's title shot">
+
+    <label for="bite-date">Issue date</label>
+    <input type="date" id="bite-date">
+
+    <div class="bite-actions">
+      <button class="save-btn" id="bite-publish" type="button" onclick="publishBite()">Publish</button>
+    </div>
+    <div class="bite-status" id="bite-status" role="status"></div>
+
+    <div id="bite-recent"></div>
+  </div>
 
   <p class="page-title">📊 Top Played (in-app)</p>
   <p class="page-sub">Plays inside your app since v42 — Spotify dashboard has platform-wide stats</p>
@@ -239,6 +300,7 @@ function signOut() {
 async function loadAdminData() {
   if (typeof firebase === 'undefined') { loadRSS(); return; }
 
+  initDailyBite();
   loadPlayStats();
 
   try {
@@ -580,6 +642,193 @@ async function uploadTranscript(idx) {
     statusEl.textContent = '✗ Failed: ' + e.message;
   }
 }
+// ── Daily Bite (newsletter image) ───────────────────────────────────────
+// Each issue is two Firestore docs keyed by date (YYYY-MM-DD):
+//   dailyBites/{date}       small: date + headline (the public archive list reads only these)
+//   dailyBiteImages/{date}  big: the shrunken image as a data URL
+// Keeping the image separate means the archive never downloads every image.
+// Images live in Firestore (not Firebase Storage) so no paid plan is needed.
+const BITE_MAX_CHARS = 700000;  // a Firestore doc maxes out at 1 MB, so stay well under
+let biteImage = null;           // { dataUrl, width, height } once an image is chosen
+
+function localToday() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+function biteDateLabel(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
+function setBiteStatus(text, kind, linkDate) {
+  const el = document.getElementById('bite-status');
+  el.className = 'bite-status ' + (kind || '');
+  el.textContent = text;
+  if (linkDate) {
+    const a = document.createElement('a');
+    a.href = '/daily/?d=' + linkDate;
+    a.target = '_blank';
+    a.textContent = ' View it →';
+    el.append(a);
+  }
+}
+
+function initDailyBite() {
+  const dateEl = document.getElementById('bite-date');
+  if (!dateEl.value) dateEl.value = localToday();
+  loadBiteRecent();
+}
+
+// Shrinks the image so it loads fast and fits in one Firestore doc.
+// Keeps full 1080px width when it can (newsletter text stays sharp), lowering
+// JPEG quality first and only then the size. White fill so transparent PNG
+// corners don't turn black.
+async function shrinkImage(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error("That file couldn't be opened as an image."));
+      i.src = url;
+    });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    let width = Math.min(img.naturalWidth, 1080);
+    let quality = 0.86;
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const height = Math.round(img.naturalHeight * width / img.naturalWidth);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      if (dataUrl.length <= BITE_MAX_CHARS) return { dataUrl, width, height };
+      if (quality > 0.66) quality -= 0.08;
+      else width = Math.round(width * 0.85);
+    }
+    throw new Error('This image is too large even after shrinking. Try a smaller image.');
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function pickBiteImage() {
+  const file = document.getElementById('bite-file').files[0];
+  const info = document.getElementById('bite-info');
+  const preview = document.getElementById('bite-preview');
+  biteImage = null;
+  preview.hidden = true;
+  setBiteStatus('');
+  if (!file) { info.textContent = ''; return; }
+  info.textContent = 'Preparing image…';
+  try {
+    biteImage = await shrinkImage(file);
+    preview.src = biteImage.dataUrl;
+    preview.hidden = false;
+    const kb = Math.round(biteImage.dataUrl.length * 0.75 / 1024);
+    info.textContent = `Ready: ${biteImage.width}×${biteImage.height}, ${kb} KB (was ${Math.round(file.size / 1024)} KB)`;
+  } catch (e) {
+    info.textContent = '✗ ' + e.message;
+  }
+}
+
+async function publishBite() {
+  const btn = document.getElementById('bite-publish');
+  const date = document.getElementById('bite-date').value;
+  const headline = document.getElementById('bite-headline').value.trim();
+  if (!biteImage) { setBiteStatus('Choose the newsletter image first.', 'err'); return; }
+  if (!headline) { setBiteStatus("Add the one-line headline first. It's what Google reads.", 'err'); return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { setBiteStatus('Pick the issue date.', 'err'); return; }
+
+  const fs = firebase.firestore();
+  btn.disabled = true;
+  btn.textContent = 'Publishing…';
+  try {
+    const existing = await fs.collection('dailyBites').doc(date).get();
+    if (existing.exists && !confirm(`There's already an issue for ${biteDateLabel(date)}. Replace it with this one?`)) {
+      setBiteStatus('Nothing changed.', '');
+      return;
+    }
+    const now = firebase.firestore.FieldValue.serverTimestamp();
+    const batch = fs.batch();
+    batch.set(fs.collection('dailyBites').doc(date),
+      { date, headline, width: biteImage.width, height: biteImage.height, updatedAt: now });
+    batch.set(fs.collection('dailyBiteImages').doc(date),
+      { date, image: biteImage.dataUrl, updatedAt: now });
+    await batch.commit();
+
+    setBiteStatus(`✓ Published the ${biteDateLabel(date)} issue. It's live now.`, 'ok', date);
+    document.getElementById('bite-file').value = '';
+    document.getElementById('bite-preview').hidden = true;
+    document.getElementById('bite-info').textContent = '';
+    document.getElementById('bite-headline').value = '';
+    biteImage = null;
+    loadBiteRecent();
+  } catch (e) {
+    const why = e && e.code === 'permission-denied'
+      ? "the database rule for Daily Bite isn't deployed yet."
+      : (e && e.message) || 'unknown error.';
+    setBiteStatus('✗ Publish failed: ' + why, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Publish';
+  }
+}
+
+async function loadBiteRecent() {
+  const box = document.getElementById('bite-recent');
+  try {
+    const snap = await firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(7).get();
+    box.replaceChildren();
+    if (snap.empty) return;
+    const title = document.createElement('p');
+    title.className = 'bite-recent-title';
+    title.textContent = 'Recent issues';
+    box.append(title);
+    snap.forEach(doc => {
+      const d = doc.data();
+      const row = document.createElement('div');
+      row.className = 'bite-row';
+      const dateEl = document.createElement('span');
+      dateEl.className = 'd';
+      dateEl.textContent = biteDateLabel(d.date);
+      const head = document.createElement('span');
+      head.className = 'h';
+      head.textContent = d.headline || '';
+      const view = document.createElement('a');
+      view.href = '/daily/?d=' + d.date;
+      view.target = '_blank';
+      view.textContent = 'View';
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Remove';
+      remove.onclick = () => removeBite(d.date);
+      row.append(dateEl, head, view, remove);
+      box.append(row);
+    });
+  } catch (e) {
+    box.replaceChildren();  // list is a convenience; publishing still works
+  }
+}
+
+async function removeBite(date) {
+  if (!confirm(`Remove the ${biteDateLabel(date)} issue from the site? This can't be undone.`)) return;
+  try {
+    const fs = firebase.firestore();
+    const batch = fs.batch();
+    batch.delete(fs.collection('dailyBites').doc(date));
+    batch.delete(fs.collection('dailyBiteImages').doc(date));
+    await batch.commit();
+    setBiteStatus(`Removed the ${biteDateLabel(date)} issue.`, '');
+    loadBiteRecent();
+  } catch (e) {
+    setBiteStatus('✗ Remove failed: ' + ((e && e.message) || 'unknown error.'), 'err');
+  }
+}
+
 function fmtDate(s) {
   if (!s) return '';
   return new Date(s).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });

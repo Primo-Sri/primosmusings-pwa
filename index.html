@@ -349,6 +349,20 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .home-stat .n{font-size:1.2rem;font-weight:900;color:#fff;line-height:1}
 .home-stat .l{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
 
+/* Daily Bite card (Home tab) — hidden until an issue exists */
+.bite-card{
+  display:block;text-decoration:none;-webkit-tap-highlight-color:transparent;
+  background:var(--card);border:1px solid rgba(232,170,48,.3);
+  border-radius:var(--radius);padding:14px;margin-bottom:14px;
+}
+.bite-card[hidden]{display:none}
+.bite-card:active{background:var(--card2)}
+.bite-card-top{display:flex;align-items:center;margin-bottom:6px}
+.bite-card-label{font-size:.62rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
+.bite-card-date{font-size:.62rem;color:var(--muted);margin-left:auto}
+.bite-card-headline{font-size:.88rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:8px}
+.bite-card-cta{font-size:.75rem;font-weight:700;color:var(--blue2)}
+
 .latest-card{
   background:linear-gradient(135deg,#051830 0%,#0a1f35 100%);
   border:1px solid rgba(29,185,84,.25);
@@ -892,6 +906,15 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </a>
       </div>
 
+      <a class="bite-card" id="home-bite-card" href="/daily/" hidden>
+        <div class="bite-card-top">
+          <span class="bite-card-label">📰 Primos Daily Bite</span>
+          <span class="bite-card-date" id="home-bite-date"></span>
+        </div>
+        <div class="bite-card-headline" id="home-bite-headline"></div>
+        <span class="bite-card-cta" id="home-bite-cta">Read today's issue →</span>
+      </a>
+
       <div class="desc-card">
         <p>It all started in <strong>Jan 2023</strong> during the Australian Open Tennis by <strong>Primo a.k.a Sri Srinivasan</strong>. Since then, Primo has been breaking down sports across the world.</p>
         <p>Sharp perspectives, efficient story-telling, and compelling guests who bring expertise and fresh viewpoints. <strong>If it matters in sports, Primosmusings is covering it.</strong></p>
@@ -1088,6 +1111,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
     <!-- ══ MORE ══════════════════════════════════════ -->
     <section id="page-more" class="page">
       <div id="more-menu">
+        <a class="more-item" href="/daily/" style="text-decoration:none">
+          <div class="more-icon-wrap" style="background:rgba(232,170,48,.1)">📰</div>
+          <div><div class="more-item-lbl">Daily Bite</div><div class="more-item-sub">Morning newsletter + past issues</div></div>
+          <span class="more-chevron">›</span>
+        </a>
         <div class="more-item" onclick="showSub('about')">
           <div class="more-icon-wrap" style="background:rgba(26,115,232,.12)">👤</div>
           <div><div class="more-item-lbl">About Me</div><div class="more-item-sub">Who is Primo?</div></div>
@@ -1528,6 +1556,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // preload episodes for home tab latest card
   if (!epLoaded) loadEpisodes();
   loadTrending();
+  loadDailyBiteCard();
 });
 
 /* ── More sub-pages ──────────────────────────────── */
@@ -2451,6 +2480,31 @@ function loadTrending() {
   } catch (e) {
     list.innerHTML = '<span style="color:var(--muted);font-size:.78rem">Stats unavailable.</span>';
   }
+}
+
+/* ── Daily Bite card (Home tab) ──────────────────────
+   Reads only the small dailyBites doc (date + headline), never the image,
+   so the Home tab stays fast. The card stays hidden until an issue exists. */
+function loadDailyBiteCard() {
+  try {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return;
+    firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(1).get()
+      .then(snap => {
+        if (snap.empty) return;
+        const issue = snap.docs[0].data();
+        if (!issue || !/^\d{4}-\d{2}-\d{2}$/.test(issue.date || '')) return;
+        const [y, m, d] = issue.date.split('-').map(Number);
+        const n = new Date();
+        const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+        document.getElementById('home-bite-date').textContent =
+          new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+        document.getElementById('home-bite-headline').textContent = issue.headline || '';
+        document.getElementById('home-bite-cta').textContent =
+          issue.date === today ? "Read today's issue →" : 'Read the latest issue →';
+        document.getElementById('home-bite-card').hidden = false;
+      })
+      .catch(() => {});  // no card is fine; never break the Home tab
+  } catch (e) {}
 }
 
 // Count each play in Firestore — one doc per episode, count increments.

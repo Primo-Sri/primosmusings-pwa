@@ -2,6 +2,8 @@
 
 > **SEO episode pages update themselves every night.** You don't do anything for them.
 > See **SEO Pages — Automatic, Nothing To Do** near the bottom.
+>
+> **Daily Bite newsletter:** publish it from your phone in admin.html. See **Daily Bite — Publish the Morning Newsletter**.
 
 ---
 
@@ -155,6 +157,30 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ---
 
+## Daily Bite — Publish the Morning Newsletter
+
+Your Primos Daily Bite lives at **primosmusings.web.app/daily/**. Today's issue is at the top,
+past issues are listed by month below it, and every issue has its own link to share.
+
+Every morning:
+1. **Save the image from Grok.** Phone: press and hold the image → Save to Photos. PC: download it.
+2. Open **primosmusings.web.app/admin.html** and sign in.
+3. In **Daily Bite**: tap **Choose image** → pick it → type the **one-line headline** → check the
+   date (it's already set to today) → tap **Publish**.
+4. Tap **View it →** to see it live.
+
+That's it. It goes live the moment you tap Publish. No push, no deploy, no Claude needed.
+
+Good to know:
+- **The headline matters.** Google can't read the words inside an image. The headline is what it reads.
+- **The episode links itself.** Each issue gets a player for that day's News Bites, found by publish date. If the newsletter goes up before the episode, the player appears on its own once the episode is in the feed.
+- **Publishing the same date again** asks before replacing the old one.
+- **Made a mistake?** Under **Recent issues** in admin, tap **Remove**. It can't be undone.
+- The image is shrunk automatically (admin shows the before and after size) so it loads fast.
+- The app's Home tab shows a Daily Bite card with the latest headline, and **More → Daily Bite** opens the page.
+
+---
+
 ## SEO Pages — Automatic, Nothing To Do
 
 Every episode has its own page at `primosmusings.web.app/episodes/`, so Google can find it.
@@ -186,6 +212,7 @@ Good to know:
 | What changed | Files to update | Also do |
 |---|---|---|
 | Any new episode (SEO pages) | Nothing — built automatically every night (~10 PM ET) | Don't run the generator or `firebase deploy` by hand |
+| Daily Bite newsletter | Nothing — publish in admin.html → Daily Bite | Live instantly at /daily/ |
 | New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
 | Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
 | Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |

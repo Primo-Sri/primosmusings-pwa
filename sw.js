@@ -1,4 +1,4 @@
-const CACHE_NAME = 'primosmusings-v49';
+const CACHE_NAME = 'primosmusings-v50';
 const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
@@ -68,7 +68,11 @@ self.addEventListener('fetch', event => {
   // Cross-origin (Spotify, RSS, Blogger) — always network, no cache
   if (url.origin !== self.location.origin) return;
 
-  const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
+  // Pages, including folder addresses like /daily/ and /episodes/, are always
+  // fetched fresh. Without the endsWith('/') and navigate checks, those folder
+  // pages fell through to cache-first below and stayed stale.
+  const isHTML = event.request.mode === 'navigate' ||
+                 url.pathname.endsWith('/') || url.pathname.endsWith('.html');
   const isManifest = url.pathname.endsWith('manifest.json');
 
   if (isHTML || isManifest) {

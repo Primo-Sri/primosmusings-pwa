@@ -4,6 +4,14 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v50 — 2026-10-17
+- **New: Primos Daily Bite** at `/daily/`, the morning newsletter. Today's issue is on top and past issues are listed by month, each with its own shareable link and a player for that day's News Bites episode (matched by publish date)
+- **Admin: Daily Bite section.** Pick the image, type a one-line headline, Publish. It's live instantly, with no deploy. The image is shrunk automatically, admin asks before replacing an existing date, and Recent issues has View and Remove
+- **App:** a "Primos Daily Bite" card on the Home tab (latest date + headline, hidden until the first issue) and a Daily Bite item at the top of More
+- **Firestore rules:** `dailyBites` and `dailyBiteImages`, which anyone can read and only the signed-in admin can write
+- **Service worker fix:** folder pages like `/daily/` and `/episodes/` now always load fresh. Before this, they were cached until the next app version
+- **Sitemap:** `/daily/` added (takes effect on the next nightly SEO run)
+
 ## Nightly SEO refresh — 2026-10-16
 - **New GitHub job** (`.github/workflows/daily-seo-refresh.yml`) rebuilds the `/episodes/` pages every night at ~10 PM Eastern. If any page changed, it commits the pages to `master` and deploys. Otherwise it does nothing. It has a manual "Run workflow" button
 - Checks that `sitemap.xml`, `robots.txt`, the Google check file and the episodes index exist before it commits or deploys
