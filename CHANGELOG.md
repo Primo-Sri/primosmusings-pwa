@@ -4,6 +4,12 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v51 — 2026-10-17
+- **New 📰 Daily tab** (second in the tab bar). It shows the latest Daily Bite inside the app with a Play button for that day's News Bites, which plays in the mini player. Past issues are listed by month and open in place, and Share uses the public `/daily/` link
+- **Help moved into More** as "Help & FAQ", to keep the tab bar at 6. Old `?tab=help` links still open it, with More lit
+- The Home Daily Bite card now opens the Daily tab instead of leaving the app. The More "Daily Bite" item was removed (it's a tab now)
+- The Daily tab waits for the fresh episode feed before saying an episode isn't out yet, so it doesn't misread the saved list
+
 ## v50 — 2026-10-17
 - **New: Primos Daily Bite** at `/daily/`, the morning newsletter. Today's issue is on top and past issues are listed by month, each with its own shareable link and a player for that day's News Bites episode (matched by publish date)
 - **Admin: Daily Bite section.** Pick the image, type a one-line headline, Publish. It's live instantly, with no deploy. The image is shrunk automatically, admin asks before replacing an existing date, and Recent issues has View and Remove

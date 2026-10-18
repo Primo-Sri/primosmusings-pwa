@@ -177,7 +177,9 @@ Good to know:
 - **Publishing the same date again** asks before replacing the old one.
 - **Made a mistake?** Under **Recent issues** in admin, tap **Remove**. It can't be undone.
 - The image is shrunk automatically (admin shows the before and after size) so it loads fast.
-- The app's Home tab shows a Daily Bite card with the latest headline, and **More → Daily Bite** opens the page.
+- In the app it has its own **📰 Daily** tab (second in the tab bar): the latest issue, a Play button for that day's News Bites (plays in the mini player), and past issues. The Home tab also shows a Daily Bite card that opens it.
+- Share links always point to the public page, `primosmusings.web.app/daily/`, so people without the app can read it.
+- Help moved into **More → Help & FAQ** to make room for the Daily tab.
 
 ---
 

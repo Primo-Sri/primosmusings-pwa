@@ -363,6 +363,50 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .bite-card-headline{font-size:.88rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:8px}
 .bite-card-cta{font-size:.75rem;font-weight:700;color:var(--blue2)}
 
+/* Daily tab — the newsletter shown inside the app */
+.dt-eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.dt-title{font-size:1.35rem;font-weight:800;color:#fff;line-height:1.2;margin:3px 0 2px}
+.dt-date{font-size:.78rem;color:var(--muted);min-height:1.2em}
+.dt-headline{font-size:.9rem;color:#fff;line-height:1.45;margin:10px 0 12px}
+.dt-img{display:block;width:100%;height:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--card)}
+.dt-skeleton{
+  margin-top:12px;aspect-ratio:9/16;border-radius:var(--radius);
+  background:linear-gradient(100deg,#141414 30%,#1e1e1e 50%,#141414 70%);
+  background-size:300% 100%;animation:dtShimmer 1.4s infinite linear;
+}
+@keyframes dtShimmer{from{background-position:100% 0}to{background-position:-100% 0}}
+@media (prefers-reduced-motion:reduce){.dt-skeleton{animation:none}}
+.dt-listen{
+  background:linear-gradient(135deg,#051830 0%,#0a1f35 100%);
+  border:1px solid rgba(29,185,84,.25);border-radius:var(--radius);
+  padding:14px;margin-top:12px;
+}
+.dt-listen-label{font-size:.62rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em}
+.dt-listen-title{font-size:.86rem;font-weight:700;color:#fff;line-height:1.35;margin:4px 0 10px}
+.dt-listen-note{font-size:.76rem;color:rgba(255,255,255,.6);margin:4px 0 10px}
+.dt-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.dt-btn{
+  display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  background:var(--card2);color:#fff;border:1px solid #333;border-radius:20px;
+  padding:8px 14px;font-size:.75rem;font-weight:700;font-family:inherit;
+}
+.dt-note{font-size:.72rem;color:var(--green)}
+.dt-state{
+  margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 16px;text-align:center;color:var(--muted);font-size:.85rem;
+}
+.dt-state .dt-btn{margin-top:12px}
+.dt-month{font-size:.7rem;font-weight:700;color:var(--gold);margin:14px 0 6px}
+.dt-row{
+  display:flex;gap:12px;align-items:baseline;width:100%;text-align:left;cursor:pointer;
+  background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;margin-bottom:6px;color:var(--text);font-family:inherit;
+  -webkit-tap-highlight-color:transparent;
+}
+.dt-row[aria-current="true"]{border-color:rgba(232,170,48,.45);background:rgba(232,170,48,.06)}
+.dt-row .d{font-size:.74rem;font-weight:700;color:#fff;white-space:nowrap;min-width:82px}
+.dt-row .h{font-size:.76rem;color:rgba(255,255,255,.6);line-height:1.4}
+
 .latest-card{
   background:linear-gradient(135deg,#051830 0%,#0a1f35 100%);
   border:1px solid rgba(29,185,84,.25);
@@ -906,7 +950,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </a>
       </div>
 
-      <a class="bite-card" id="home-bite-card" href="/daily/" hidden>
+      <a class="bite-card" id="home-bite-card" href="/daily/" onclick="switchTab('daily');return false;" hidden>
         <div class="bite-card-top">
           <span class="bite-card-label">📰 Primos Daily Bite</span>
           <span class="bite-card-date" id="home-bite-date"></span>
@@ -943,6 +987,18 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         <p>Every Primosmusings episode, from weekly NFL recaps and previews to the daily Primos News Bites, has its own page.</p>
         <p><a href="/episodes/" style="color:var(--blue2)">Browse all episodes</a></p>
       </nav>
+    </section>
+
+    <!-- ══ DAILY BITE ════════════════════════════════ -->
+    <section id="page-daily" class="page">
+      <div class="dt-eyebrow" id="dt-eyebrow">Morning sports newsletter</div>
+      <h2 class="dt-title">Primos Daily Bite</h2>
+      <div class="dt-date" id="dt-date"></div>
+      <div id="dt-issue" aria-live="polite"><div class="dt-skeleton" role="img" aria-label="Loading the issue"></div></div>
+      <div id="dt-archive" hidden>
+        <p class="sec-label" style="margin-top:24px">Past issues</p>
+        <div id="dt-archive-list"></div>
+      </div>
     </section>
 
     <!-- ══ LISTEN ════════════════════════════════════ -->
@@ -1111,11 +1167,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
     <!-- ══ MORE ══════════════════════════════════════ -->
     <section id="page-more" class="page">
       <div id="more-menu">
-        <a class="more-item" href="/daily/" style="text-decoration:none">
-          <div class="more-icon-wrap" style="background:rgba(232,170,48,.1)">📰</div>
-          <div><div class="more-item-lbl">Daily Bite</div><div class="more-item-sub">Morning newsletter + past issues</div></div>
-          <span class="more-chevron">›</span>
-        </a>
         <div class="more-item" onclick="showSub('about')">
           <div class="more-icon-wrap" style="background:rgba(26,115,232,.12)">👤</div>
           <div><div class="more-item-lbl">About Me</div><div class="more-item-sub">Who is Primo?</div></div>
@@ -1134,6 +1185,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         <div class="more-item" onclick="showSub('blog')">
           <div class="more-icon-wrap" style="background:rgba(255,255,255,.06)">📝</div>
           <div><div class="more-item-lbl">Blog</div><div class="more-item-sub">Primo's latest posts</div></div>
+          <span class="more-chevron">›</span>
+        </div>
+        <div class="more-item" onclick="switchTab('help')">
+          <div class="more-icon-wrap" style="background:rgba(255,255,255,.06)">❓</div>
+          <div><div class="more-item-lbl">Help &amp; FAQ</div><div class="more-item-sub">App not updating? Start here</div></div>
           <span class="more-chevron">›</span>
         </div>
         <a class="more-item" href="https://www.primosmusings.com" target="_blank" style="text-decoration:none">
@@ -1526,11 +1582,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
   <nav id="bottom-nav">
     <button class="nav-btn active" data-tab="home"   onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
+    <button class="nav-btn"        data-tab="daily"  onclick="switchTab('daily',this)"><span class="nav-icon">📰</span><span class="nav-label">Daily</span></button>
     <button class="nav-btn"        data-tab="listen" onclick="switchTab('listen',this)"><span class="nav-icon">🎙</span><span class="nav-label">Listen</span></button>
     <button class="nav-btn"        data-tab="guests" onclick="switchTab('guests',this)"><span class="nav-icon">👥</span><span class="nav-label">Guests</span></button>
     <button class="nav-btn"        data-tab="primo"  onclick="switchTab('primo',this)"><span class="nav-icon">⭐</span><span class="nav-label">Primo</span></button>
     <button class="nav-btn"        data-tab="more"   onclick="switchTab('more',this)"><span class="nav-icon">☰</span><span class="nav-label">More</span></button>
-    <button class="nav-btn"        data-tab="help"   onclick="switchTab('help',this)"><span class="nav-icon">❓</span><span class="nav-label">Help</span></button>
   </nav>
 </div>
 
@@ -1542,9 +1598,12 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('page-' + tab).classList.add('active');
-  (btn || document.querySelector(`[data-tab="${tab}"]`)).classList.add('active');
+  // Pages without their own tab button (Help, opened from More) light up More instead.
+  const navBtn = btn || document.querySelector(`[data-tab="${tab}"]`) || document.querySelector('[data-tab="more"]');
+  if (navBtn) navBtn.classList.add('active');
   document.getElementById('main').scrollTo(0,0);
   if (tab==='listen' && !epLoaded) loadEpisodes();
+  if (tab==='daily' && !dailyLoaded) loadDailyTab();
   history.replaceState(null,'','?tab='+tab);
 }
 
@@ -1981,6 +2040,7 @@ GUESTS.forEach(g => g.episodes.forEach(ep => {
 }));
 
 let loadedEpisodes = [];
+let epFetchDone = false;
 
 // Multiple CORS proxies — tried in order, first one that works is used.
 // If allorigins.win is down, the app automatically falls back to the next.
@@ -2134,6 +2194,7 @@ async function loadEpisodes() {
       errEl.style.display   = 'block';
     }
   }
+  epFetchDone = true;  // fresh feed finished (or failed); the Daily tab waits for this
 }
 
 function updateHomeLatest() {
@@ -2505,6 +2566,186 @@ function loadDailyBiteCard() {
       })
       .catch(() => {});  // no card is fine; never break the Home tab
   } catch (e) {}
+}
+
+/* ── Daily tab ───────────────────────────────────────
+   The same issues as the public /daily/ page (Firestore dailyBites + dailyBiteImages),
+   shown inside the app so that day's News Bites plays in the mini player and the tab
+   bar stays put. /daily/ stays the page to share. */
+let dailyLoaded  = false;
+let dailyIssues  = [];
+let dailyCurrent = '';
+const dailyImageCache = {};
+const DAILY_MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+// Builds an element safely: text goes in as text, never as HTML.
+function dailyEl(tag, attrs, ...kids) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs || {})) {
+    if (value == null || value === false) continue;
+    if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  for (const kid of kids.flat()) if (kid != null && kid !== false) node.append(kid);
+  return node;
+}
+
+// Issue dates are "YYYY-MM-DD"; format in UTC so the day never shifts by one.
+function dailyPretty(iso, options) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { ...options, timeZone: 'UTC' });
+}
+
+function dailyToday() {
+  const n = new Date();
+  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+// The Eastern-time day an episode was published, as YYYY-MM-DD.
+function dailyEtDate(ts) {
+  const p = {};
+  new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' })
+    .formatToParts(new Date(ts)).forEach(x => { p[x.type] = x.value; });
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+// That day's News Bites: same Eastern publish date first, then a date in the
+// title ("Oct 17", "October 17") published within a few days.
+function dailyFindEpisode(isoDate) {
+  const bites = loadedEpisodes.filter(e => e.ts && /news\s*bites/i.test(e.title || ''));
+  const sameDay = bites.find(e => dailyEtDate(e.ts) === isoDate);
+  if (sameDay) return sameDay;
+  const [, m, d] = isoDate.split('-').map(Number);
+  const nearby = Date.parse(isoDate + 'T12:00:00Z');
+  const re = new RegExp(`\\b${DAILY_MONTHS[m - 1]}[a-z]*\\.?\\s+${d}\\b`, 'i');
+  return bites.find(e => re.test(e.title) && Math.abs(e.ts - nearby) < 3 * 86400000) || null;
+}
+
+function dailyState(message, withRetry) {
+  document.getElementById('dt-issue').replaceChildren(dailyEl('div', { class: 'dt-state' },
+    dailyEl('p', {}, message),
+    withRetry ? dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => loadDailyTab() }, 'Try again') : null
+  ));
+}
+
+async function dailyShare(issue, noteEl) {
+  const url = `https://primosmusings.web.app/daily/?d=${issue.date}`;
+  const title = `Primos Daily Bite, ${dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric' })}`;
+  if (navigator.share) {
+    try { await navigator.share({ title, text: issue.headline || title, url }); } catch (e) { /* closed the share sheet */ }
+    return;
+  }
+  try { await navigator.clipboard.writeText(url); noteEl.textContent = 'Link copied'; }
+  catch (e) { window.prompt('Copy this link:', url); }
+}
+
+function renderDailyArchive(currentDate) {
+  const wrap = document.getElementById('dt-archive');
+  const list = document.getElementById('dt-archive-list');
+  list.replaceChildren();
+  if (dailyIssues.length < 2) { wrap.hidden = true; return; }
+  let month = '';
+  for (const issue of dailyIssues) {
+    const key = issue.date.slice(0, 7);
+    if (key !== month) {
+      month = key;
+      list.append(dailyEl('p', { class: 'dt-month' }, dailyPretty(key + '-01', { month: 'long', year: 'numeric' })));
+    }
+    list.append(dailyEl('button', {
+        class: 'dt-row', type: 'button', 'aria-current': issue.date === currentDate ? 'true' : null,
+        onclick: () => { loadDailyTab(issue.date); document.getElementById('main').scrollTo(0, 0); },
+      },
+      dailyEl('span', { class: 'd' }, dailyPretty(issue.date, { weekday: 'short', month: 'short', day: 'numeric' })),
+      dailyEl('span', { class: 'h' }, issue.headline || '')
+    ));
+  }
+  wrap.hidden = false;
+}
+
+// Shows that day's episode with a Play button for the mini player. The app shows its
+// saved episode list first and fetches the fresh feed a moment later, so keep checking
+// until the fresh feed is in before saying an episode isn't out.
+function fillDailyListen(issue, tries = 0) {
+  const box = document.getElementById('dt-listen');
+  if (!box || box.dataset.date !== issue.date) return;  // reader moved to another issue
+  const ep = dailyFindEpisode(issue.date);
+  if (ep && ep.audio) {
+    box.replaceChildren(
+      dailyEl('div', { class: 'dt-listen-label' }, "🎧 This day's News Bites"),
+      dailyEl('p', { class: 'dt-listen-title' }, ep.title),
+      dailyEl('button', { class: 'btn-play-now', type: 'button',
+        onclick: () => playEpisode({ dataset: { eptitle: ep.title, audio: ep.audio } }) }, '▶ Play episode')
+    );
+    return;
+  }
+  if (!epFetchDone && tries < 60) { setTimeout(() => fillDailyListen(issue, tries + 1), 500); return; }
+  const note = issue.date === dailyToday()
+    ? "Today's News Bites episode isn't out yet. It usually lands by 9 AM Eastern."
+    : 'No News Bites episode found for this day.';
+  box.replaceChildren(
+    dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
+    dailyEl('p', { class: 'dt-listen-note' }, note),
+    dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => switchTab('listen') }, 'Browse episodes')
+  );
+}
+
+async function loadDailyTab(date) {
+  dailyLoaded = true;
+  if (!dailyIssues.length) {
+    try {
+      if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('no firebase');
+      const snap = await firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(60).get();
+      dailyIssues = snap.docs.map(d => d.data()).filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ''));
+    } catch (e) {
+      dailyLoaded = false;  // try again next time the tab opens
+      dailyState("Couldn't load the Daily Bite. Check your connection and try again.", true);
+      return;
+    }
+  }
+  if (!dailyIssues.length) {
+    dailyLoaded = false;  // check again next time, in case one was just published
+    dailyState('The first issue is coming soon.', false);
+    return;
+  }
+
+  const issue = (date && dailyIssues.find(i => i.date === date)) || dailyIssues[0];
+  dailyCurrent = issue.date;
+  const newest = issue.date === dailyIssues[0].date;
+  const longDate = dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  document.getElementById('dt-eyebrow').textContent =
+    !newest ? 'From the archive' : issue.date === dailyToday() ? "Today's issue" : 'Latest issue';
+  document.getElementById('dt-date').textContent = longDate;
+  renderDailyArchive(issue.date);
+
+  const issueBox = document.getElementById('dt-issue');
+  let image = dailyImageCache[issue.date] || '';
+  if (!image) {
+    issueBox.replaceChildren(dailyEl('div', { class: 'dt-skeleton', role: 'img', 'aria-label': 'Loading the issue' }));
+    try {
+      const snap = await firebase.firestore().collection('dailyBiteImages').doc(issue.date).get();
+      image = (snap.exists && snap.data().image) || '';
+      if (image) dailyImageCache[issue.date] = image;
+    } catch (e) { /* shows the "couldn't load" note below */ }
+    if (dailyCurrent !== issue.date) return;  // reader picked another issue while this loaded
+  }
+
+  const shareNote = dailyEl('span', { class: 'dt-note', role: 'status' });
+  issueBox.replaceChildren(
+    issue.headline ? dailyEl('p', { class: 'dt-headline' }, issue.headline) : null,
+    image
+      ? dailyEl('img', { class: 'dt-img', src: image, decoding: 'async', width: issue.width, height: issue.height,
+          alt: `Primos Daily Bite for ${longDate}${issue.headline ? ': ' + issue.headline : ''}` })
+      : dailyEl('div', { class: 'dt-state' }, "This issue's image couldn't load. Check your connection."),
+    dailyEl('div', { class: 'dt-listen', id: 'dt-listen', 'data-date': issue.date },
+      dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
+      dailyEl('p', { class: 'dt-listen-note' }, "Finding this day's episode…")
+    ),
+    dailyEl('div', { class: 'dt-actions' },
+      dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => dailyShare(issue, shareNote) }, '↗ Share this issue'),
+      shareNote
+    )
+  );
+  fillDailyListen(issue);
 }
 
 // Count each play in Firestore — one doc per episode, count increments.
