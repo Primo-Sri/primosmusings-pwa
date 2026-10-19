@@ -154,7 +154,7 @@ C:\Users\padik\AppData\Roaming\Claude\local-agent-mode-sessions\skills-plugin\
 |---|---|---|
 | Spotify Podcast | https://open.spotify.com/show/primosmusings | Primary episode platform |
 | Amazon Music | `26244d08-ef1b-430e-8e03-38f33efb7adb` | Secondary episode platform |
-| Blogger RSS | Referenced in `enrichGuestsFromRSS()` | Auto-enriches guest episode data |
+| Substack | https://substack.com/@primosmusings | Primo's writing. Linked from More → Substack (replaced the old Blog, Oct 2026) |
 | Firebase Hosting | `primosmusings-b47f7` | Podcast app deployment |
 
 ---

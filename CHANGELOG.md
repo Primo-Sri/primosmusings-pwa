@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v52 — 2026-10-19
+- **Blog removed.** The More → Blog item, the Blog page, its loader (the primosmusings.com/blogs feed), its styles, and blog posts in search are all gone
+- **Substack added.** More → Substack opens https://substack.com/@primosmusings in a new tab
+- Search wording no longer mentions blog. The Help FAQ offline note no longer mentions blog posts
+
 ## v51 — 2026-10-17
 - **New 📰 Daily tab** (second in the tab bar). It shows the latest Daily Bite inside the app with a Play button for that day's News Bites, which plays in the mini player. Past issues are listed by month and open in place, and Share uses the public `/daily/` link
 - **Help moved into More** as "Help & FAQ", to keep the tab bar at 6. Old `?tab=help` links still open it, with More lit

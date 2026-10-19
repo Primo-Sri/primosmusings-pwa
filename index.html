@@ -310,7 +310,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
   font-size:.82rem;font-weight:800;color:#fff;flex-shrink:0;
 }
 .sri-avatar.ep{background:linear-gradient(135deg,#1a3a1a,var(--green))}
-.sri-avatar.blog{background:linear-gradient(135deg,#3a1a00,var(--gold))}
 .sri-avatar.transcript{background:linear-gradient(135deg,#2a0a3a,#7c3aed)}
 .sri-info{flex:1;min-width:0}
 .sri-title{font-size:.82rem;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -663,16 +662,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .b-f1      {background:rgba(229,57,53,.15);  color:#fca5a5}
 .b-cycling {background:rgba(139,92,246,.12); color:#c4b5fd}
 
-/* ══════════════════════════════════════════════════════
-   BLOG
-══════════════════════════════════════════════════════ */
-.blog-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:14px;margin-bottom:8px;
-}
-.blog-date{font-size:.62rem;color:var(--muted);margin-bottom:6px}
-.blog-title{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:6px}
-.blog-excerpt{font-size:.74rem;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:10px}
 .btn-read{
   display:inline-flex;align-items:center;gap:5px;
   color:var(--blue);font-size:.72rem;font-weight:700;
@@ -902,14 +891,14 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
           <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
         </svg>
-        <input id="search-input" type="search" placeholder="Search episodes, guests, blog…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <input id="search-input" type="search" placeholder="Search episodes, guests…" autocomplete="off" autocorrect="off" spellcheck="false">
       </div>
       <button class="btn-search-cancel" onclick="closeSearch()">Cancel</button>
     </div>
     <div class="search-results" id="search-results">
       <div class="search-empty">
         <div class="se-icon">🔍</div>
-        <p>Search episodes, guests<br>blog posts and more</p>
+        <p>Search episodes, guests<br>and what was said on the show</p>
       </div>
     </div>
   </div>
@@ -1182,11 +1171,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
           <div><div class="more-item-lbl">Contact Me</div><div class="more-item-sub">Drop Primo a message</div></div>
           <span class="more-chevron">›</span>
         </div>
-        <div class="more-item" onclick="showSub('blog')">
-          <div class="more-icon-wrap" style="background:rgba(255,255,255,.06)">📝</div>
-          <div><div class="more-item-lbl">Blog</div><div class="more-item-sub">Primo's latest posts</div></div>
-          <span class="more-chevron">›</span>
-        </div>
+        <a class="more-item" href="https://substack.com/@primosmusings" target="_blank" rel="noopener" style="text-decoration:none">
+          <div class="more-icon-wrap" style="background:rgba(255,103,25,.12)">✍️</div>
+          <div><div class="more-item-lbl">Substack</div><div class="more-item-sub">Primo's writing · @primosmusings</div></div>
+          <span class="more-chevron" style="font-size:.8rem">↗</span>
+        </a>
         <div class="more-item" onclick="switchTab('help')">
           <div class="more-icon-wrap" style="background:rgba(255,255,255,.06)">❓</div>
           <div><div class="more-item-lbl">Help &amp; FAQ</div><div class="more-item-sub">App not updating? Start here</div></div>
@@ -1236,16 +1225,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </div>
       </div>
 
-      <div id="sub-blog" class="sub-page">
-        <button class="back-btn" onclick="hideSub()">‹ Back</button>
-        <p class="sec-label">Primo's Blog</p>
-        <div id="blog-loading" class="ep-loading"><div class="spin"></div><br>Loading posts…</div>
-        <div id="blog-list"></div>
-        <div id="blog-error" style="display:none" class="ep-loading">
-          <p style="margin-bottom:10px">Couldn't load posts.</p>
-          <a href="https://www.primosmusings.com/blogs" target="_blank" class="btn-read">Open Blog →</a>
-        </div>
-      </div>
 
       <div id="sub-contact" class="sub-page">
         <button class="back-btn" onclick="hideSub()">‹ Back</button>
@@ -1536,7 +1515,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
             <strong style="color:#fff">Yes — partially.</strong> The app shell (layout, guest list, navigation) loads from your device's cache when offline.
           </p>
           <p style="font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.65;margin-top:8px">
-            The <strong style="color:#fff">episode list</strong> and <strong style="color:#fff">blog posts</strong> require an internet connection because they're loaded live from Spotify and the blog feed.
+            The <strong style="color:#fff">episode list</strong> requires an internet connection because it's loaded live from the podcast feed.
           </p>
           <div class="faq-note">To actually listen offline, save episodes in the Spotify app directly — the Primosmusings website/PWA can't store audio files.</div>
         </div>
@@ -1592,7 +1571,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
 <script>
 /* ── Tab navigation ──────────────────────────────── */
-let blogLoaded = false, epLoaded = false;
+let epLoaded = false;
 
 function switchTab(tab, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1623,7 +1602,6 @@ function showSub(id) {
   document.getElementById('more-menu').style.display='none';
   document.querySelectorAll('.sub-page').forEach(s=>s.classList.remove('active'));
   document.getElementById('sub-'+id).classList.add('active');
-  if (id === 'blog' && !blogLoaded) loadBlog();
 }
 function hideSub() {
   document.getElementById('more-menu').style.display='';
@@ -2233,49 +2211,6 @@ function renderEpCard(ep) {
   </div>`;
 }
 
-/* ── Blog loader ─────────────────────────────────── */
-let loadedPosts = [];
-async function loadBlog() {
-  blogLoaded=true;
-  const loading=document.getElementById('blog-loading');
-  const list=document.getElementById('blog-list');
-  const errEl=document.getElementById('blog-error');
-  try {
-    const posts = await fetchBlogger();
-    loadedPosts = posts;
-    loading.style.display='none';
-    if (!posts.length) throw new Error('empty');
-    list.innerHTML = posts.map(p=>`
-      <div class="blog-card">
-        <div class="blog-date">${p.date}</div>
-        <div class="blog-title">${p.title}</div>
-        <div class="blog-excerpt">${p.excerpt}</div>
-        <a class="btn-read" href="${p.url}" target="_blank">Read Post →</a>
-      </div>`).join('');
-  } catch(e) { loading.style.display='none'; errEl.style.display='block'; }
-}
-
-function fetchBlogger() {
-  return new Promise((resolve,reject)=>{
-    const cb='__blog_'+Date.now();
-    const t=setTimeout(()=>{reject();cleanup();},8000);
-    window[cb]=data=>{
-      clearTimeout(t);cleanup();
-      try{resolve((data.feed.entry||[]).map(e=>({
-        title:e.title.$t,
-        excerpt:stripTags(e.summary?e.summary.$t:(e.content?e.content.$t:'')).substring(0,150)+'…',
-        url:(e.link.find(l=>l.rel==='alternate')||{}).href||'#',
-        date:fmtDate(e.published.$t),
-      })));}catch(e){reject(e);}
-    };
-    function cleanup(){script.remove();delete window[cb];}
-    const script=document.createElement('script');
-    script.src=`https://www.primosmusings.com/blogs/feeds/posts/default?alt=json-in-script&max-results=10&callback=${cb}`;
-    script.onerror=()=>{clearTimeout(t);cleanup();reject();};
-    document.head.appendChild(script);
-  });
-}
-
 /* ── Search ──────────────────────────────────────── */
 function openSearch() {
   document.getElementById('search-overlay').classList.add('open');
@@ -2284,7 +2219,7 @@ function openSearch() {
 function closeSearch() {
   document.getElementById('search-overlay').classList.remove('open');
   document.getElementById('search-input').value='';
-  document.getElementById('search-results').innerHTML=`<div class="search-empty"><div class="se-icon">🔍</div><p>Search episodes, guests<br>blog posts and more</p></div>`;
+  document.getElementById('search-results').innerHTML=`<div class="search-empty"><div class="se-icon">🔍</div><p>Search episodes, guests<br>and what was said on the show</p></div>`;
 }
 
 document.getElementById('search-input').addEventListener('input', function() {
@@ -2296,7 +2231,7 @@ document.getElementById('search-input').addEventListener('input', function() {
 let _searchRes = [];
 
 // Handle a search result tap: guests jump to their card, episodes play
-// in the mini player (falling back to the Spotify link), blogs open in a tab.
+// in the mini player (falling back to the Spotify link).
 function searchGo(i) {
   const r = _searchRes[i];
   if (!r) return;
@@ -2332,13 +2267,6 @@ function runSearch(q) {
     }
   });
 
-  // Search blog posts
-  loadedPosts.forEach(p => {
-    if (p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q)) {
-      res.push({type:'blog', title:p.title, sub:p.date, url:p.url});
-    }
-  });
-
   const container = document.getElementById('search-results');
   if (!res.length) {
     container.innerHTML=`<div class="search-empty"><div class="se-icon">😕</div><p>No results for "<strong>${q}</strong>"</p></div>`;
@@ -2348,19 +2276,19 @@ function runSearch(q) {
   _searchRes = res;
   res.forEach((r, i) => { r._i = i; });
 
-  const groups = {guest:[], episode:[], blog:[]};
+  const groups = {guest:[], episode:[]};
   res.forEach(r=>groups[r.type].push(r));
-  const labels = {guest:'Guests',episode:'Episodes',blog:'Blog Posts'};
-  const icons  = {guest:'👥',episode:'🎙',blog:'📝'};
+  const labels = {guest:'Guests',episode:'Episodes'};
+  const icons  = {guest:'👥',episode:'🎙'};
 
   let html='';
-  ['guest','episode','blog'].forEach(type=>{
+  ['guest','episode'].forEach(type=>{
     if (!groups[type].length) return;
     html+=`<div class="search-cat-label">${icons[type]} ${labels[type]}</div>`;
     html+=groups[type].map(r=>`
       <div class="search-result-item" onclick="searchGo(${r._i})">
         <div class="sri-avatar ${type}">
-          ${type==='guest'?r.title.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase().slice(0,2):type==='episode'?'▶':'📝'}
+          ${type==='guest'?r.title.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase().slice(0,2):'▶'}
         </div>
         <div class="sri-info">
           <div class="sri-title">${r.title}</div>
