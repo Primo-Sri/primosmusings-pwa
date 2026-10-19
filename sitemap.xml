@@ -2,15 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://primosmusings.web.app/</loc>
-    <lastmod>2026-10-16</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://primosmusings.web.app/episodes/</loc>
-    <lastmod>2026-10-16</lastmod>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://primosmusings.web.app/daily/</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://primosmusings.web.app/episodes/primos-news-bites-oct-18-edition-bedlam-in-college-football-davidovich-creates-h-ye3qme8e.html</loc>
+    <lastmod>2026-10-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://primosmusings.web.app/episodes/primos-news-bites-oct-17-edition-zverev-bites-the-dust-sonya-kartal-makes-final-le3ql4f4.html</loc>
+    <lastmod>2026-10-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://primosmusings.web.app/episodes/primos-news-bites-oct-16-edition-how-sweep-it-is-for-brewers-broncos-defense-shi-se3qjn82.html</loc>
