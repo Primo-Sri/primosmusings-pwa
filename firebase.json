@@ -16,6 +16,10 @@
             { "key": "Cache-Control", "value": "no-cache" }
           ]
         }
+      ],
+      "rewrites": [
+        { "source": "/nfl", "destination": "/daily/index.html" },
+        { "source": "/nfl/", "destination": "/daily/index.html" }
       ]
     }
   ],

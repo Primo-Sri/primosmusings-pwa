@@ -4,6 +4,14 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v54 — 2026-10-20
+- **Three newsletters: Daily Bite, NFL Recap and NFL Preview.** Each has its own slot and keeps only its latest issue, and publishing one never touches the others
+- **Admin "Newsletters":** pick which newsletter, then image, headline, an optional **Substack article link** (must be https), date and Publish. Live now lists all three, each with View and Remove
+- **App:** the tab is renamed **📰 News**. It shows every live newsletter, Daily Bite first (with its News Bites Play button), then the NFL ones newest first, each with "Read on Substack →" and Share. The Home card shows whichever newsletter is newest
+- **Public pages:** `/daily/` (Daily Bite) and the new `/nfl/` (NFL Recap + Preview). They're one page file, and `firebase.json` rewrites `/nfl/` to it
+- **Database:** new `newsletters` and `newsletterImages` collections (anyone can read, only the admin can write; needs a rules deploy). The first Daily Bite publish tidies away the old-style `dailyBites` records
+- Sitemap: `/nfl/` added
+
 ## v53 — 2026-10-19
 - **Daily Bite keeps only the latest issue.** Publishing in admin now takes down every older issue in the same all-or-nothing step, so there's no manual cleanup
 - "Past issues" is removed from the `/daily/` page and the app's Daily tab. Share links point to `/daily/`, and old `?d=` links land on the latest issue

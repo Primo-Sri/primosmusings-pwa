@@ -110,7 +110,15 @@ body {
 }
 .bite-box label { font-size: .72rem; color: rgba(255,255,255,.4); display: block; margin: 14px 0 6px; }
 .bite-box label:first-child { margin-top: 0; }
-.bite-box input[type=text], .bite-box input[type=date] {
+.bite-box .kind-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.bite-box .kind-pill {
+  display: flex; align-items: center; gap: 6px; margin: 0; cursor: pointer;
+  padding: 8px 12px; border: 1.5px solid #2a2a2a; border-radius: 20px;
+  font-size: .82rem; color: rgba(255,255,255,.75);
+}
+.bite-box .kind-pill:has(input:checked) { border-color: #e8aa30; color: #e8aa30; background: rgba(232,170,48,.1); }
+.bite-box .kind-pill input { accent-color: #e8aa30; margin: 0; }
+.bite-box input[type=text], .bite-box input[type=date], .bite-box input[type=url] {
   width: 100%; background: #0e0e0e; border: 1.5px solid #2a2a2a;
   border-radius: 10px; color: #fff; font-size: 1rem;
   padding: 11px 14px; outline: none; color-scheme: dark; font-family: inherit;
@@ -162,9 +170,16 @@ body {
 <div id="admin-screen">
   <button id="sign-out-btn" onclick="signOut()">Sign out</button>
 
-  <p class="page-title">📰 Daily Bite</p>
-  <p class="page-sub">Publish the day's newsletter. It replaces the previous issue and is live at primosmusings.web.app/daily/ the moment you tap Publish.</p>
+  <p class="page-title">📰 Newsletters</p>
+  <p class="page-sub">Publish a newsletter. It replaces the previous issue of that same newsletter and is live the moment you tap Publish. The other newsletters aren't touched.</p>
   <div class="bite-box">
+    <label>Which newsletter?</label>
+    <div class="kind-pills" role="radiogroup" aria-label="Which newsletter">
+      <label class="kind-pill"><input type="radio" name="bite-kind" value="daily" checked> 📰 Daily Bite</label>
+      <label class="kind-pill"><input type="radio" name="bite-kind" value="nflRecap"> 🏈 NFL Recap</label>
+      <label class="kind-pill"><input type="radio" name="bite-kind" value="nflPreview"> 🏈 NFL Preview</label>
+    </div>
+
     <label>Newsletter image</label>
     <input type="file" id="bite-file" accept="image/*" style="display:none" onchange="pickBiteImage()">
     <button class="srt-btn" type="button" onclick="document.getElementById('bite-file').click()">🖼 Choose image</button>
@@ -174,6 +189,10 @@ body {
     <label for="bite-headline">One-line headline (Google can't read the image, so this is what it reads)</label>
     <input type="text" id="bite-headline" maxlength="160"
            placeholder="Champs clash at noon, Spain owns Shanghai, Kartal's title shot">
+
+    <label for="bite-link">Substack article link (optional)</label>
+    <input type="url" id="bite-link" inputmode="url" autocomplete="off"
+           placeholder="Paste the article link from Substack">
 
     <label for="bite-date">Issue date</label>
     <input type="date" id="bite-date">
@@ -300,7 +319,7 @@ function signOut() {
 async function loadAdminData() {
   if (typeof firebase === 'undefined') { loadRSS(); return; }
 
-  initDailyBite();
+  initNewsletters();
   loadPlayStats();
 
   try {
@@ -642,14 +661,36 @@ async function uploadTranscript(idx) {
     statusEl.textContent = '✗ Failed: ' + e.message;
   }
 }
-// ── Daily Bite (newsletter image) ───────────────────────────────────────
-// Each issue is two Firestore docs keyed by date (YYYY-MM-DD):
-//   dailyBites/{date}       small: date + headline (the public archive list reads only these)
-//   dailyBiteImages/{date}  big: the shrunken image as a data URL
-// Keeping the image separate means the archive never downloads every image.
+// ── Newsletters (Daily Bite, NFL Recap, NFL Preview) ────────────────────
+// Each newsletter keeps only its latest issue, in two Firestore docs named after it:
+//   newsletters/{kind}       small: date, headline, Substack link (Home card + pages read these)
+//   newsletterImages/{kind}  big: the shrunken image as a data URL
+// Publishing overwrites that newsletter's two docs, so the others are never touched.
 // Images live in Firestore (not Firebase Storage) so no paid plan is needed.
+const NEWSLETTERS = {
+  daily:      { name: 'Daily Bite',  page: '/daily/' },
+  nflRecap:   { name: 'NFL Recap',   page: '/nfl/' },
+  nflPreview: { name: 'NFL Preview', page: '/nfl/' },
+};
 const BITE_MAX_CHARS = 700000;  // a Firestore doc maxes out at 1 MB, so stay well under
 let biteImage = null;           // { dataUrl, width, height } once an image is chosen
+
+function selectedKind() {
+  const picked = document.querySelector('input[name="bite-kind"]:checked');
+  return picked && NEWSLETTERS[picked.value] ? picked.value : 'daily';
+}
+
+// The Substack link is optional. Returns '' for blank, the cleaned link if it's a
+// proper https address, or null if it doesn't look like a link.
+function cleanLink(raw) {
+  if (!raw) return '';
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' ? url.href : null;
+  } catch (e) {
+    return null;
+  }
+}
 
 function localToday() {
   const n = new Date();
@@ -661,20 +702,20 @@ function biteDateLabel(iso) {
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
-function setBiteStatus(text, kind, linkDate) {
+function setBiteStatus(text, tone, viewPage) {
   const el = document.getElementById('bite-status');
-  el.className = 'bite-status ' + (kind || '');
+  el.className = 'bite-status ' + (tone || '');
   el.textContent = text;
-  if (linkDate) {
+  if (viewPage) {
     const a = document.createElement('a');
-    a.href = '/daily/';
+    a.href = viewPage;
     a.target = '_blank';
     a.textContent = ' View it →';
     el.append(a);
   }
 }
 
-function initDailyBite() {
+function initNewsletters() {
   const dateEl = document.getElementById('bite-date');
   if (!dateEl.value) dateEl.value = localToday();
   loadBiteRecent();
@@ -737,42 +778,52 @@ async function pickBiteImage() {
 
 async function publishBite() {
   const btn = document.getElementById('bite-publish');
+  const kind = selectedKind();
+  const name = NEWSLETTERS[kind].name;
   const date = document.getElementById('bite-date').value;
   const headline = document.getElementById('bite-headline').value.trim();
+  const link = cleanLink(document.getElementById('bite-link').value.trim());
   if (!biteImage) { setBiteStatus('Choose the newsletter image first.', 'err'); return; }
   if (!headline) { setBiteStatus("Add the one-line headline first. It's what Google reads.", 'err'); return; }
+  if (link === null) { setBiteStatus("That Substack link doesn't look right. Paste the full link, starting with https://", 'err'); return; }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { setBiteStatus('Pick the issue date.', 'err'); return; }
 
   const fs = firebase.firestore();
   btn.disabled = true;
   btn.textContent = 'Publishing…';
   try {
-    // Only the newest issue is kept, so publishing replaces whatever is live.
-    // One batch: the new issue goes up and the old ones come down together, or nothing changes.
-    const live = await fs.collection('dailyBites').get();
-    const older = live.docs.filter(doc => doc.id !== date);
+    const existing = await fs.collection('newsletters').doc(kind).get();
     const now = firebase.firestore.FieldValue.serverTimestamp();
+    // One batch: everything below happens together, or nothing changes.
     const batch = fs.batch();
-    older.forEach(doc => {
-      batch.delete(fs.collection('dailyBites').doc(doc.id));
-      batch.delete(fs.collection('dailyBiteImages').doc(doc.id));
-    });
-    batch.set(fs.collection('dailyBites').doc(date),
-      { date, headline, width: biteImage.width, height: biteImage.height, updatedAt: now });
-    batch.set(fs.collection('dailyBiteImages').doc(date),
-      { date, image: biteImage.dataUrl, updatedAt: now });
+    batch.set(fs.collection('newsletters').doc(kind),
+      { kind, date, headline, link, width: biteImage.width, height: biteImage.height, updatedAt: now });
+    batch.set(fs.collection('newsletterImages').doc(kind),
+      { kind, date, image: biteImage.dataUrl, updatedAt: now });
+    // One-time tidy-up: Daily Bite issues saved before newsletters had their own slots.
+    if (kind === 'daily') {
+      try {
+        const legacy = await fs.collection('dailyBites').get();
+        legacy.forEach(doc => {
+          batch.delete(fs.collection('dailyBites').doc(doc.id));
+          batch.delete(fs.collection('dailyBiteImages').doc(doc.id));
+        });
+      } catch (e) { /* nothing old to tidy, or can't read it: publish anyway */ }
+    }
     await batch.commit();
 
-    setBiteStatus(`✓ Published the ${biteDateLabel(date)} issue${older.length ? ' and took down the previous one' : ''}. It's live now.`, 'ok', date);
+    const replaced = existing.exists ? ` It replaced the previous ${name}.` : '';
+    setBiteStatus(`✓ Published the ${name} for ${biteDateLabel(date)}.${replaced} It's live now.`, 'ok', NEWSLETTERS[kind].page);
     document.getElementById('bite-file').value = '';
     document.getElementById('bite-preview').hidden = true;
     document.getElementById('bite-info').textContent = '';
     document.getElementById('bite-headline').value = '';
+    document.getElementById('bite-link').value = '';
     biteImage = null;
     loadBiteRecent();
   } catch (e) {
     const why = e && e.code === 'permission-denied'
-      ? "the database rule for Daily Bite isn't deployed yet."
+      ? "the database rule for newsletters isn't deployed yet."
       : (e && e.message) || 'unknown error.';
     setBiteStatus('✗ Publish failed: ' + why, 'err');
   } finally {
@@ -784,48 +835,50 @@ async function publishBite() {
 async function loadBiteRecent() {
   const box = document.getElementById('bite-recent');
   try {
-    const snap = await firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(7).get();
+    const snap = await firebase.firestore().collection('newsletters').get();
     box.replaceChildren();
-    if (snap.empty) return;
+    const live = snap.docs.map(doc => ({ kind: doc.id, ...doc.data() })).filter(d => NEWSLETTERS[d.kind]);
+    if (!live.length) return;
+    live.sort((a, b) => Object.keys(NEWSLETTERS).indexOf(a.kind) - Object.keys(NEWSLETTERS).indexOf(b.kind));
     const title = document.createElement('p');
     title.className = 'bite-recent-title';
     title.textContent = 'Live now';
     box.append(title);
-    snap.forEach(doc => {
-      const d = doc.data();
+    for (const d of live) {
       const row = document.createElement('div');
       row.className = 'bite-row';
-      const dateEl = document.createElement('span');
-      dateEl.className = 'd';
-      dateEl.textContent = biteDateLabel(d.date);
+      const label = document.createElement('span');
+      label.className = 'd';
+      label.textContent = `${NEWSLETTERS[d.kind].name} · ${d.date ? biteDateLabel(d.date) : ''}`;
       const head = document.createElement('span');
       head.className = 'h';
       head.textContent = d.headline || '';
       const view = document.createElement('a');
-      view.href = '/daily/';
+      view.href = NEWSLETTERS[d.kind].page;
       view.target = '_blank';
       view.textContent = 'View';
       const remove = document.createElement('button');
       remove.type = 'button';
       remove.textContent = 'Remove';
-      remove.onclick = () => removeBite(d.date);
-      row.append(dateEl, head, view, remove);
+      remove.onclick = () => removeBite(d.kind, d.date);
+      row.append(label, head, view, remove);
       box.append(row);
-    });
+    }
   } catch (e) {
     box.replaceChildren();  // list is a convenience; publishing still works
   }
 }
 
-async function removeBite(date) {
-  if (!confirm(`Remove the ${biteDateLabel(date)} issue from the site? This can't be undone.`)) return;
+async function removeBite(kind, date) {
+  const name = NEWSLETTERS[kind].name;
+  if (!confirm(`Take down the ${name}${date ? ' for ' + biteDateLabel(date) : ''}? It disappears from the app and the site. This can't be undone.`)) return;
   try {
     const fs = firebase.firestore();
     const batch = fs.batch();
-    batch.delete(fs.collection('dailyBites').doc(date));
-    batch.delete(fs.collection('dailyBiteImages').doc(date));
+    batch.delete(fs.collection('newsletters').doc(kind));
+    batch.delete(fs.collection('newsletterImages').doc(kind));
     await batch.commit();
-    setBiteStatus(`Removed the ${biteDateLabel(date)} issue.`, '');
+    setBiteStatus(`Took down the ${name}.`, '');
     loadBiteRecent();
   } catch (e) {
     setBiteStatus('✗ Remove failed: ' + ((e && e.message) || 'unknown error.'), 'err');

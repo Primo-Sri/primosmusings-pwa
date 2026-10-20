@@ -40,5 +40,17 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Newsletters (Daily Bite, NFL Recap, NFL Preview) — one slot each, named
+    // daily / nflRecap / nflPreview. Anyone can read, only the admin can publish.
+    // newsletters = date + headline + Substack link; newsletterImages = the image.
+    match /newsletters/{doc} {
+      allow read:  if true;
+      allow write: if request.auth != null;
+    }
+    match /newsletterImages/{doc} {
+      allow read:  if true;
+      allow write: if request.auth != null;
+    }
+
   }
 }

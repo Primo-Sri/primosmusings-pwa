@@ -3,7 +3,7 @@
 > **SEO episode pages update themselves every night.** You don't do anything for them.
 > See **SEO Pages — Automatic, Nothing To Do** near the bottom.
 >
-> **Daily Bite newsletter:** publish it from your phone in admin.html. See **Daily Bite — Publish the Morning Newsletter**.
+> **Newsletters (Daily Bite, NFL Recap, NFL Preview):** publish them from your phone in admin.html. See **Newsletters**.
 
 ---
 
@@ -157,28 +157,39 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ---
 
-## Daily Bite — Publish the Morning Newsletter
+## Newsletters — Daily Bite, NFL Recap, NFL Preview
 
-Your Primos Daily Bite lives at **primosmusings.web.app/daily/**. It always shows just the latest
-issue. **Publishing a new one automatically takes the previous one down**, so there's nothing to clean up.
+You have three newsletters. Each is one image plus one Substack article, and each keeps only its
+latest issue:
 
-Every morning:
+| Newsletter | When | Public page |
+|---|---|---|
+| 📰 **Daily Bite** | Every day | primosmusings.web.app/daily/ |
+| 🏈 **NFL Recap** (the Aftermath) | Recap days | primosmusings.web.app/nfl/ |
+| 🏈 **NFL Preview** | Preview days | primosmusings.web.app/nfl/ |
+
+**Publishing one replaces only that newsletter's previous issue.** The others are never touched.
+A normal day is one publish (Daily Bite). An NFL day is one more for each NFL newsletter.
+
+To publish (do it once per newsletter):
 1. **Save the image from Grok.** Phone: press and hold the image → Save to Photos. PC: download it.
 2. Open **primosmusings.web.app/admin.html** and sign in.
-3. In **Daily Bite**: tap **Choose image** → pick it → type the **one-line headline** → check the
-   date (it's already set to today) → tap **Publish**.
+3. In **Newsletters**: pick **which newsletter** → **Choose image** → type the **one-line headline** →
+   paste the **Substack article link** (optional) → check the date (already set to today) → **Publish**.
 4. Tap **View it →** to see it live.
 
 That's it. It goes live the moment you tap Publish. No push, no deploy, no Claude needed.
 
 Good to know:
 - **The headline matters.** Google can't read the words inside an image. The headline is what it reads.
-- **The episode links itself.** Each issue gets a player for that day's News Bites, found by publish date. If the newsletter goes up before the episode, the player appears on its own once the episode is in the feed.
-- **Made a mistake?** Just publish again. It replaces what's live. Or under **Live now** in admin, tap **Remove** to take it down (can't be undone).
+- **The Substack link** becomes a "Read on Substack →" button. Copy the article's link from Substack (Share → Copy link). It must start with `https://`.
+- **The Daily Bite's episode links itself.** It gets a player for that day's News Bites, found by publish date. If the newsletter goes up before the episode, the player appears on its own once the episode is in the feed.
+- **Made a mistake?** Publish again with the same newsletter picked. It replaces what's live. Or under **Live now** in admin, tap **Remove** next to that newsletter (can't be undone).
+- An old NFL Preview stays up until you publish the next one or tap **Remove**.
 - The image is shrunk automatically (admin shows the before and after size) so it loads fast.
-- In the app it has its own **📰 Daily** tab (second in the tab bar): the latest issue and a Play button for that day's News Bites (plays in the mini player). The Home tab also shows a Daily Bite card that opens it.
-- Share links always point to the public page, `primosmusings.web.app/daily/`, so people without the app can read it.
-- Help moved into **More → Help & FAQ** to make room for the Daily tab.
+- **In the app:** the **📰 News** tab (second in the tab bar) shows every newsletter that's live. The Daily Bite is always first, with its Play button. The Home tab shows a card for whichever newsletter is newest.
+- **Share links:** `/daily/` for the Daily Bite and `/nfl/` for the NFL ones, so people without the app can read them.
+- Help lives in **More → Help & FAQ**.
 
 ---
 
@@ -213,7 +224,7 @@ Good to know:
 | What changed | Files to update | Also do |
 |---|---|---|
 | Any new episode (SEO pages) | Nothing — built automatically every night (~10 PM ET) | Don't run the generator or `firebase deploy` by hand |
-| Daily Bite newsletter | Nothing — publish in admin.html → Daily Bite | Live instantly at /daily/ |
+| Newsletter (Daily Bite / NFL Recap / NFL Preview) | Nothing — publish in admin.html → Newsletters | Live instantly at /daily/ or /nfl/ |
 | New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
 | Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
 | Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |

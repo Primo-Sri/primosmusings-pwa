@@ -366,6 +366,10 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .dt-eyebrow{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .dt-title{font-size:1.35rem;font-weight:800;color:#fff;line-height:1.2;margin:3px 0 2px}
 .dt-date{font-size:.78rem;color:var(--muted);min-height:1.2em}
+.dt-card{margin-top:14px}
+.dt-card + .dt-card{margin-top:28px;padding-top:22px;border-top:1px solid var(--border)}
+.dt-kind{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.dt-btn-substack{background:rgba(255,103,25,.12);color:#ff8a4c;border-color:rgba(255,103,25,.35);text-decoration:none}
 .dt-headline{font-size:.9rem;color:#fff;line-height:1.45;margin:10px 0 12px}
 .dt-img{display:block;width:100%;height:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--card)}
 .dt-skeleton{
@@ -931,7 +935,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
       <a class="bite-card" id="home-bite-card" href="/daily/" onclick="switchTab('daily');return false;" hidden>
         <div class="bite-card-top">
-          <span class="bite-card-label">📰 Primos Daily Bite</span>
+          <span class="bite-card-label" id="home-bite-label">📰 Daily Bite</span>
           <span class="bite-card-date" id="home-bite-date"></span>
         </div>
         <div class="bite-card-headline" id="home-bite-headline"></div>
@@ -970,9 +974,8 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
     <!-- ══ DAILY BITE ════════════════════════════════ -->
     <section id="page-daily" class="page">
-      <div class="dt-eyebrow" id="dt-eyebrow">Morning sports newsletter</div>
-      <h2 class="dt-title">Primos Daily Bite</h2>
-      <div class="dt-date" id="dt-date"></div>
+      <div class="dt-eyebrow">Primosmusings newsletters</div>
+      <h2 class="dt-title">News</h2>
       <div id="dt-issue" aria-live="polite"><div class="dt-skeleton" role="img" aria-label="Loading the issue"></div></div>
     </section>
 
@@ -1547,7 +1550,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
   <nav id="bottom-nav">
     <button class="nav-btn active" data-tab="home"   onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
-    <button class="nav-btn"        data-tab="daily"  onclick="switchTab('daily',this)"><span class="nav-icon">📰</span><span class="nav-label">Daily</span></button>
+    <button class="nav-btn"        data-tab="daily"  onclick="switchTab('daily',this)"><span class="nav-icon">📰</span><span class="nav-label">News</span></button>
     <button class="nav-btn"        data-tab="listen" onclick="switchTab('listen',this)"><span class="nav-icon">🎙</span><span class="nav-label">Listen</span></button>
     <button class="nav-btn"        data-tab="guests" onclick="switchTab('guests',this)"><span class="nav-icon">👥</span><span class="nav-label">Guests</span></button>
     <button class="nav-btn"        data-tab="primo"  onclick="switchTab('primo',this)"><span class="nav-icon">⭐</span><span class="nav-label">Primo</span></button>
@@ -2457,20 +2460,37 @@ function loadTrending() {
   }
 }
 
-/* ── Daily Bite card (Home tab) ──────────────────────
-   Reads only the small dailyBites doc (date + headline), never the image,
-   so the Home tab stays fast. The card stays hidden until an issue exists. */
+/* ── Newsletters: Daily Bite, NFL Recap, NFL Preview ─
+   Each keeps only its latest issue, in two Firestore docs named after it (published
+   from admin.html): newsletters/{kind} = date, headline, Substack link (small);
+   newsletterImages/{kind} = the image (big). */
+const NEWS_KINDS = {
+  daily:      { name: 'Primos Daily Bite',  label: '📰 Daily Bite',  page: '/daily/' },
+  nflRecap:   { name: 'Primos NFL Recap',   label: '🏈 NFL Recap',   page: '/nfl/' },
+  nflPreview: { name: 'Primos NFL Preview', label: '🏈 NFL Preview', page: '/nfl/' },
+};
+
+function readNewsletters(snap) {
+  return snap.docs.map(doc => ({ ...doc.data(), kind: doc.id }))
+    .filter(x => NEWS_KINDS[x.kind] && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ''));
+}
+
+// Home card: whichever newsletter is newest (the Daily Bite wins a same-day tie).
+// Reads only the small docs, never the images, so the Home tab stays fast.
+// The card stays hidden until a newsletter exists.
 function loadDailyBiteCard() {
   try {
     if (typeof firebase === 'undefined' || !firebase.firestore) return;
-    firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(1).get()
+    firebase.firestore().collection('newsletters').get()
       .then(snap => {
-        if (snap.empty) return;
-        const issue = snap.docs[0].data();
-        if (!issue || !/^\d{4}-\d{2}-\d{2}$/.test(issue.date || '')) return;
+        const issues = readNewsletters(snap).sort((a, b) =>
+          b.date.localeCompare(a.date) || (a.kind === 'daily' ? -1 : b.kind === 'daily' ? 1 : 0));
+        if (!issues.length) return;
+        const issue = issues[0];
         const [y, m, d] = issue.date.split('-').map(Number);
         const n = new Date();
         const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+        document.getElementById('home-bite-label').textContent = NEWS_KINDS[issue.kind].label;
         document.getElementById('home-bite-date').textContent =
           new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
         document.getElementById('home-bite-headline').textContent = issue.headline || '';
@@ -2482,15 +2502,24 @@ function loadDailyBiteCard() {
   } catch (e) {}
 }
 
-/* ── Daily tab ───────────────────────────────────────
-   The same issues as the public /daily/ page (Firestore dailyBites + dailyBiteImages),
-   shown inside the app so that day's News Bites plays in the mini player and the tab
-   bar stays put. /daily/ stays the page to share. */
-let dailyLoaded  = false;
-let dailyIssues  = [];
-let dailyCurrent = '';
-const dailyImageCache = {};
+/* ── News tab ────────────────────────────────────────
+   Every newsletter that's live, shown inside the app so that day's News Bites plays
+   in the mini player and the tab bar stays put. The Daily Bite always comes first.
+   The public pages /daily/ and /nfl/ are the ones to share. */
+let dailyLoaded = false;
+let newsIssues  = [];
+const newsImageCache = {};
 const DAILY_MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+// Only real web links become buttons (never javascript: or other odd addresses).
+function newsSafeLink(url) {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' || u.protocol === 'http:' ? u.href : '';
+  } catch (e) {
+    return '';
+  }
+}
 
 // Builds an element safely: text goes in as text, never as HTML.
 function dailyEl(tag, attrs, ...kids) {
@@ -2543,8 +2572,8 @@ function dailyState(message, withRetry) {
 }
 
 async function dailyShare(issue, noteEl) {
-  const url = 'https://primosmusings.web.app/daily/';
-  const title = `Primos Daily Bite, ${dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric' })}`;
+  const url = 'https://primosmusings.web.app' + NEWS_KINDS[issue.kind].page;
+  const title = `${NEWS_KINDS[issue.kind].name}, ${dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric' })}`;
   if (navigator.share) {
     try { await navigator.share({ title, text: issue.headline || title, url }); } catch (e) { /* closed the share sheet */ }
     return;
@@ -2580,61 +2609,74 @@ function fillDailyListen(issue, tries = 0) {
   );
 }
 
-// Only the newest issue is kept (publishing in admin takes the previous one down).
-async function loadDailyTab() {
-  dailyLoaded = true;
-  if (!dailyIssues.length) {
-    try {
-      if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('no firebase');
-      const snap = await firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(1).get();
-      dailyIssues = snap.docs.map(d => d.data()).filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ''));
-    } catch (e) {
-      dailyLoaded = false;  // try again next time the tab opens
-      dailyState("Couldn't load the Daily Bite. Check your connection and try again.", true);
-      return;
-    }
-  }
-  if (!dailyIssues.length) {
-    dailyLoaded = false;  // check again next time, in case one was just published
-    dailyState('The first issue is coming soon.', false);
-    return;
-  }
-
-  const issue = dailyIssues[0];
-  dailyCurrent = issue.date;
-  const longDate = dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  document.getElementById('dt-eyebrow').textContent = issue.date === dailyToday() ? "Today's issue" : 'Latest issue';
-  document.getElementById('dt-date').textContent = longDate;
-
-  const issueBox = document.getElementById('dt-issue');
-  let image = dailyImageCache[issue.date] || '';
-  if (!image) {
-    issueBox.replaceChildren(dailyEl('div', { class: 'dt-skeleton', role: 'img', 'aria-label': 'Loading the issue' }));
-    try {
-      const snap = await firebase.firestore().collection('dailyBiteImages').doc(issue.date).get();
-      image = (snap.exists && snap.data().image) || '';
-      if (image) dailyImageCache[issue.date] = image;
-    } catch (e) { /* shows the "couldn't load" note below */ }
-    if (dailyCurrent !== issue.date) return;  // reader picked another issue while this loaded
-  }
-
+// One newsletter's block. Its image loads separately, so it starts as a placeholder.
+function renderNewsIssue(issue) {
+  const meta = NEWS_KINDS[issue.kind];
   const shareNote = dailyEl('span', { class: 'dt-note', role: 'status' });
-  issueBox.replaceChildren(
+  const link = newsSafeLink(issue.link || '');
+  const when = dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  return dailyEl('article', { class: 'dt-card' },
+    dailyEl('div', { class: 'dt-kind' }, meta.label),
+    dailyEl('div', { class: 'dt-date' }, when + (issue.date === dailyToday() ? ' · Today' : '')),
     issue.headline ? dailyEl('p', { class: 'dt-headline' }, issue.headline) : null,
-    image
-      ? dailyEl('img', { class: 'dt-img', src: image, decoding: 'async', width: issue.width, height: issue.height,
-          alt: `Primos Daily Bite for ${longDate}${issue.headline ? ': ' + issue.headline : ''}` })
-      : dailyEl('div', { class: 'dt-state' }, "This issue's image couldn't load. Check your connection."),
-    dailyEl('div', { class: 'dt-listen', id: 'dt-listen', 'data-date': issue.date },
-      dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
-      dailyEl('p', { class: 'dt-listen-note' }, "Finding this day's episode…")
-    ),
+    dailyEl('div', { class: 'dt-skeleton', id: 'dt-img-' + issue.kind, role: 'img', 'aria-label': 'Loading the newsletter' }),
+    issue.kind === 'daily'
+      ? dailyEl('div', { class: 'dt-listen', id: 'dt-listen', 'data-date': issue.date },
+          dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
+          dailyEl('p', { class: 'dt-listen-note' }, "Finding this day's episode…"))
+      : null,
     dailyEl('div', { class: 'dt-actions' },
-      dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => dailyShare(issue, shareNote) }, '↗ Share this issue'),
+      link ? dailyEl('a', { class: 'dt-btn dt-btn-substack', href: link, target: '_blank', rel: 'noopener' }, 'Read on Substack →') : null,
+      dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => dailyShare(issue, shareNote) }, '↗ Share'),
       shareNote
     )
   );
-  fillDailyListen(issue);
+}
+
+async function loadNewsImage(issue) {
+  const key = issue.kind + '/' + issue.date;
+  let image = newsImageCache[key] || '';
+  if (!image) {
+    try {
+      const snap = await firebase.firestore().collection('newsletterImages').doc(issue.kind).get();
+      image = (snap.exists && snap.data().image) || '';
+      if (image) newsImageCache[key] = image;
+    } catch (e) { /* shows the "couldn't load" note below */ }
+  }
+  const spot = document.getElementById('dt-img-' + issue.kind);
+  if (!spot) return;
+  const when = dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  spot.replaceWith(image
+    ? dailyEl('img', { class: 'dt-img', src: image, decoding: 'async', width: issue.width, height: issue.height,
+        alt: `${NEWS_KINDS[issue.kind].name} for ${when}${issue.headline ? ': ' + issue.headline : ''}` })
+    : dailyEl('div', { class: 'dt-state' }, "This newsletter's image couldn't load. Check your connection."));
+}
+
+async function loadDailyTab() {
+  dailyLoaded = true;
+  if (!newsIssues.length) {
+    try {
+      if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('no firebase');
+      const snap = await firebase.firestore().collection('newsletters').get();
+      // Daily Bite first, then the NFL newsletters newest first.
+      newsIssues = readNewsletters(snap).sort((a, b) =>
+        (a.kind === 'daily') !== (b.kind === 'daily') ? (a.kind === 'daily' ? -1 : 1) : b.date.localeCompare(a.date));
+    } catch (e) {
+      dailyLoaded = false;  // try again next time the tab opens
+      dailyState("Couldn't load the newsletters. Check your connection and try again.", true);
+      return;
+    }
+  }
+  if (!newsIssues.length) {
+    dailyLoaded = false;  // check again next time, in case one was just published
+    dailyState('The first newsletter is coming soon.', false);
+    return;
+  }
+
+  document.getElementById('dt-issue').replaceChildren(...newsIssues.map(renderNewsIssue));
+  newsIssues.forEach(loadNewsImage);
+  const daily = newsIssues.find(i => i.kind === 'daily');
+  if (daily) fillDailyListen(daily);
 }
 
 // Count each play in Firestore — one doc per episode, count increments.

@@ -8,9 +8,9 @@
 <link rel="canonical" id="canonical" href="https://primosmusings.web.app/daily/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Primosmusings">
-<meta property="og:title" content="Primos Daily Bite">
-<meta property="og:description" content="The morning sports newsletter from Primosmusings, with the matching Primos News Bites episode.">
-<meta property="og:url" content="https://primosmusings.web.app/daily/">
+<meta property="og:title" id="og-title" content="Primos Daily Bite">
+<meta property="og:description" content="Sports newsletters from Primosmusings, the global sports podcast by Sri Srinivasan (Primo).">
+<meta property="og:url" id="og-url" content="https://primosmusings.web.app/daily/">
 <meta property="og:image" content="https://primosmusings.web.app/icon-512.png">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="/icon-192.png">
@@ -41,16 +41,19 @@ a{color:var(--blue2)}
 .brand span{font-size:.7rem;font-weight:800;letter-spacing:.06em;color:#fff}
 
 .eyebrow{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
-h1{font-size:1.6rem;font-weight:800;line-height:1.15;margin:4px 0 2px;text-wrap:balance}
-.issue-date{font-size:.85rem;color:var(--muted);min-height:1.3em}
+h1{font-size:1.6rem;font-weight:800;line-height:1.15;margin:4px 0 18px;text-wrap:balance}
 
-.headline{font-size:.95rem;color:#fff;line-height:1.45;margin:10px 0 14px;text-wrap:pretty}
+/* One block per newsletter (the NFL page can show two) */
+.issue + .issue{margin-top:30px;padding-top:24px;border-top:1px solid var(--border)}
+.kind{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.issue-date{font-size:.85rem;color:var(--muted)}
+.headline{font-size:.95rem;color:#fff;line-height:1.45;margin:8px 0 14px;text-wrap:pretty}
 .issue-img{
   display:block;width:100%;height:auto;
   border-radius:var(--radius);border:1px solid var(--border);background:var(--card);
 }
 .skeleton{
-  margin-top:14px;aspect-ratio:9/16;border-radius:var(--radius);
+  aspect-ratio:9/16;border-radius:var(--radius);
   background:linear-gradient(100deg,#141414 30%,#1e1e1e 50%,#141414 70%);
   background-size:300% 100%;animation:shimmer 1.4s infinite linear;
 }
@@ -75,11 +78,11 @@ h1{font-size:1.6rem;font-weight:800;line-height:1.15;margin:4px 0 2px;text-wrap:
   background:var(--card2);color:#fff;
 }
 .btn-follow{background:rgba(29,185,84,.12);color:var(--green);border-color:rgba(29,185,84,.35)}
+.btn-substack{background:rgba(255,103,25,.12);color:#ff8a4c;border-color:rgba(255,103,25,.35)}
 .share-note{font-size:.75rem;color:var(--green);align-self:center}
 
-
 .state{
-  margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
   padding:24px 16px;text-align:center;color:var(--muted);font-size:.88rem;
 }
 .state .btn{margin-top:12px}
@@ -97,14 +100,13 @@ footer{margin-top:32px;font-size:.72rem;color:#666;text-align:center}
   </div>
 
   <div class="eyebrow" id="eyebrow">Morning sports newsletter</div>
-  <h1>Primos Daily Bite</h1>
-  <div class="issue-date" id="issue-date"></div>
+  <h1 id="page-title">Primos Daily Bite</h1>
 
-  <section id="issue" aria-live="polite">
-    <div class="skeleton" role="img" aria-label="Loading the issue"></div>
+  <section id="issues" aria-live="polite">
+    <div class="skeleton" role="img" aria-label="Loading"></div>
   </section>
 
-  <footer>Primos Daily Bite from <a href="/">Primosmusings</a>, the global sports podcast by Sri Srinivasan (Primo).</footer>
+  <footer>Newsletters from <a href="/">Primosmusings</a>, the global sports podcast by Sri Srinivasan (Primo).</footer>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -119,15 +121,29 @@ firebase.initializeApp({
   appId:             "1:60238815621:web:ff7c622820f162cf6864ec"
 });
 
-// Each issue is two Firestore docs keyed by date (YYYY-MM-DD), written from admin.html:
-//   dailyBites/{date}       small: date + headline (the Home card reads only these)
-//   dailyBiteImages/{date}  big: the newsletter image
+// This one page serves two addresses (firebase.json sends /nfl/ here too):
+//   /daily/  the Daily Bite
+//   /nfl/    the NFL Recap and NFL Preview
+// Each newsletter keeps only its latest issue, in two Firestore docs written from admin.html:
+//   newsletters/{kind}       small: date, headline, Substack link
+//   newsletterImages/{kind}  big: the newsletter image
 const SITE         = 'https://primosmusings.web.app';
 const RSS_URL      = 'https://primosmusings-rss.primosmusings.workers.dev/';
 const SPOTIFY_SHOW = 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
 const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
-const issueEl = document.getElementById('issue');
+const NEWSLETTERS = {
+  daily:      { name: 'Primos Daily Bite',  label: '📰 Daily Bite' },
+  nflRecap:   { name: 'Primos NFL Recap',   label: '🏈 NFL Recap' },
+  nflPreview: { name: 'Primos NFL Preview', label: '🏈 NFL Preview' },
+};
+const PAGE = location.pathname.startsWith('/nfl')
+  ? { path: '/nfl/', kinds: ['nflRecap', 'nflPreview'], title: 'Primos NFL', eyebrow: 'NFL recap & preview',
+      empty: 'The first NFL newsletter is coming soon.' }
+  : { path: '/daily/', kinds: ['daily'], title: 'Primos Daily Bite', eyebrow: 'Morning sports newsletter',
+      empty: 'The first issue is coming soon.' };
+
+const issuesEl = document.getElementById('issues');
 
 // Builds an element safely. Text is added as text, never as HTML,
 // so a headline can't break the page.
@@ -148,11 +164,21 @@ function prettyDate(iso, options) {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { ...options, timeZone: 'UTC' });
 }
-const longDate  = iso => prettyDate(iso, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+const longDate = iso => prettyDate(iso, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
 function localToday() {
   const n = new Date();
   return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+}
+
+// Only real web links become buttons (never javascript: or other odd addresses).
+function safeLink(url) {
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' || u.protocol === 'http:' ? u.href : '';
+  } catch (e) {
+    return '';
+  }
 }
 
 // The day an episode was published, in Eastern time, as YYYY-MM-DD.
@@ -194,22 +220,33 @@ async function loadFeed() {
 }
 
 function showState(message, withRetry) {
-  issueEl.replaceChildren(el('div', { class: 'state' },
+  issuesEl.replaceChildren(el('div', { class: 'state' },
     el('p', {}, message),
     withRetry ? el('button', { class: 'btn', type: 'button', onclick: () => location.reload() }, 'Try again') : null
   ));
 }
 
-function setHead(issue) {
-  const url = `${SITE}/daily/`;
-  document.title = `Primos Daily Bite, ${prettyDate(issue.date, { month: 'short', day: 'numeric', year: 'numeric' })} | Primosmusings`;
+function setPageText() {
+  const url = SITE + PAGE.path;
+  document.getElementById('eyebrow').textContent = PAGE.eyebrow;
+  document.getElementById('page-title').textContent = PAGE.title;
+  document.title = `${PAGE.title} | Primosmusings`;
   document.getElementById('canonical').setAttribute('href', url);
-  if (issue.headline) document.querySelector('meta[name="description"]').setAttribute('content', `Primos Daily Bite for ${longDate(issue.date)}: ${issue.headline}`);
+  document.getElementById('og-url').setAttribute('content', url);
+  document.getElementById('og-title').setAttribute('content', PAGE.title);
+}
+
+function setHead(newest) {
+  document.title = `${PAGE.title}, ${prettyDate(newest.date, { month: 'short', day: 'numeric', year: 'numeric' })} | Primosmusings`;
+  if (newest.headline) {
+    document.querySelector('meta[name="description"]')
+      .setAttribute('content', `${NEWSLETTERS[newest.kind].name} for ${longDate(newest.date)}: ${newest.headline}`);
+  }
 }
 
 async function share(issue, noteEl) {
-  const url = `${SITE}/daily/`;
-  const title = `Primos Daily Bite, ${longDate(issue.date)}`;
+  const url = SITE + PAGE.path;
+  const title = `${NEWSLETTERS[issue.kind].name}, ${longDate(issue.date)}`;
   if (navigator.share) {
     try { await navigator.share({ title, text: issue.headline || title, url }); } catch (e) { /* closed the share sheet */ }
     return;
@@ -222,28 +259,38 @@ async function share(issue, noteEl) {
   }
 }
 
-function renderIssue(issue, image, eyebrowText) {
-  document.getElementById('eyebrow').textContent = eyebrowText;
-  document.getElementById('issue-date').textContent = longDate(issue.date);
+// One newsletter's block. The image arrives separately (see main), so it starts as a placeholder.
+function renderIssue(issue) {
   const shareNote = el('span', { class: 'share-note', role: 'status' });
-  issueEl.replaceChildren(
+  const link = safeLink(issue.link || '');
+  const isToday = issue.date === localToday();
+  return el('article', { class: 'issue', id: 'issue-' + issue.kind },
+    el('div', { class: 'kind' }, NEWSLETTERS[issue.kind].label),
+    el('div', { class: 'issue-date' }, longDate(issue.date) + (isToday ? ' · Today' : '')),
     issue.headline ? el('p', { class: 'headline' }, issue.headline) : null,
-    image
-      ? el('img', {
-          class: 'issue-img', src: image, decoding: 'async',
-          width: issue.width, height: issue.height,
-          alt: `Primos Daily Bite for ${longDate(issue.date)}${issue.headline ? ': ' + issue.headline : ''}`,
-        })
-      : el('div', { class: 'state' }, "This issue's image is missing."),
-    el('div', { class: 'listen', id: 'listen' },
-      el('div', { class: 'listen-label' }, '🎧 Primos News Bites'),
-      el('p', { class: 'listen-note' }, "Finding this day's episode…")
-    ),
+    el('div', { class: 'skeleton', id: 'img-' + issue.kind, role: 'img', 'aria-label': 'Loading the newsletter' }),
+    issue.kind === 'daily'
+      ? el('div', { class: 'listen', id: 'listen' },
+          el('div', { class: 'listen-label' }, '🎧 Primos News Bites'),
+          el('p', { class: 'listen-note' }, "Finding this day's episode…"))
+      : null,
     el('div', { class: 'actions' },
-      el('button', { class: 'btn', type: 'button', onclick: () => share(issue, shareNote) }, '↗ Share this issue'),
+      link ? el('a', { class: 'btn btn-substack', href: link, target: '_blank', rel: 'noopener' }, 'Read on Substack →') : null,
+      el('button', { class: 'btn', type: 'button', onclick: () => share(issue, shareNote) }, '↗ Share'),
       shareNote
     )
   );
+}
+
+function showImage(issue, image) {
+  const spot = document.getElementById('img-' + issue.kind);
+  if (!spot) return;
+  spot.replaceWith(image
+    ? el('img', {
+        class: 'issue-img', src: image, decoding: 'async', width: issue.width, height: issue.height,
+        alt: `${NEWSLETTERS[issue.kind].name} for ${longDate(issue.date)}${issue.headline ? ': ' + issue.headline : ''}`,
+      })
+    : el('div', { class: 'state' }, "This newsletter's image is missing."));
 }
 
 function renderListen(episode, isoDate) {
@@ -272,32 +319,40 @@ function renderListen(episode, isoDate) {
   );
 }
 
-// Only the newest issue is kept (publishing in admin takes the previous one down),
-// so this page always shows the latest. Old share links with ?d= land here too.
 async function main() {
+  setPageText();
   const db = firebase.firestore();
 
-  let current;
+  let issues;
   try {
-    const snap = await db.collection('dailyBites').orderBy('date', 'desc').limit(1).get();
-    current = snap.docs.map(d => d.data()).find(x => x && x.date);
+    const snaps = await Promise.all(PAGE.kinds.map(kind => db.collection('newsletters').doc(kind).get()));
+    issues = snaps
+      .map((snap, i) => (snap.exists ? { ...snap.data(), kind: PAGE.kinds[i] } : null))
+      .filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ''))
+      .sort((a, b) => b.date.localeCompare(a.date));  // newest first
   } catch (e) {
-    showState("Couldn't load the Daily Bite. Check your connection and try again.", true);
+    showState("Couldn't load the newsletter. Check your connection and try again.", true);
     return;
   }
-  if (!current) { showState('The first issue is coming soon.', false); return; }
+  if (!issues.length) { showState(PAGE.empty, false); return; }
 
-  const eyebrowText = current.date === localToday() ? "Today's issue" : 'Latest issue';
-  setHead(current);
+  setHead(issues[0]);
+  const feedPromise = PAGE.kinds.includes('daily') ? loadFeed() : null;
+  issuesEl.replaceChildren(...issues.map(renderIssue));
 
-  const feedPromise = loadFeed();
-  let image = '';
-  try {
-    const imgSnap = await db.collection('dailyBiteImages').doc(current.date).get();
-    if (imgSnap.exists) image = imgSnap.data().image || '';
-  } catch (e) { /* shows the "image is missing" note */ }
-  renderIssue(current, image, eyebrowText);
-  renderListen(findNewsBites(await feedPromise, current.date), current.date);
+  await Promise.all(issues.map(async issue => {
+    let image = '';
+    try {
+      const snap = await db.collection('newsletterImages').doc(issue.kind).get();
+      if (snap.exists) image = snap.data().image || '';
+    } catch (e) { /* shows the "image is missing" note */ }
+    showImage(issue, image);
+  }));
+
+  if (feedPromise) {
+    const daily = issues.find(i => i.kind === 'daily');
+    renderListen(findNewsBites(await feedPromise, daily.date), daily.date);
+  }
 }
 
 main();

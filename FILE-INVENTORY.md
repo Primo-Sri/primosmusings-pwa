@@ -20,7 +20,7 @@
 | `index.html` | Entire app — all HTML, CSS, and JavaScript in one file | May 2026 |
 | `sw.js` | Service worker — caching strategy, push notifications | May 2026 |
 | `manifest.json` | PWA manifest — app name, icons, shortcuts, theme color | — |
-| `firebase.json` | Firebase Hosting config — deploy target, cache headers for sw.js | — |
+| `firebase.json` | Firebase Hosting config — deploy target, cache headers for sw.js, and a rewrite so `/nfl/` serves the newsletter page | Oct 2026 |
 | `.firebaserc` | Firebase project binding — links to `primosmusings-b47f7` | — |
 | `logo.jpg` | Podcast logo image used in header | — |
 | `icon-192.png` | App icon 192×192 (Android home screen, notification badge) | — |
@@ -31,7 +31,7 @@
 | `episodes/` | One crawlable page per episode plus an index, for Google. Rebuilt nightly by the GitHub job — don't edit by hand | Oct 2026 |
 | `scripts/generate-episodes.mjs` | Rebuilds `episodes/` and `sitemap.xml` from the podcast RSS feed. Run by the nightly job, not by hand. Refuses to run if the feed returns fewer episodes than we have pages | Oct 2026 |
 | `.github/workflows/daily-seo-refresh.yml` | Nightly job (~10 PM ET): rebuilds the SEO pages, and if any changed, commits them to `master` and deploys. Has a "Run workflow" button in GitHub → Actions | Oct 2026 |
-| `daily/index.html` | Primos Daily Bite page (`/daily/`): the latest newsletter image (only one issue is kept) and that day's News Bites player. Reads Firestore `dailyBites` (date + headline) and `dailyBiteImages` (the image), which are published from admin.html | Oct 2026 |
+| `daily/index.html` | Newsletter page. At `/daily/` it shows the Daily Bite (with that day's News Bites player). At `/nfl/` (via the firebase.json rewrite) it shows the NFL Recap and NFL Preview. Reads Firestore `newsletters/{daily, nflRecap, nflPreview}` (date, headline, Substack link) and `newsletterImages/{…}` (the image), which are published from admin.html. Only the latest issue of each is kept | Oct 2026 |
 | `sitemap.xml` | Lists the home page, `/episodes/` and every episode page for search engines. Rewritten by the generator | Oct 2026 |
 | `robots.txt` | Lets search engines crawl everything and points them to the sitemap | Oct 2026 |
 | `google0e92640586a1d1a5.html` | Google Search Console ownership check. Do not delete or Search Console loses access | Oct 2026 |
