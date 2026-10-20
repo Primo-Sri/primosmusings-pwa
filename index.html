@@ -417,6 +417,9 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .lc-date{font-size:.62rem;color:var(--muted);margin-left:auto}
 .latest-card h3{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:5px}
 .latest-card p{font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:12px}
+/* Newsletter + Substack buttons under Listen Now, when the episode has a matching newsletter */
+.lc-news{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.lc-news[hidden]{display:none}
 .btn-play-now{
   display:inline-flex;align-items:center;gap:7px;
   background:var(--green);color:#000;
@@ -931,6 +934,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
             Listen Now
           </button>
         </a>
+        <div class="lc-news" id="home-latest-news" hidden></div>
       </div>
 
       <a class="bite-card" id="home-bite-card" href="/daily/" onclick="switchTab('daily');return false;" hidden>
@@ -2179,6 +2183,7 @@ function updateHomeLatest() {
   latestLink.dataset.audio = ep.audio || '';
   latestLink.dataset.eptitle = ep.title || '';
   document.getElementById('home-latest-card').onclick = null;
+  showLatestEpisodeNewsletter(ep);
 }
 
 function renderEpCard(ep) {
@@ -2521,6 +2526,82 @@ function newsSafeLink(url) {
   }
 }
 
+/* ── Episodes ↔ newsletters ──────────────────────────
+   An episode and a newsletter belong together when they're the same kind and close in
+   date: News Bites ↔ Daily Bite (same day); an NFL Recap episode ↔ the NFL Recap and an
+   NFL Preview episode ↔ the NFL Preview (within 3 days, since those are weekly). */
+let newsMetaPromise = null;
+function getNewsletters() {
+  if (!newsMetaPromise) {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return Promise.resolve([]);
+    newsMetaPromise = firebase.firestore().collection('newsletters').get()
+      .then(readNewsletters)
+      .catch(() => { newsMetaPromise = null; return []; });  // try again next time
+  }
+  return newsMetaPromise;
+}
+
+function newsKindForEpisode(title) {
+  const t = (title || '').toLowerCase();
+  if (/news\s*bites/.test(t)) return 'daily';
+  if (/\bnfl\b/.test(t) && /\brecap\b/.test(t)) return 'nflRecap';
+  if (/\bnfl\b/.test(t) && /\bpreview\b/.test(t)) return 'nflPreview';
+  return '';
+}
+
+function episodeMatchesNewsletter(ep, issue) {
+  if (!ep || !ep.ts || newsKindForEpisode(ep.title) !== issue.kind) return false;
+  const daysApart = Math.abs(Date.parse(dailyEtDate(ep.ts) + 'T12:00:00Z') - Date.parse(issue.date + 'T12:00:00Z')) / 86400000;
+  return daysApart <= (issue.kind === 'daily' ? 0 : 3);
+}
+
+// Opens the News tab and scrolls to that newsletter's image.
+function openNewsletter(kind) {
+  switchTab('daily');
+  let tries = 0;
+  (function scrollWhenReady() {
+    const card = document.getElementById('dt-card-' + kind);
+    if (card) { card.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    if (tries++ < 40) setTimeout(scrollWhenReady, 150);
+  })();
+}
+
+// Home "Latest Episode" card: if the episode has a matching newsletter, show
+// "See the newsletter" (its image in the News tab) and "Read on Substack".
+async function showLatestEpisodeNewsletter(ep) {
+  const box = document.getElementById('home-latest-news');
+  if (!box) return;
+  const issues = await getNewsletters();
+  if (loadedEpisodes[0] !== ep) return;  // a fresher episode list arrived meanwhile
+  const issue = issues.find(i => episodeMatchesNewsletter(ep, i));
+  if (!issue) { box.hidden = true; box.replaceChildren(); return; }
+  const link = newsSafeLink(issue.link || '');
+  box.replaceChildren(
+    dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => openNewsletter(issue.kind) }, '📰 See the newsletter'),
+    link ? dailyEl('a', { class: 'dt-btn dt-btn-substack', href: link, target: '_blank', rel: 'noopener' }, 'Read on Substack →') : null
+  );
+  box.hidden = false;
+}
+
+// News tab, NFL cards: a Play button for the matching episode. Waits for the fresh
+// episode feed; if there's no matching episode it shows nothing rather than a dead end.
+function fillNflPlay(issue, tries = 0) {
+  const box = document.getElementById('dt-play-' + issue.kind);
+  if (!box) return;
+  const ep = loadedEpisodes.find(e => e.audio && episodeMatchesNewsletter(e, issue));
+  if (ep) {
+    box.replaceChildren(
+      dailyEl('div', { class: 'dt-listen-label' }, '🎧 The episode'),
+      dailyEl('p', { class: 'dt-listen-title' }, ep.title),
+      dailyEl('button', { class: 'btn-play-now', type: 'button',
+        onclick: () => playEpisode({ dataset: { eptitle: ep.title, audio: ep.audio } }) }, '▶ Play episode')
+    );
+    return;
+  }
+  if (!epFetchDone && tries < 60) { setTimeout(() => fillNflPlay(issue, tries + 1), 500); return; }
+  box.remove();
+}
+
 // Builds an element safely: text goes in as text, never as HTML.
 function dailyEl(tag, attrs, ...kids) {
   const node = document.createElement(tag);
@@ -2615,7 +2696,7 @@ function renderNewsIssue(issue) {
   const shareNote = dailyEl('span', { class: 'dt-note', role: 'status' });
   const link = newsSafeLink(issue.link || '');
   const when = dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  return dailyEl('article', { class: 'dt-card' },
+  return dailyEl('article', { class: 'dt-card', id: 'dt-card-' + issue.kind },
     dailyEl('div', { class: 'dt-kind' }, meta.label),
     dailyEl('div', { class: 'dt-date' }, when + (issue.date === dailyToday() ? ' · Today' : '')),
     issue.headline ? dailyEl('p', { class: 'dt-headline' }, issue.headline) : null,
@@ -2624,7 +2705,9 @@ function renderNewsIssue(issue) {
       ? dailyEl('div', { class: 'dt-listen', id: 'dt-listen', 'data-date': issue.date },
           dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
           dailyEl('p', { class: 'dt-listen-note' }, "Finding this day's episode…"))
-      : null,
+      : dailyEl('div', { class: 'dt-listen', id: 'dt-play-' + issue.kind },
+          dailyEl('div', { class: 'dt-listen-label' }, '🎧 The episode'),
+          dailyEl('p', { class: 'dt-listen-note' }, 'Finding the episode…')),
     dailyEl('div', { class: 'dt-actions' },
       link ? dailyEl('a', { class: 'dt-btn dt-btn-substack', href: link, target: '_blank', rel: 'noopener' }, 'Read on Substack →') : null,
       dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => dailyShare(issue, shareNote) }, '↗ Share'),
@@ -2677,6 +2760,7 @@ async function loadDailyTab() {
   newsIssues.forEach(loadNewsImage);
   const daily = newsIssues.find(i => i.kind === 'daily');
   if (daily) fillDailyListen(daily);
+  newsIssues.filter(i => i.kind !== 'daily').forEach(i => fillNflPlay(i));
 }
 
 // Count each play in Firestore — one doc per episode, count increments.

@@ -189,6 +189,18 @@ Good to know:
 - The image is shrunk automatically (admin shows the before and after size) so it loads fast.
 - **In the app:** the **📰 News** tab (second in the tab bar) shows every newsletter that's live. The Daily Bite is always first, with its Play button. The Home tab shows a card for whichever newsletter is newest.
 - **Share links:** `/daily/` for the Daily Bite and `/nfl/` for the NFL ones, so people without the app can read them.
+- **Episodes and newsletters link to each other in the app, automatically.** When an episode has a matching newsletter, the Home tab's **Latest Episode** card gets **📰 See the newsletter** (opens its image in News) and **Read on Substack →**. Each NFL card in News gets a **▶ Play episode** button. Matching is by title and date:
+  - an episode with "News Bites" in the title ↔ the Daily Bite on the **same day**
+  - "NFL" + "Recap" in the title ↔ the NFL Recap, **within 3 days**
+  - "NFL" + "Preview" in the title ↔ the NFL Preview, **within 3 days**
+
+  So keep those words in your episode titles, like you do now ("2026-27: NFL Week 6 Recap : …").
+- **In Spotify for Creators** (the episode description), paste the links so listeners on Spotify and Apple can find them. Podcast apps can't show the image itself, so link to the page that shows it:
+  ```
+  📰 Read the full recap: <paste the Substack article link>
+  🖼 See the newsletter: primosmusings.web.app/nfl/
+  ```
+  For a News Bites episode, use `primosmusings.web.app/daily/` instead.
 - Help lives in **More → Help & FAQ**.
 
 ---
