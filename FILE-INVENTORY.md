@@ -31,7 +31,7 @@
 | `episodes/` | One crawlable page per episode plus an index, for Google. Rebuilt nightly by the GitHub job — don't edit by hand | Oct 2026 |
 | `scripts/generate-episodes.mjs` | Rebuilds `episodes/` and `sitemap.xml` from the podcast RSS feed. Run by the nightly job, not by hand. Refuses to run if the feed returns fewer episodes than we have pages | Oct 2026 |
 | `.github/workflows/daily-seo-refresh.yml` | Nightly job (~10 PM ET): rebuilds the SEO pages, and if any changed, commits them to `master` and deploys. Has a "Run workflow" button in GitHub → Actions | Oct 2026 |
-| `daily/index.html` | Primos Daily Bite page (`/daily/`): latest newsletter image, past issues by month, that day's News Bites player. Reads Firestore `dailyBites` (date + headline) and `dailyBiteImages` (the image), which are published from admin.html | Oct 2026 |
+| `daily/index.html` | Primos Daily Bite page (`/daily/`): the latest newsletter image (only one issue is kept) and that day's News Bites player. Reads Firestore `dailyBites` (date + headline) and `dailyBiteImages` (the image), which are published from admin.html | Oct 2026 |
 | `sitemap.xml` | Lists the home page, `/episodes/` and every episode page for search engines. Rewritten by the generator | Oct 2026 |
 | `robots.txt` | Lets search engines crawl everything and points them to the sitemap | Oct 2026 |
 | `google0e92640586a1d1a5.html` | Google Search Console ownership check. Do not delete or Search Console loses access | Oct 2026 |

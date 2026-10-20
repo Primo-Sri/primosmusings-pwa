@@ -4,6 +4,11 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v53 — 2026-10-19
+- **Daily Bite keeps only the latest issue.** Publishing in admin now takes down every older issue in the same all-or-nothing step, so there's no manual cleanup
+- "Past issues" is removed from the `/daily/` page and the app's Daily tab. Share links point to `/daily/`, and old `?d=` links land on the latest issue
+- Admin: "Recent issues" is now "Live now", and there's no "replace?" prompt (publishing always replaces)
+
 ## v52 — 2026-10-19
 - **Blog removed.** The More → Blog item, the Blog page, its loader (the primosmusings.com/blogs feed), its styles, and blog posts in search are all gone
 - **Substack added.** More → Substack opens https://substack.com/@primosmusings in a new tab

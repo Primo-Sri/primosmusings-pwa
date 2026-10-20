@@ -395,16 +395,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
   padding:22px 16px;text-align:center;color:var(--muted);font-size:.85rem;
 }
 .dt-state .dt-btn{margin-top:12px}
-.dt-month{font-size:.7rem;font-weight:700;color:var(--gold);margin:14px 0 6px}
-.dt-row{
-  display:flex;gap:12px;align-items:baseline;width:100%;text-align:left;cursor:pointer;
-  background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:10px 12px;margin-bottom:6px;color:var(--text);font-family:inherit;
-  -webkit-tap-highlight-color:transparent;
-}
-.dt-row[aria-current="true"]{border-color:rgba(232,170,48,.45);background:rgba(232,170,48,.06)}
-.dt-row .d{font-size:.74rem;font-weight:700;color:#fff;white-space:nowrap;min-width:82px}
-.dt-row .h{font-size:.76rem;color:rgba(255,255,255,.6);line-height:1.4}
 
 .latest-card{
   background:linear-gradient(135deg,#051830 0%,#0a1f35 100%);
@@ -984,10 +974,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
       <h2 class="dt-title">Primos Daily Bite</h2>
       <div class="dt-date" id="dt-date"></div>
       <div id="dt-issue" aria-live="polite"><div class="dt-skeleton" role="img" aria-label="Loading the issue"></div></div>
-      <div id="dt-archive" hidden>
-        <p class="sec-label" style="margin-top:24px">Past issues</p>
-        <div id="dt-archive-list"></div>
-      </div>
     </section>
 
     <!-- ══ LISTEN ════════════════════════════════════ -->
@@ -2557,7 +2543,7 @@ function dailyState(message, withRetry) {
 }
 
 async function dailyShare(issue, noteEl) {
-  const url = `https://primosmusings.web.app/daily/?d=${issue.date}`;
+  const url = 'https://primosmusings.web.app/daily/';
   const title = `Primos Daily Bite, ${dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric' })}`;
   if (navigator.share) {
     try { await navigator.share({ title, text: issue.headline || title, url }); } catch (e) { /* closed the share sheet */ }
@@ -2565,29 +2551,6 @@ async function dailyShare(issue, noteEl) {
   }
   try { await navigator.clipboard.writeText(url); noteEl.textContent = 'Link copied'; }
   catch (e) { window.prompt('Copy this link:', url); }
-}
-
-function renderDailyArchive(currentDate) {
-  const wrap = document.getElementById('dt-archive');
-  const list = document.getElementById('dt-archive-list');
-  list.replaceChildren();
-  if (dailyIssues.length < 2) { wrap.hidden = true; return; }
-  let month = '';
-  for (const issue of dailyIssues) {
-    const key = issue.date.slice(0, 7);
-    if (key !== month) {
-      month = key;
-      list.append(dailyEl('p', { class: 'dt-month' }, dailyPretty(key + '-01', { month: 'long', year: 'numeric' })));
-    }
-    list.append(dailyEl('button', {
-        class: 'dt-row', type: 'button', 'aria-current': issue.date === currentDate ? 'true' : null,
-        onclick: () => { loadDailyTab(issue.date); document.getElementById('main').scrollTo(0, 0); },
-      },
-      dailyEl('span', { class: 'd' }, dailyPretty(issue.date, { weekday: 'short', month: 'short', day: 'numeric' })),
-      dailyEl('span', { class: 'h' }, issue.headline || '')
-    ));
-  }
-  wrap.hidden = false;
 }
 
 // Shows that day's episode with a Play button for the mini player. The app shows its
@@ -2617,12 +2580,13 @@ function fillDailyListen(issue, tries = 0) {
   );
 }
 
-async function loadDailyTab(date) {
+// Only the newest issue is kept (publishing in admin takes the previous one down).
+async function loadDailyTab() {
   dailyLoaded = true;
   if (!dailyIssues.length) {
     try {
       if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('no firebase');
-      const snap = await firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(60).get();
+      const snap = await firebase.firestore().collection('dailyBites').orderBy('date', 'desc').limit(1).get();
       dailyIssues = snap.docs.map(d => d.data()).filter(x => x && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ''));
     } catch (e) {
       dailyLoaded = false;  // try again next time the tab opens
@@ -2636,14 +2600,11 @@ async function loadDailyTab(date) {
     return;
   }
 
-  const issue = (date && dailyIssues.find(i => i.date === date)) || dailyIssues[0];
+  const issue = dailyIssues[0];
   dailyCurrent = issue.date;
-  const newest = issue.date === dailyIssues[0].date;
   const longDate = dailyPretty(issue.date, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  document.getElementById('dt-eyebrow').textContent =
-    !newest ? 'From the archive' : issue.date === dailyToday() ? "Today's issue" : 'Latest issue';
+  document.getElementById('dt-eyebrow').textContent = issue.date === dailyToday() ? "Today's issue" : 'Latest issue';
   document.getElementById('dt-date').textContent = longDate;
-  renderDailyArchive(issue.date);
 
   const issueBox = document.getElementById('dt-issue');
   let image = dailyImageCache[issue.date] || '';

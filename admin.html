@@ -163,7 +163,7 @@ body {
   <button id="sign-out-btn" onclick="signOut()">Sign out</button>
 
   <p class="page-title">📰 Daily Bite</p>
-  <p class="page-sub">Publish the day's newsletter. It's live at primosmusings.web.app/daily/ the moment you tap Publish.</p>
+  <p class="page-sub">Publish the day's newsletter. It replaces the previous issue and is live at primosmusings.web.app/daily/ the moment you tap Publish.</p>
   <div class="bite-box">
     <label>Newsletter image</label>
     <input type="file" id="bite-file" accept="image/*" style="display:none" onchange="pickBiteImage()">
@@ -667,7 +667,7 @@ function setBiteStatus(text, kind, linkDate) {
   el.textContent = text;
   if (linkDate) {
     const a = document.createElement('a');
-    a.href = '/daily/?d=' + linkDate;
+    a.href = '/daily/';
     a.target = '_blank';
     a.textContent = ' View it →';
     el.append(a);
@@ -747,20 +747,23 @@ async function publishBite() {
   btn.disabled = true;
   btn.textContent = 'Publishing…';
   try {
-    const existing = await fs.collection('dailyBites').doc(date).get();
-    if (existing.exists && !confirm(`There's already an issue for ${biteDateLabel(date)}. Replace it with this one?`)) {
-      setBiteStatus('Nothing changed.', '');
-      return;
-    }
+    // Only the newest issue is kept, so publishing replaces whatever is live.
+    // One batch: the new issue goes up and the old ones come down together, or nothing changes.
+    const live = await fs.collection('dailyBites').get();
+    const older = live.docs.filter(doc => doc.id !== date);
     const now = firebase.firestore.FieldValue.serverTimestamp();
     const batch = fs.batch();
+    older.forEach(doc => {
+      batch.delete(fs.collection('dailyBites').doc(doc.id));
+      batch.delete(fs.collection('dailyBiteImages').doc(doc.id));
+    });
     batch.set(fs.collection('dailyBites').doc(date),
       { date, headline, width: biteImage.width, height: biteImage.height, updatedAt: now });
     batch.set(fs.collection('dailyBiteImages').doc(date),
       { date, image: biteImage.dataUrl, updatedAt: now });
     await batch.commit();
 
-    setBiteStatus(`✓ Published the ${biteDateLabel(date)} issue. It's live now.`, 'ok', date);
+    setBiteStatus(`✓ Published the ${biteDateLabel(date)} issue${older.length ? ' and took down the previous one' : ''}. It's live now.`, 'ok', date);
     document.getElementById('bite-file').value = '';
     document.getElementById('bite-preview').hidden = true;
     document.getElementById('bite-info').textContent = '';
@@ -786,7 +789,7 @@ async function loadBiteRecent() {
     if (snap.empty) return;
     const title = document.createElement('p');
     title.className = 'bite-recent-title';
-    title.textContent = 'Recent issues';
+    title.textContent = 'Live now';
     box.append(title);
     snap.forEach(doc => {
       const d = doc.data();
@@ -799,7 +802,7 @@ async function loadBiteRecent() {
       head.className = 'h';
       head.textContent = d.headline || '';
       const view = document.createElement('a');
-      view.href = '/daily/?d=' + d.date;
+      view.href = '/daily/';
       view.target = '_blank';
       view.textContent = 'View';
       const remove = document.createElement('button');

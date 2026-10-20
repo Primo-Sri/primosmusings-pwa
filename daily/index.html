@@ -77,23 +77,6 @@ h1{font-size:1.6rem;font-weight:800;line-height:1.15;margin:4px 0 2px;text-wrap:
 .btn-follow{background:rgba(29,185,84,.12);color:var(--green);border-color:rgba(29,185,84,.35)}
 .share-note{font-size:.75rem;color:var(--green);align-self:center}
 
-.sec-label{
-  font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
-  padding:0 2px 8px;margin:30px 0 4px;border-bottom:1px solid var(--border);
-}
-.month{font-size:.72rem;font-weight:700;color:var(--gold);margin:16px 0 6px}
-.archive ul{list-style:none;display:flex;flex-direction:column;gap:6px}
-.archive a{
-  display:flex;gap:12px;align-items:baseline;
-  background:var(--card);border:1px solid var(--border);border-radius:10px;
-  padding:10px 12px;text-decoration:none;color:var(--text);
-}
-.archive a[aria-current="page"]{border-color:rgba(232,170,48,.45);background:rgba(232,170,48,.06)}
-.archive .d{font-size:.75rem;font-weight:700;color:#fff;white-space:nowrap;min-width:84px;font-variant-numeric:tabular-nums}
-.archive .h{
-  font-size:.78rem;color:rgba(255,255,255,.6);line-height:1.4;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-}
 
 .state{
   margin-top:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
@@ -121,11 +104,6 @@ footer{margin-top:32px;font-size:.72rem;color:#666;text-align:center}
     <div class="skeleton" role="img" aria-label="Loading the issue"></div>
   </section>
 
-  <nav class="archive" id="archive" aria-label="Past issues" hidden>
-    <p class="sec-label">Past issues</p>
-    <div id="archive-list"></div>
-  </nav>
-
   <footer>Primos Daily Bite from <a href="/">Primosmusings</a>, the global sports podcast by Sri Srinivasan (Primo).</footer>
 </main>
 
@@ -142,7 +120,7 @@ firebase.initializeApp({
 });
 
 // Each issue is two Firestore docs keyed by date (YYYY-MM-DD), written from admin.html:
-//   dailyBites/{date}       small: date + headline (the archive list reads only these)
+//   dailyBites/{date}       small: date + headline (the Home card reads only these)
 //   dailyBiteImages/{date}  big: the newsletter image
 const SITE         = 'https://primosmusings.web.app';
 const RSS_URL      = 'https://primosmusings-rss.primosmusings.workers.dev/';
@@ -171,7 +149,6 @@ function prettyDate(iso, options) {
   return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', { ...options, timeZone: 'UTC' });
 }
 const longDate  = iso => prettyDate(iso, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-const shortDate = iso => prettyDate(iso, { weekday: 'short', month: 'short', day: 'numeric' });
 
 function localToday() {
   const n = new Date();
@@ -223,15 +200,15 @@ function showState(message, withRetry) {
   ));
 }
 
-function setHead(issue, isNewest) {
-  const url = isNewest ? `${SITE}/daily/` : `${SITE}/daily/?d=${issue.date}`;
+function setHead(issue) {
+  const url = `${SITE}/daily/`;
   document.title = `Primos Daily Bite, ${prettyDate(issue.date, { month: 'short', day: 'numeric', year: 'numeric' })} | Primosmusings`;
   document.getElementById('canonical').setAttribute('href', url);
   if (issue.headline) document.querySelector('meta[name="description"]').setAttribute('content', `Primos Daily Bite for ${longDate(issue.date)}: ${issue.headline}`);
 }
 
 async function share(issue, noteEl) {
-  const url = `${SITE}/daily/?d=${issue.date}`;
+  const url = `${SITE}/daily/`;
   const title = `Primos Daily Bite, ${longDate(issue.date)}`;
   if (navigator.share) {
     try { await navigator.share({ title, text: issue.headline || title, url }); } catch (e) { /* closed the share sheet */ }
@@ -295,59 +272,23 @@ function renderListen(episode, isoDate) {
   );
 }
 
-function renderArchive(issues, currentDate) {
-  if (issues.length < 2) return;
-  const list = document.getElementById('archive-list');
-  let month = '';
-  let ul = null;
-  for (const issue of issues) {
-    const key = issue.date.slice(0, 7);
-    if (key !== month) {
-      month = key;
-      list.append(el('p', { class: 'month' }, prettyDate(key + '-01', { month: 'long', year: 'numeric' })));
-      ul = el('ul');
-      list.append(ul);
-    }
-    ul.append(el('li', {},
-      el('a', { href: `/daily/?d=${issue.date}`, 'aria-current': issue.date === currentDate ? 'page' : null },
-        el('span', { class: 'd' }, shortDate(issue.date)),
-        el('span', { class: 'h' }, issue.headline || '')
-      )
-    ));
-  }
-  document.getElementById('archive').hidden = false;
-}
-
+// Only the newest issue is kept (publishing in admin takes the previous one down),
+// so this page always shows the latest. Old share links with ?d= land here too.
 async function main() {
   const db = firebase.firestore();
-  const param = new URLSearchParams(location.search).get('d');
-  const wanted = /^\d{4}-\d{2}-\d{2}$/.test(param || '') ? param : null;
 
-  let issues;
+  let current;
   try {
-    const snap = await db.collection('dailyBites').orderBy('date', 'desc').limit(120).get();
-    issues = snap.docs.map(d => d.data()).filter(x => x && x.date);
+    const snap = await db.collection('dailyBites').orderBy('date', 'desc').limit(1).get();
+    current = snap.docs.map(d => d.data()).find(x => x && x.date);
   } catch (e) {
     showState("Couldn't load the Daily Bite. Check your connection and try again.", true);
     return;
   }
-  if (!issues.length) { showState('The first issue is coming soon.', false); return; }
+  if (!current) { showState('The first issue is coming soon.', false); return; }
 
-  let current = wanted ? issues.find(i => i.date === wanted) : issues[0];
-  if (wanted && !current) {
-    // Older than the 120 most recent issues: look it up directly.
-    try {
-      const old = await db.collection('dailyBites').doc(wanted).get();
-      if (old.exists) current = old.data();
-    } catch (e) { /* treated as not found below */ }
-  }
-  renderArchive(issues, current && current.date);
-  if (!current) { showState("There's no Daily Bite for that date. Pick one from the past issues below.", false); return; }
-
-  const isNewest = current.date === issues[0].date;
-  const eyebrowText = !isNewest ? 'From the archive'
-    : current.date === localToday() ? "Today's issue" : 'Latest issue';
-  setHead(current, isNewest && !wanted);
+  const eyebrowText = current.date === localToday() ? "Today's issue" : 'Latest issue';
+  setHead(current);
 
   const feedPromise = loadFeed();
   let image = '';

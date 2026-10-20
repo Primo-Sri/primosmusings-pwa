@@ -159,8 +159,8 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ## Daily Bite — Publish the Morning Newsletter
 
-Your Primos Daily Bite lives at **primosmusings.web.app/daily/**. Today's issue is at the top,
-past issues are listed by month below it, and every issue has its own link to share.
+Your Primos Daily Bite lives at **primosmusings.web.app/daily/**. It always shows just the latest
+issue. **Publishing a new one automatically takes the previous one down**, so there's nothing to clean up.
 
 Every morning:
 1. **Save the image from Grok.** Phone: press and hold the image → Save to Photos. PC: download it.
@@ -174,10 +174,9 @@ That's it. It goes live the moment you tap Publish. No push, no deploy, no Claud
 Good to know:
 - **The headline matters.** Google can't read the words inside an image. The headline is what it reads.
 - **The episode links itself.** Each issue gets a player for that day's News Bites, found by publish date. If the newsletter goes up before the episode, the player appears on its own once the episode is in the feed.
-- **Publishing the same date again** asks before replacing the old one.
-- **Made a mistake?** Under **Recent issues** in admin, tap **Remove**. It can't be undone.
+- **Made a mistake?** Just publish again. It replaces what's live. Or under **Live now** in admin, tap **Remove** to take it down (can't be undone).
 - The image is shrunk automatically (admin shows the before and after size) so it loads fast.
-- In the app it has its own **📰 Daily** tab (second in the tab bar): the latest issue, a Play button for that day's News Bites (plays in the mini player), and past issues. The Home tab also shows a Daily Bite card that opens it.
+- In the app it has its own **📰 Daily** tab (second in the tab bar): the latest issue and a Play button for that day's News Bites (plays in the mini player). The Home tab also shows a Daily Bite card that opens it.
 - Share links always point to the public page, `primosmusings.web.app/daily/`, so people without the app can read it.
 - Help moved into **More → Help & FAQ** to make room for the Daily tab.
 
