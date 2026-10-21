@@ -4,6 +4,10 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v56 — 2026-10-21
+- **No duplicate newsletter on Home.** The newsletter card hides when the Latest Episode card above already links to that same newsletter (for example today's News Bites and today's Daily Bite). It still shows when the latest episode is something else (an NFL Recap, a guest episode, or before today's Daily Bite is published)
+- The Home newsletter card and the Latest Episode buttons now read the same newsletter list (one database read instead of two)
+
 ## v55 — 2026-10-20
 - **Episodes link to their newsletter.** When the Home **Latest Episode** has a matching newsletter, the card shows **📰 See the newsletter** (opens the News tab and scrolls to its image) and **Read on Substack →**
 - **NFL cards in News** get a **▶ Play episode** button for their matching episode, which plays in the mini player. If there's no match, nothing is shown

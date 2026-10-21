@@ -2482,13 +2482,22 @@ function readNewsletters(snap) {
 
 // Home card: whichever newsletter is newest (the Daily Bite wins a same-day tie).
 // Reads only the small docs, never the images, so the Home tab stays fast.
-// The card stays hidden until a newsletter exists.
+// Hidden until a newsletter exists, and hidden when the Latest Episode card above
+// already links to that same newsletter (no point showing it twice).
+let homeCardIssue = null;      // the newsletter the Home card would show
+let latestLinkedIssue = null;  // the newsletter the Latest Episode card links to
+
+function syncHomeNewsCard() {
+  const sameAsAbove = homeCardIssue && latestLinkedIssue &&
+    homeCardIssue.kind === latestLinkedIssue.kind && homeCardIssue.date === latestLinkedIssue.date;
+  document.getElementById('home-bite-card').hidden = !homeCardIssue || sameAsAbove;
+}
+
 function loadDailyBiteCard() {
   try {
-    if (typeof firebase === 'undefined' || !firebase.firestore) return;
-    firebase.firestore().collection('newsletters').get()
-      .then(snap => {
-        const issues = readNewsletters(snap).sort((a, b) =>
+    getNewsletters()
+      .then(all => {
+        const issues = [...all].sort((a, b) =>
           b.date.localeCompare(a.date) || (a.kind === 'daily' ? -1 : b.kind === 'daily' ? 1 : 0));
         if (!issues.length) return;
         const issue = issues[0];
@@ -2501,7 +2510,8 @@ function loadDailyBiteCard() {
         document.getElementById('home-bite-headline').textContent = issue.headline || '';
         document.getElementById('home-bite-cta').textContent =
           issue.date === today ? "Read today's issue →" : 'Read the latest issue →';
-        document.getElementById('home-bite-card').hidden = false;
+        homeCardIssue = issue;
+        syncHomeNewsCard();
       })
       .catch(() => {});  // no card is fine; never break the Home tab
   } catch (e) {}
@@ -2573,7 +2583,9 @@ async function showLatestEpisodeNewsletter(ep) {
   if (!box) return;
   const issues = await getNewsletters();
   if (loadedEpisodes[0] !== ep) return;  // a fresher episode list arrived meanwhile
-  const issue = issues.find(i => episodeMatchesNewsletter(ep, i));
+  const issue = issues.find(i => episodeMatchesNewsletter(ep, i)) || null;
+  latestLinkedIssue = issue;
+  syncHomeNewsCard();
   if (!issue) { box.hidden = true; box.replaceChildren(); return; }
   const link = newsSafeLink(issue.link || '');
   box.replaceChildren(

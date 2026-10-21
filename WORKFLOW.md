@@ -187,7 +187,7 @@ Good to know:
 - **Made a mistake?** Publish again with the same newsletter picked. It replaces what's live. Or under **Live now** in admin, tap **Remove** next to that newsletter (can't be undone).
 - An old NFL Preview stays up until you publish the next one or tap **Remove**.
 - The image is shrunk automatically (admin shows the before and after size) so it loads fast.
-- **In the app:** the **📰 News** tab (second in the tab bar) shows every newsletter that's live. The Daily Bite is always first, with its Play button. The Home tab shows a card for whichever newsletter is newest.
+- **In the app:** the **📰 News** tab (second in the tab bar) shows every newsletter that's live. The Daily Bite is always first, with its Play button. The Home tab shows a card for whichever newsletter is newest, unless the Latest Episode card right above already links to it (then the card hides so it isn't shown twice).
 - **Share links:** `/daily/` for the Daily Bite and `/nfl/` for the NFL ones, so people without the app can read them.
 - **Episodes and newsletters link to each other in the app, automatically.** When an episode has a matching newsletter, the Home tab's **Latest Episode** card gets **📰 See the newsletter** (opens its image in News) and **Read on Substack →**. Each NFL card in News gets a **▶ Play episode** button. Matching is by title and date:
   - an episode with "News Bites" in the title ↔ the Daily Bite on the **same day**
