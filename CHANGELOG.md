@@ -4,11 +4,18 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v59 — 2026-10-22
+- **News tab removed from the tab bar** (it repeated what Home already shows). The bar is now 5 tabs: Home, Listen, Guests, Primo, More
+- The newsletter page is now called **Newsletters** and has a **‹ Back** button. It opens from Home (📰 See the newsletter, or the newsletter card), keeps Home lit, and Back returns there
+- **More → 📰 Newsletters** lists every live newsletter, so one without a matching episode on Home (like an NFL Preview before its episode is out) is still reachable
+- Old links to `?tab=daily` and `?tab=help` still work
+
 ## v58 — 2026-10-22
 - **New: Polls** for NFL, golf and tennis events. In admin → **Polls**, pick the sport, type a question with 2 to 4 answers and a closing time, then Publish. It's live on the app's Home tab instantly
 - **On Home:** a 🗳 Poll card. Listeners tap a pick and then see live results (bars, percentages, vote count, and their own pick marked). Results stay hidden until they vote. After closing it shows **Final results** with the leader 🏆, and it disappears from the app 2 days after closing
 - **One vote per phone:** the choice is remembered on the device, and a new database rule (`polls`) only accepts exactly one +1 at a time, only while voting is open. Only the admin can create, edit or remove polls
 - **Admin:** "Your polls" lists every poll with vote counts and its state (open / showing final results / hidden), each with Remove
+- **Rules fix (same day):** the first polls rule rejected every vote. It compared a set with a list, which the rules language treats as an error. It now compares the answer lists before and after the vote. Checked live on a throwaway poll: a normal vote is allowed, and blocked are +2 at once, voting for both answers, taking a vote away, fake answers, setting a count, editing the question, moving the closing time, deleting, creating a poll, and voting after closing
 
 ## v57 — 2026-10-22
 - **Home shows every newsletter episode of the day.** The Latest Episode card keeps its newsletter buttons. Each other episode from the same Eastern day that has a newsletter (for example News Bites alongside an NFL Recap or Preview) gets its own **"Also today"** card with Listen Now, 📰 See the newsletter and Read on Substack. That's up to three cards on a big NFL day

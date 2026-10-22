@@ -964,7 +964,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
       </div>
       <div id="home-more-episodes"></div>
 
-      <a class="bite-card" id="home-bite-card" href="/daily/" onclick="switchTab('daily');return false;" hidden>
+      <a class="bite-card" id="home-bite-card" href="/daily/" onclick="showNewsletters('home');return false;" hidden>
         <div class="bite-card-top">
           <span class="bite-card-label" id="home-bite-label">📰 News Bites</span>
           <span class="bite-card-date" id="home-bite-date"></span>
@@ -1007,8 +1007,9 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
     <!-- ══ NEWS TAB ══════════════════════════════════ -->
     <section id="page-daily" class="page">
+      <button class="back-btn" type="button" onclick="leaveNewsletters()">‹ Back</button>
       <div class="dt-eyebrow">Primosmusings newsletters</div>
-      <h2 class="dt-title">News</h2>
+      <h2 class="dt-title">Newsletters</h2>
       <div id="dt-issue" aria-live="polite"><div class="dt-skeleton" role="img" aria-label="Loading the issue"></div></div>
     </section>
 
@@ -1178,6 +1179,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
     <!-- ══ MORE ══════════════════════════════════════ -->
     <section id="page-more" class="page">
       <div id="more-menu">
+        <div class="more-item" onclick="showNewsletters('more')">
+          <div class="more-icon-wrap" style="background:rgba(232,170,48,.1)">📰</div>
+          <div><div class="more-item-lbl">Newsletters</div><div class="more-item-sub">News Bites, NFL Recap &amp; Preview</div></div>
+          <span class="more-chevron">›</span>
+        </div>
         <div class="more-item" onclick="showSub('about')">
           <div class="more-icon-wrap" style="background:rgba(26,115,232,.12)">👤</div>
           <div><div class="more-item-lbl">About Me</div><div class="more-item-sub">Who is Primo?</div></div>
@@ -1583,7 +1589,6 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 
   <nav id="bottom-nav">
     <button class="nav-btn active" data-tab="home"   onclick="switchTab('home',this)"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></button>
-    <button class="nav-btn"        data-tab="daily"  onclick="switchTab('daily',this)"><span class="nav-icon">📰</span><span class="nav-label">News</span></button>
     <button class="nav-btn"        data-tab="listen" onclick="switchTab('listen',this)"><span class="nav-icon">🎙</span><span class="nav-label">Listen</span></button>
     <button class="nav-btn"        data-tab="guests" onclick="switchTab('guests',this)"><span class="nav-icon">👥</span><span class="nav-label">Guests</span></button>
     <button class="nav-btn"        data-tab="primo"  onclick="switchTab('primo',this)"><span class="nav-icon">⭐</span><span class="nav-label">Primo</span></button>
@@ -2595,9 +2600,20 @@ function episodeMatchesNewsletter(ep, issue) {
   return daysApart <= (issue.kind === 'daily' ? 0 : 3);
 }
 
-// Opens the News tab and scrolls to that newsletter's image.
+// The Newsletters page has no tab-bar button. It opens from Home ("See the newsletter",
+// the newsletter card) or from More, keeps that tab lit, and "‹ Back" returns there.
+let newsReturnTab = 'home';
+function showNewsletters(fromTab) {
+  newsReturnTab = fromTab === 'more' ? 'more' : 'home';
+  switchTab('daily', document.querySelector(`[data-tab="${newsReturnTab}"]`));
+}
+function leaveNewsletters() {
+  switchTab(newsReturnTab);
+}
+
+// Opens the Newsletters page and scrolls to that newsletter's image.
 function openNewsletter(kind) {
-  switchTab('daily');
+  showNewsletters('home');
   let tries = 0;
   (function scrollWhenReady() {
     const card = document.getElementById('dt-card-' + kind);
