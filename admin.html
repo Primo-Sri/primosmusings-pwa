@@ -103,7 +103,7 @@ body {
 .srt-btn:active { background: rgba(255,255,255,.05); }
 .srt-status { font-size: .78rem; display: block; margin-top: 8px; min-height: 18px; }
 
-/* ── Daily Bite ───────────────────── */
+/* ── Newsletters ─────────────────── */
 .bite-box {
   background: #141414; border: 1.5px solid #222; border-radius: 14px;
   padding: 14px; margin-bottom: 28px;
@@ -175,7 +175,7 @@ body {
   <div class="bite-box">
     <label>Which newsletter?</label>
     <div class="kind-pills" role="radiogroup" aria-label="Which newsletter">
-      <label class="kind-pill"><input type="radio" name="bite-kind" value="daily" checked> 📰 Daily Bite</label>
+      <label class="kind-pill"><input type="radio" name="bite-kind" value="daily" checked> 📰 News Bites</label>
       <label class="kind-pill"><input type="radio" name="bite-kind" value="nflRecap"> 🏈 NFL Recap</label>
       <label class="kind-pill"><input type="radio" name="bite-kind" value="nflPreview"> 🏈 NFL Preview</label>
     </div>
@@ -661,14 +661,14 @@ async function uploadTranscript(idx) {
     statusEl.textContent = '✗ Failed: ' + e.message;
   }
 }
-// ── Newsletters (Daily Bite, NFL Recap, NFL Preview) ────────────────────
+// ── Newsletters (News Bites, NFL Recap, NFL Preview) ────────────────────
 // Each newsletter keeps only its latest issue, in two Firestore docs named after it:
 //   newsletters/{kind}       small: date, headline, Substack link (Home card + pages read these)
 //   newsletterImages/{kind}  big: the shrunken image as a data URL
 // Publishing overwrites that newsletter's two docs, so the others are never touched.
 // Images live in Firestore (not Firebase Storage) so no paid plan is needed.
 const NEWSLETTERS = {
-  daily:      { name: 'Daily Bite',  page: '/daily/' },
+  daily:      { name: 'News Bites',  page: '/daily/' },
   nflRecap:   { name: 'NFL Recap',   page: '/nfl/' },
   nflPreview: { name: 'NFL Preview', page: '/nfl/' },
 };
@@ -800,7 +800,7 @@ async function publishBite() {
       { kind, date, headline, link, width: biteImage.width, height: biteImage.height, updatedAt: now });
     batch.set(fs.collection('newsletterImages').doc(kind),
       { kind, date, image: biteImage.dataUrl, updatedAt: now });
-    // One-time tidy-up: Daily Bite issues saved before newsletters had their own slots.
+    // One-time tidy-up: News Bites issues saved before newsletters had their own slots.
     if (kind === 'daily') {
       try {
         const legacy = await fs.collection('dailyBites').get();

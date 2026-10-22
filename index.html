@@ -348,7 +348,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .home-stat .n{font-size:1.2rem;font-weight:900;color:#fff;line-height:1}
 .home-stat .l{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
 
-/* Daily Bite card (Home tab) — hidden until an issue exists */
+/* News Bites newsletter card (Home tab) — hidden until an issue exists */
 .bite-card{
   display:block;text-decoration:none;-webkit-tap-highlight-color:transparent;
   background:var(--card);border:1px solid rgba(232,170,48,.3);
@@ -936,10 +936,11 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         </a>
         <div class="lc-news" id="home-latest-news" hidden></div>
       </div>
+      <div id="home-more-episodes"></div>
 
       <a class="bite-card" id="home-bite-card" href="/daily/" onclick="switchTab('daily');return false;" hidden>
         <div class="bite-card-top">
-          <span class="bite-card-label" id="home-bite-label">📰 Daily Bite</span>
+          <span class="bite-card-label" id="home-bite-label">📰 News Bites</span>
           <span class="bite-card-date" id="home-bite-date"></span>
         </div>
         <div class="bite-card-headline" id="home-bite-headline"></div>
@@ -976,7 +977,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
       </nav>
     </section>
 
-    <!-- ══ DAILY BITE ════════════════════════════════ -->
+    <!-- ══ NEWS TAB ══════════════════════════════════ -->
     <section id="page-daily" class="page">
       <div class="dt-eyebrow">Primosmusings newsletters</div>
       <h2 class="dt-title">News</h2>
@@ -2465,12 +2466,12 @@ function loadTrending() {
   }
 }
 
-/* ── Newsletters: Daily Bite, NFL Recap, NFL Preview ─
+/* ── Newsletters: News Bites, NFL Recap, NFL Preview ─
    Each keeps only its latest issue, in two Firestore docs named after it (published
    from admin.html): newsletters/{kind} = date, headline, Substack link (small);
    newsletterImages/{kind} = the image (big). */
 const NEWS_KINDS = {
-  daily:      { name: 'Primos Daily Bite',  label: '📰 Daily Bite',  page: '/daily/' },
+  daily:      { name: 'Primos News Bites',  label: '📰 News Bites',  page: '/daily/' },
   nflRecap:   { name: 'Primos NFL Recap',   label: '🏈 NFL Recap',   page: '/nfl/' },
   nflPreview: { name: 'Primos NFL Preview', label: '🏈 NFL Preview', page: '/nfl/' },
 };
@@ -2480,17 +2481,17 @@ function readNewsletters(snap) {
     .filter(x => NEWS_KINDS[x.kind] && /^\d{4}-\d{2}-\d{2}$/.test(x.date || ''));
 }
 
-// Home card: whichever newsletter is newest (the Daily Bite wins a same-day tie).
+// Home card: whichever newsletter is newest (News Bites wins a same-day tie).
 // Reads only the small docs, never the images, so the Home tab stays fast.
-// Hidden until a newsletter exists, and hidden when the Latest Episode card above
-// already links to that same newsletter (no point showing it twice).
-let homeCardIssue = null;      // the newsletter the Home card would show
-let latestLinkedIssue = null;  // the newsletter the Latest Episode card links to
+// Hidden until a newsletter exists, and hidden when an episode card above already
+// links to that same newsletter (no point showing it twice).
+let homeCardIssue = null;  // the newsletter the Home card would show
+let linkedIssues  = [];    // newsletters already linked by the episode cards above
 
 function syncHomeNewsCard() {
-  const sameAsAbove = homeCardIssue && latestLinkedIssue &&
-    homeCardIssue.kind === latestLinkedIssue.kind && homeCardIssue.date === latestLinkedIssue.date;
-  document.getElementById('home-bite-card').hidden = !homeCardIssue || sameAsAbove;
+  const shownAbove = homeCardIssue && linkedIssues.some(i =>
+    i.kind === homeCardIssue.kind && i.date === homeCardIssue.date);
+  document.getElementById('home-bite-card').hidden = !homeCardIssue || shownAbove;
 }
 
 function loadDailyBiteCard() {
@@ -2519,7 +2520,7 @@ function loadDailyBiteCard() {
 
 /* ── News tab ────────────────────────────────────────
    Every newsletter that's live, shown inside the app so that day's News Bites plays
-   in the mini player and the tab bar stays put. The Daily Bite always comes first.
+   in the mini player and the tab bar stays put. News Bites always comes first.
    The public pages /daily/ and /nfl/ are the ones to share. */
 let dailyLoaded = false;
 let newsIssues  = [];
@@ -2538,7 +2539,7 @@ function newsSafeLink(url) {
 
 /* ── Episodes ↔ newsletters ──────────────────────────
    An episode and a newsletter belong together when they're the same kind and close in
-   date: News Bites ↔ Daily Bite (same day); an NFL Recap episode ↔ the NFL Recap and an
+   date: a News Bites episode ↔ the News Bites newsletter (same day); an NFL Recap episode ↔ the NFL Recap and an
    NFL Preview episode ↔ the NFL Preview (within 3 days, since those are weekly). */
 let newsMetaPromise = null;
 function getNewsletters() {
@@ -2576,23 +2577,74 @@ function openNewsletter(kind) {
   })();
 }
 
-// Home "Latest Episode" card: if the episode has a matching newsletter, show
-// "See the newsletter" (its image in the News tab) and "Read on Substack".
+// "See the newsletter" (its image in the News tab) + "Read on Substack" for one newsletter.
+function newsletterButtons(issue) {
+  const link = newsSafeLink(issue.link || '');
+  return [
+    dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => openNewsletter(issue.kind) }, '📰 See the newsletter'),
+    link ? dailyEl('a', { class: 'dt-btn dt-btn-substack', href: link, target: '_blank', rel: 'noopener' }, 'Read on Substack →') : null,
+  ];
+}
+
+// Same green Listen Now button as the Latest Episode card; plays in the mini player.
+function listenNowLink(ep) {
+  const button = document.createElement('button');
+  button.className = 'btn-play-now';
+  button.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Listen Now';
+  return dailyEl('a', {
+    href: spotifyLink(ep.link, ep.title), target: '_blank', style: 'text-decoration:none',
+    'data-audio': ep.audio || '', 'data-eptitle': ep.title || '',
+    onclick: e => { if (playEpisode(e.currentTarget) === false) e.preventDefault(); },
+  }, button);
+}
+
+function renderAlsoTodayCard(ep, issue) {
+  return dailyEl('div', { class: 'latest-card also-today' },
+    dailyEl('div', { style: 'display:flex;align-items:center;margin-bottom:8px' },
+      dailyEl('div', { class: 'lc-badge' }, dailyEl('div', { class: 'lc-dot' }), dailyEl('span', { class: 'lc-label' }, 'Also today')),
+      dailyEl('span', { class: 'lc-date' }, ep.pub || '')),
+    dailyEl('h3', {}, ep.title),
+    ep.desc ? dailyEl('p', {}, ep.desc + '…') : null,
+    listenNowLink(ep),
+    dailyEl('div', { class: 'lc-news' }, ...newsletterButtons(issue))
+  );
+}
+
+// Home: the Latest Episode card gets its newsletter's buttons. On days with more than one
+// newsletter episode (say News Bites plus an NFL Recap or Preview), each of that day's other
+// newsletter episodes gets its own "Also today" card with its own buttons.
 async function showLatestEpisodeNewsletter(ep) {
   const box = document.getElementById('home-latest-news');
-  if (!box) return;
+  const more = document.getElementById('home-more-episodes');
+  if (!box || !more) return;
   const issues = await getNewsletters();
   if (loadedEpisodes[0] !== ep) return;  // a fresher episode list arrived meanwhile
+
+  const linked = [];
   const issue = issues.find(i => episodeMatchesNewsletter(ep, i)) || null;
-  latestLinkedIssue = issue;
+  if (issue) {
+    linked.push(issue);
+    box.replaceChildren(...newsletterButtons(issue));
+    box.hidden = false;
+  } else {
+    box.hidden = true;
+    box.replaceChildren();
+  }
+
+  const day = ep.ts ? dailyEtDate(ep.ts) : '';
+  const extras = [];
+  for (const other of loadedEpisodes.slice(1, 15)) {
+    if (!day || !other.ts || dailyEtDate(other.ts) !== day) continue;  // same Eastern day only
+    const match = issues.find(i => episodeMatchesNewsletter(other, i));
+    if (!match || linked.some(l => l.kind === match.kind)) continue;
+    linked.push(match);
+    extras.push(renderAlsoTodayCard(other, match));
+    if (extras.length === 2) break;  // at most the other two newsletters
+  }
+  more.replaceChildren(...extras);
+
+  linkedIssues = linked;
   syncHomeNewsCard();
-  if (!issue) { box.hidden = true; box.replaceChildren(); return; }
-  const link = newsSafeLink(issue.link || '');
-  box.replaceChildren(
-    dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => openNewsletter(issue.kind) }, '📰 See the newsletter'),
-    link ? dailyEl('a', { class: 'dt-btn dt-btn-substack', href: link, target: '_blank', rel: 'noopener' }, 'Read on Substack →') : null
-  );
-  box.hidden = false;
 }
 
 // News tab, NFL cards: a Play button for the matching episode. Waits for the fresh
@@ -2684,7 +2736,7 @@ function fillDailyListen(issue, tries = 0) {
   const ep = dailyFindEpisode(issue.date);
   if (ep && ep.audio) {
     box.replaceChildren(
-      dailyEl('div', { class: 'dt-listen-label' }, "🎧 This day's News Bites"),
+      dailyEl('div', { class: 'dt-listen-label' }, '🎧 The episode'),
       dailyEl('p', { class: 'dt-listen-title' }, ep.title),
       dailyEl('button', { class: 'btn-play-now', type: 'button',
         onclick: () => playEpisode({ dataset: { eptitle: ep.title, audio: ep.audio } }) }, '▶ Play episode')
@@ -2696,7 +2748,7 @@ function fillDailyListen(issue, tries = 0) {
     ? "Today's News Bites episode isn't out yet. It usually lands by 9 AM Eastern."
     : 'No News Bites episode found for this day.';
   box.replaceChildren(
-    dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
+    dailyEl('div', { class: 'dt-listen-label' }, '🎧 The episode'),
     dailyEl('p', { class: 'dt-listen-note' }, note),
     dailyEl('button', { class: 'dt-btn', type: 'button', onclick: () => switchTab('listen') }, 'Browse episodes')
   );
@@ -2715,7 +2767,7 @@ function renderNewsIssue(issue) {
     dailyEl('div', { class: 'dt-skeleton', id: 'dt-img-' + issue.kind, role: 'img', 'aria-label': 'Loading the newsletter' }),
     issue.kind === 'daily'
       ? dailyEl('div', { class: 'dt-listen', id: 'dt-listen', 'data-date': issue.date },
-          dailyEl('div', { class: 'dt-listen-label' }, '🎧 Primos News Bites'),
+          dailyEl('div', { class: 'dt-listen-label' }, '🎧 The episode'),
           dailyEl('p', { class: 'dt-listen-note' }, "Finding this day's episode…"))
       : dailyEl('div', { class: 'dt-listen', id: 'dt-play-' + issue.kind },
           dailyEl('div', { class: 'dt-listen-label' }, '🎧 The episode'),
@@ -2753,7 +2805,7 @@ async function loadDailyTab() {
     try {
       if (typeof firebase === 'undefined' || !firebase.firestore) throw new Error('no firebase');
       const snap = await firebase.firestore().collection('newsletters').get();
-      // Daily Bite first, then the NFL newsletters newest first.
+      // News Bites first, then the NFL newsletters newest first.
       newsIssues = readNewsletters(snap).sort((a, b) =>
         (a.kind === 'daily') !== (b.kind === 'daily') ? (a.kind === 'daily' ? -1 : 1) : b.date.localeCompare(a.date));
     } catch (e) {

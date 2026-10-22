@@ -4,6 +4,12 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v57 — 2026-10-22
+- **Home shows every newsletter episode of the day.** The Latest Episode card keeps its newsletter buttons. Each other episode from the same Eastern day that has a newsletter (for example News Bites alongside an NFL Recap or Preview) gets its own **"Also today"** card with Listen Now, 📰 See the newsletter and Read on Substack. That's up to three cards on a big NFL day
+- The separate newsletter card hides whenever any episode card already links to that newsletter. On a guest-only day it still shows the latest News Bites
+- **One name: Primos News Bites.** The daily newsletter (formerly "Daily Bite") is now called News Bites everywhere people see it: the app, the News tab, the Home cards, the admin picker and the public `/daily/` page title. The web address `/daily/` and the internal database names are unchanged, so shared links keep working
+- The play box on the News Bites card now reads "🎧 The episode" (matching the NFL cards), so it isn't confused with the newsletter's own name
+
 ## v56 — 2026-10-21
 - **No duplicate newsletter on Home.** The newsletter card hides when the Latest Episode card above already links to that same newsletter (for example today's News Bites and today's Daily Bite). It still shows when the latest episode is something else (an NFL Recap, a guest episode, or before today's Daily Bite is published)
 - The Home newsletter card and the Latest Episode buttons now read the same newsletter list (one database read instead of two)

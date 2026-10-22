@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Primos Daily Bite | Primosmusings</title>
-<meta name="description" content="Primos Daily Bite, the morning sports newsletter from Primosmusings: last night's scores, today's big games and what's on TV, with the matching Primos News Bites episode.">
+<title>Primos News Bites | Primosmusings</title>
+<meta name="description" content="Primos News Bites, the morning sports newsletter from Primosmusings: last night's scores, today's big games and what's on TV, with that day's episode.">
 <link rel="canonical" id="canonical" href="https://primosmusings.web.app/daily/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Primosmusings">
-<meta property="og:title" id="og-title" content="Primos Daily Bite">
+<meta property="og:title" id="og-title" content="Primos News Bites">
 <meta property="og:description" content="Sports newsletters from Primosmusings, the global sports podcast by Sri Srinivasan (Primo).">
 <meta property="og:url" id="og-url" content="https://primosmusings.web.app/daily/">
 <meta property="og:image" content="https://primosmusings.web.app/icon-512.png">
@@ -100,7 +100,7 @@ footer{margin-top:32px;font-size:.72rem;color:#666;text-align:center}
   </div>
 
   <div class="eyebrow" id="eyebrow">Morning sports newsletter</div>
-  <h1 id="page-title">Primos Daily Bite</h1>
+  <h1 id="page-title">Primos News Bites</h1>
 
   <section id="issues" aria-live="polite">
     <div class="skeleton" role="img" aria-label="Loading"></div>
@@ -122,7 +122,7 @@ firebase.initializeApp({
 });
 
 // This one page serves two addresses (firebase.json sends /nfl/ here too):
-//   /daily/  the Daily Bite
+//   /daily/  the News Bites newsletter
 //   /nfl/    the NFL Recap and NFL Preview
 // Each newsletter keeps only its latest issue, in two Firestore docs written from admin.html:
 //   newsletters/{kind}       small: date, headline, Substack link
@@ -133,14 +133,14 @@ const SPOTIFY_SHOW = 'https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J';
 const MONTHS = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
 const NEWSLETTERS = {
-  daily:      { name: 'Primos Daily Bite',  label: '📰 Daily Bite' },
+  daily:      { name: 'Primos News Bites',  label: '📰 News Bites' },
   nflRecap:   { name: 'Primos NFL Recap',   label: '🏈 NFL Recap' },
   nflPreview: { name: 'Primos NFL Preview', label: '🏈 NFL Preview' },
 };
 const PAGE = location.pathname.startsWith('/nfl')
   ? { path: '/nfl/', kinds: ['nflRecap', 'nflPreview'], title: 'Primos NFL', eyebrow: 'NFL recap & preview',
       empty: 'The first NFL newsletter is coming soon.' }
-  : { path: '/daily/', kinds: ['daily'], title: 'Primos Daily Bite', eyebrow: 'Morning sports newsletter',
+  : { path: '/daily/', kinds: ['daily'], title: 'Primos News Bites', eyebrow: 'Morning sports newsletter',
       empty: 'The first issue is coming soon.' };
 
 const issuesEl = document.getElementById('issues');
@@ -271,7 +271,7 @@ function renderIssue(issue) {
     el('div', { class: 'skeleton', id: 'img-' + issue.kind, role: 'img', 'aria-label': 'Loading the newsletter' }),
     issue.kind === 'daily'
       ? el('div', { class: 'listen', id: 'listen' },
-          el('div', { class: 'listen-label' }, '🎧 Primos News Bites'),
+          el('div', { class: 'listen-label' }, '🎧 The episode'),
           el('p', { class: 'listen-note' }, "Finding this day's episode…"))
       : null,
     el('div', { class: 'actions' },
@@ -299,7 +299,7 @@ function renderListen(episode, isoDate) {
   const follow = el('a', { class: 'btn btn-follow', href: SPOTIFY_SHOW, target: '_blank', rel: 'noopener' }, 'Follow on Spotify');
   if (episode && episode.audio) {
     box.replaceChildren(
-      el('div', { class: 'listen-label' }, "🎧 This day's News Bites"),
+      el('div', { class: 'listen-label' }, '🎧 The episode'),
       el('p', { class: 'listen-title' }, episode.title),
       el('audio', { controls: '', preload: 'none', src: episode.audio }, 'Your browser cannot play this audio.'),
       el('div', { class: 'actions' }, follow)
@@ -310,7 +310,7 @@ function renderListen(episode, isoDate) {
     ? "Today's News Bites episode isn't out yet. It usually lands by 9 AM Eastern."
     : 'No News Bites episode found for this day.';
   box.replaceChildren(
-    el('div', { class: 'listen-label' }, '🎧 Primos News Bites'),
+    el('div', { class: 'listen-label' }, '🎧 The episode'),
     el('p', { class: 'listen-note' }, note),
     el('div', { class: 'actions' },
       el('a', { class: 'btn', href: '/episodes/' }, 'Browse all episodes'),

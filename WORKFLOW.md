@@ -3,7 +3,7 @@
 > **SEO episode pages update themselves every night.** You don't do anything for them.
 > See **SEO Pages — Automatic, Nothing To Do** near the bottom.
 >
-> **Newsletters (Daily Bite, NFL Recap, NFL Preview):** publish them from your phone in admin.html. See **Newsletters**.
+> **Newsletters (News Bites, NFL Recap, NFL Preview):** publish them from your phone in admin.html. See **Newsletters**.
 
 ---
 
@@ -157,19 +157,19 @@ Claude will update the count and bump the cache. Push to deploy.
 
 ---
 
-## Newsletters — Daily Bite, NFL Recap, NFL Preview
+## Newsletters — News Bites, NFL Recap, NFL Preview
 
 You have three newsletters. Each is one image plus one Substack article, and each keeps only its
 latest issue:
 
 | Newsletter | When | Public page |
 |---|---|---|
-| 📰 **Daily Bite** | Every day | primosmusings.web.app/daily/ |
+| 📰 **News Bites** | Every day | primosmusings.web.app/daily/ |
 | 🏈 **NFL Recap** (the Aftermath) | Recap days | primosmusings.web.app/nfl/ |
 | 🏈 **NFL Preview** | Preview days | primosmusings.web.app/nfl/ |
 
 **Publishing one replaces only that newsletter's previous issue.** The others are never touched.
-A normal day is one publish (Daily Bite). An NFL day is one more for each NFL newsletter.
+A normal day is one publish (News Bites). An NFL day is one more for each NFL newsletter.
 
 To publish (do it once per newsletter):
 1. **Save the image from Grok.** Phone: press and hold the image → Save to Photos. PC: download it.
@@ -183,14 +183,14 @@ That's it. It goes live the moment you tap Publish. No push, no deploy, no Claud
 Good to know:
 - **The headline matters.** Google can't read the words inside an image. The headline is what it reads.
 - **The Substack link** becomes a "Read on Substack →" button. Copy the article's link from Substack (Share → Copy link). It must start with `https://`.
-- **The Daily Bite's episode links itself.** It gets a player for that day's News Bites, found by publish date. If the newsletter goes up before the episode, the player appears on its own once the episode is in the feed.
+- **News Bites links its episode itself.** It gets a player for that day's News Bites episode, found by publish date. If the newsletter goes up before the episode, the player appears on its own once the episode is in the feed.
 - **Made a mistake?** Publish again with the same newsletter picked. It replaces what's live. Or under **Live now** in admin, tap **Remove** next to that newsletter (can't be undone).
 - An old NFL Preview stays up until you publish the next one or tap **Remove**.
 - The image is shrunk automatically (admin shows the before and after size) so it loads fast.
-- **In the app:** the **📰 News** tab (second in the tab bar) shows every newsletter that's live. The Daily Bite is always first, with its Play button. The Home tab shows a card for whichever newsletter is newest, unless the Latest Episode card right above already links to it (then the card hides so it isn't shown twice).
-- **Share links:** `/daily/` for the Daily Bite and `/nfl/` for the NFL ones, so people without the app can read them.
+- **In the app:** the **📰 News** tab (second in the tab bar) shows every newsletter that's live. News Bites is always first, with its Play button. On the Home tab, the Latest Episode card carries its newsletter's buttons, and on NFL days each other newsletter episode from the same day (e.g. News Bites next to the NFL Recap) gets its own **"Also today"** card with Listen Now, See the newsletter and Read on Substack. A separate newsletter card only appears when no episode card already links it (e.g. on a guest-only day).
+- **Share links:** `/daily/` for News Bites and `/nfl/` for the NFL ones, so people without the app can read them.
 - **Episodes and newsletters link to each other in the app, automatically.** When an episode has a matching newsletter, the Home tab's **Latest Episode** card gets **📰 See the newsletter** (opens its image in News) and **Read on Substack →**. Each NFL card in News gets a **▶ Play episode** button. Matching is by title and date:
-  - an episode with "News Bites" in the title ↔ the Daily Bite on the **same day**
+  - an episode with "News Bites" in the title ↔ the News Bites newsletter on the **same day**
   - "NFL" + "Recap" in the title ↔ the NFL Recap, **within 3 days**
   - "NFL" + "Preview" in the title ↔ the NFL Preview, **within 3 days**
 
@@ -236,7 +236,7 @@ Good to know:
 | What changed | Files to update | Also do |
 |---|---|---|
 | Any new episode (SEO pages) | Nothing — built automatically every night (~10 PM ET) | Don't run the generator or `firebase deploy` by hand |
-| Newsletter (Daily Bite / NFL Recap / NFL Preview) | Nothing — publish in admin.html → Newsletters | Live instantly at /daily/ or /nfl/ |
+| Newsletter (News Bites / NFL Recap / NFL Preview) | Nothing — publish in admin.html → Newsletters | Live instantly at /daily/ or /nfl/ |
 | New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
 | Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
 | Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |
