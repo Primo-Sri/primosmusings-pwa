@@ -118,7 +118,8 @@ body {
 }
 .bite-box .kind-pill:has(input:checked) { border-color: #e8aa30; color: #e8aa30; background: rgba(232,170,48,.1); }
 .bite-box .kind-pill input { accent-color: #e8aa30; margin: 0; }
-.bite-box input[type=text], .bite-box input[type=date], .bite-box input[type=url] {
+.poll-answers { display: flex; flex-direction: column; gap: 8px; }
+.bite-box input[type=text], .bite-box input[type=date], .bite-box input[type=url], .bite-box input[type=datetime-local] {
   width: 100%; background: #0e0e0e; border: 1.5px solid #2a2a2a;
   border-radius: 10px; color: #fff; font-size: 1rem;
   padding: 11px 14px; outline: none; color-scheme: dark; font-family: inherit;
@@ -203,6 +204,38 @@ body {
     <div class="bite-status" id="bite-status" role="status"></div>
 
     <div id="bite-recent"></div>
+  </div>
+
+  <p class="page-title">🗳 Polls</p>
+  <p class="page-sub">Ask listeners about a big event. It shows on the app's Home tab, closes when you say, and disappears from the app 2 days after closing.</p>
+  <div class="bite-box">
+    <label>Sport</label>
+    <div class="kind-pills" role="radiogroup" aria-label="Sport">
+      <label class="kind-pill"><input type="radio" name="poll-sport" value="nfl" checked> 🏈 NFL</label>
+      <label class="kind-pill"><input type="radio" name="poll-sport" value="golf"> ⛳ Golf</label>
+      <label class="kind-pill"><input type="radio" name="poll-sport" value="tennis"> 🎾 Tennis</label>
+    </div>
+
+    <label for="poll-question">Question</label>
+    <input type="text" id="poll-question" maxlength="120" placeholder="Who wins Notre Dame vs BYU?">
+
+    <label>Answers (at least 2, up to 4)</label>
+    <div class="poll-answers">
+      <input type="text" id="poll-opt-0" maxlength="60" placeholder="Answer 1">
+      <input type="text" id="poll-opt-1" maxlength="60" placeholder="Answer 2">
+      <input type="text" id="poll-opt-2" maxlength="60" placeholder="Answer 3 (optional)">
+      <input type="text" id="poll-opt-3" maxlength="60" placeholder="Answer 4 (optional)">
+    </div>
+
+    <label for="poll-closes">Voting closes (your time — e.g. kickoff or first tee time)</label>
+    <input type="datetime-local" id="poll-closes">
+
+    <div class="bite-actions">
+      <button class="save-btn" id="poll-publish" type="button" onclick="publishPoll()">Publish poll</button>
+    </div>
+    <div class="bite-status" id="poll-status" role="status"></div>
+
+    <div id="poll-live"></div>
   </div>
 
   <p class="page-title">📊 Top Played (in-app)</p>
@@ -320,6 +353,7 @@ async function loadAdminData() {
   if (typeof firebase === 'undefined') { loadRSS(); return; }
 
   initNewsletters();
+  initPolls();
   loadPlayStats();
 
   try {
@@ -882,6 +916,118 @@ async function removeBite(kind, date) {
     loadBiteRecent();
   } catch (e) {
     setBiteStatus('✗ Remove failed: ' + ((e && e.message) || 'unknown error.'), 'err');
+  }
+}
+
+// ── Polls ───────────────────────────────────────────────────────────────
+// One Firestore doc per poll in `polls`: sport, question, options (2–4), counts
+// ({ o0: 0, o1: 0, … }), closesAt. Listeners add votes from the app; the database rule
+// only lets them add exactly one vote at a time, and only before closesAt.
+// The app hides a poll 2 days after it closes; Remove deletes it for good.
+const POLL_SPORTS = { nfl: '🏈 NFL', golf: '⛳ Golf', tennis: '🎾 Tennis' };
+
+function setPollStatus(text, tone) {
+  const el = document.getElementById('poll-status');
+  el.className = 'bite-status ' + (tone || '');
+  el.textContent = text;
+}
+
+function pollWhen(ts) {
+  return ts.toDate().toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+}
+
+function initPolls() {
+  loadPollList();
+}
+
+async function publishPoll() {
+  const btn = document.getElementById('poll-publish');
+  const sportEl = document.querySelector('input[name="poll-sport"]:checked');
+  const sport = sportEl && POLL_SPORTS[sportEl.value] ? sportEl.value : 'nfl';
+  const question = document.getElementById('poll-question').value.trim();
+  const options = [0, 1, 2, 3].map(i => document.getElementById('poll-opt-' + i).value.trim()).filter(Boolean);
+  const closesRaw = document.getElementById('poll-closes').value;
+  const closes = closesRaw ? new Date(closesRaw) : null;  // read as your own local time
+
+  if (!question) { setPollStatus('Type the question first.', 'err'); return; }
+  if (options.length < 2) { setPollStatus('Add at least 2 answers.', 'err'); return; }
+  if (new Set(options.map(o => o.toLowerCase())).size !== options.length) { setPollStatus('Two answers are the same. Make each one different.', 'err'); return; }
+  if (!closes || isNaN(closes)) { setPollStatus('Pick when voting closes.', 'err'); return; }
+  if (closes <= new Date()) { setPollStatus('Voting has to close in the future.', 'err'); return; }
+
+  const counts = {};
+  options.forEach((_, i) => { counts['o' + i] = 0; });
+  btn.disabled = true;
+  btn.textContent = 'Publishing…';
+  try {
+    await firebase.firestore().collection('polls').add({
+      sport, question, options, counts,
+      closesAt: firebase.firestore.Timestamp.fromDate(closes),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    setPollStatus(`✓ Poll is live on the app's Home tab. Voting closes ${closes.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}.`, 'ok');
+    document.getElementById('poll-question').value = '';
+    [0, 1, 2, 3].forEach(i => { document.getElementById('poll-opt-' + i).value = ''; });
+    document.getElementById('poll-closes').value = '';
+    loadPollList();
+  } catch (e) {
+    const why = e && e.code === 'permission-denied'
+      ? "the database rule for polls isn't deployed yet."
+      : (e && e.message) || 'unknown error.';
+    setPollStatus('✗ Publish failed: ' + why, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Publish poll';
+  }
+}
+
+async function loadPollList() {
+  const box = document.getElementById('poll-live');
+  try {
+    const snap = await firebase.firestore().collection('polls').orderBy('closesAt', 'desc').limit(20).get();
+    box.replaceChildren();
+    if (snap.empty) return;
+    const title = document.createElement('p');
+    title.className = 'bite-recent-title';
+    title.textContent = 'Your polls';
+    box.append(title);
+    const now = Date.now();
+    snap.forEach(doc => {
+      const p = doc.data();
+      if (!p.closesAt || typeof p.closesAt.toMillis !== 'function') return;
+      const closesMs = p.closesAt.toMillis();
+      const votes = Object.values(p.counts || {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
+      const state = now < closesMs ? `open until ${pollWhen(p.closesAt)}`
+        : now < closesMs + 2 * 86400000 ? 'closed · showing final results'
+        : 'closed · hidden from the app';
+      const row = document.createElement('div');
+      row.className = 'bite-row';
+      const label = document.createElement('span');
+      label.className = 'd';
+      label.textContent = POLL_SPORTS[p.sport] || '🗳';
+      const info = document.createElement('span');
+      info.className = 'h';
+      info.textContent = `${p.question} — ${votes} vote${votes === 1 ? '' : 's'}, ${state}`;
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.textContent = 'Remove';
+      remove.onclick = () => removePoll(doc.id, p.question);
+      row.append(label, info, remove);
+      box.append(row);
+    });
+  } catch (e) {
+    box.replaceChildren();  // list is a convenience; publishing still works
+  }
+}
+
+async function removePoll(id, question) {
+  if (!confirm(`Remove the poll "${question}"? It disappears from the app, with its votes. This can't be undone.`)) return;
+  try {
+    await firebase.firestore().collection('polls').doc(id).delete();
+    setPollStatus('Removed the poll.', '');
+    loadPollList();
+  } catch (e) {
+    setPollStatus('✗ Remove failed: ' + ((e && e.message) || 'unknown error.'), 'err');
   }
 }
 

@@ -417,6 +417,32 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 .lc-date{font-size:.62rem;color:var(--muted);margin-left:auto}
 .latest-card h3{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:5px}
 .latest-card p{font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:12px}
+/* Polls (Home tab) */
+.poll-card{
+  background:var(--card);border:1px solid rgba(77,158,247,.3);
+  border-radius:var(--radius);padding:14px;margin-bottom:14px;
+}
+.poll-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.poll-label{font-size:.62rem;font-weight:700;color:var(--blue2);text-transform:uppercase;letter-spacing:.08em}
+.poll-when{font-size:.62rem;color:var(--muted);margin-left:auto;text-align:right}
+.poll-q{font-size:.92rem;font-weight:700;color:#fff;line-height:1.35;margin-bottom:10px}
+.poll-opts{display:flex;flex-direction:column;gap:8px}
+.poll-opt{
+  width:100%;text-align:left;cursor:pointer;font-family:inherit;
+  background:var(--card2);color:#fff;border:1px solid #333;border-radius:10px;
+  padding:11px 14px;font-size:.85rem;font-weight:600;-webkit-tap-highlight-color:transparent;
+}
+.poll-opt:active{border-color:var(--blue2)}
+.poll-opt:disabled{opacity:.6;cursor:default}
+.poll-row{margin-bottom:9px}
+.poll-row-top{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;color:#fff;margin-bottom:4px}
+.poll-pct{font-weight:700;font-variant-numeric:tabular-nums}
+.poll-bar{height:8px;background:#222;border-radius:4px;overflow:hidden}
+.poll-bar i{display:block;height:100%;background:var(--blue2);border-radius:4px}
+.poll-row.mine .poll-bar i{background:var(--gold)}
+.poll-foot{font-size:.7rem;color:var(--muted);margin-top:8px}
+.poll-error{font-size:.72rem;color:#ff6b6b;margin-top:8px}
+
 /* Newsletter + Substack buttons under Listen Now, when the episode has a matching newsletter */
 .lc-news{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .lc-news[hidden]{display:none}
@@ -946,6 +972,8 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
         <div class="bite-card-headline" id="home-bite-headline"></div>
         <span class="bite-card-cta" id="home-bite-cta">Read today's issue →</span>
       </a>
+
+      <div id="home-polls"></div>
 
       <div class="desc-card">
         <p>It all started in <strong>Jan 2023</strong> during the Australian Open Tennis by <strong>Primo a.k.a Sri Srinivasan</strong>. Since then, Primo has been breaking down sports across the world.</p>
@@ -1589,6 +1617,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!epLoaded) loadEpisodes();
   loadTrending();
   loadDailyBiteCard();
+  loadPolls();
 });
 
 /* ── More sub-pages ──────────────────────────────── */
@@ -2825,6 +2854,113 @@ async function loadDailyTab() {
   const daily = newsIssues.find(i => i.kind === 'daily');
   if (daily) fillDailyListen(daily);
   newsIssues.filter(i => i.kind !== 'daily').forEach(i => fillNflPlay(i));
+}
+
+/* ── Polls (Home tab) ────────────────────────────────
+   Published from admin.html into Firestore `polls` (sport, question, options,
+   counts { o0, o1, … }, closesAt). Shown until 2 days after voting closes.
+   One vote per phone: the choice is remembered on this device, and the database
+   rule only accepts exactly one +1 at a time, only while voting is open. */
+const POLL_SPORTS = { nfl: '🏈 NFL', golf: '⛳ Golf', tennis: '🎾 Tennis' };
+const POLL_SHOW_AFTER_CLOSE_MS = 2 * 86400000;
+const POLL_VOTES_KEY = 'pm_poll_votes';
+
+function pollMyVotes() {
+  try { return JSON.parse(localStorage.getItem(POLL_VOTES_KEY) || '{}') || {}; }
+  catch (e) { return {}; }
+}
+function pollRememberVote(pollId, choice) {
+  try {
+    const votes = pollMyVotes();
+    votes[pollId] = choice;
+    localStorage.setItem(POLL_VOTES_KEY, JSON.stringify(votes));
+  } catch (e) { /* private browsing: the vote still counts, it just isn't remembered */ }
+}
+
+function isUsablePoll(p) {
+  return p && typeof p.question === 'string' && Array.isArray(p.options) && p.options.length >= 2 &&
+    p.closesAt && typeof p.closesAt.toMillis === 'function';
+}
+
+async function loadPolls() {
+  try {
+    if (typeof firebase === 'undefined' || !firebase.firestore) return;
+    const since = firebase.firestore.Timestamp.fromDate(new Date(Date.now() - POLL_SHOW_AFTER_CLOSE_MS));
+    const snap = await firebase.firestore().collection('polls')
+      .where('closesAt', '>', since).orderBy('closesAt').limit(5).get();
+    const polls = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(isUsablePoll);
+    document.getElementById('home-polls').replaceChildren(...polls.map(renderPollCard));
+  } catch (e) { /* no polls is fine; never break the Home tab */ }
+}
+
+function pollCounts(p) {
+  return p.options.map((_, i) => Math.max(0, Number((p.counts || {})['o' + i]) || 0));
+}
+
+function renderPollCard(p) {
+  const closed = Date.now() >= p.closesAt.toMillis();
+  const mine = pollMyVotes()[p.id];
+  const voted = Number.isInteger(mine) && mine >= 0 && mine < p.options.length;
+  const when = p.closesAt.toDate().toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  const card = dailyEl('div', { class: 'poll-card', id: 'poll-' + p.id },
+    dailyEl('div', { class: 'poll-top' },
+      dailyEl('span', { class: 'poll-label' }, '🗳 Poll · ' + (POLL_SPORTS[p.sport] || 'Sports')),
+      dailyEl('span', { class: 'poll-when' }, closed ? 'Final results' : 'Closes ' + when)),
+    dailyEl('p', { class: 'poll-q' }, p.question)
+  );
+
+  if (closed || voted) {
+    const counts = pollCounts(p);
+    const total = counts.reduce((a, b) => a + b, 0);
+    const top = Math.max(...counts);
+    card.append(...p.options.map((option, i) => {
+      const pct = total ? Math.round(counts[i] * 100 / total) : 0;
+      const bar = dailyEl('i');
+      bar.style.width = pct + '%';
+      const lead = closed && total > 0 && counts[i] === top;
+      return dailyEl('div', { class: 'poll-row' + (voted && i === mine ? ' mine' : '') },
+        dailyEl('div', { class: 'poll-row-top' },
+          dailyEl('span', {}, (lead ? '🏆 ' : '') + option + (voted && i === mine ? ' ✓' : '')),
+          dailyEl('span', { class: 'poll-pct' }, pct + '%')),
+        dailyEl('div', { class: 'poll-bar' }, bar));
+    }));
+    card.append(dailyEl('p', { class: 'poll-foot' },
+      `${total} vote${total === 1 ? '' : 's'}` + (voted ? ` · You picked ${p.options[mine]}` : closed ? ' · Voting has closed' : '')));
+    return card;
+  }
+
+  const error = dailyEl('p', { class: 'poll-error', role: 'status' });
+  const buttons = p.options.map((option, i) =>
+    dailyEl('button', { class: 'poll-opt', type: 'button', onclick: () => castPollVote(p, i, card, buttons, error) }, option));
+  card.append(dailyEl('div', { class: 'poll-opts' }, buttons),
+    dailyEl('p', { class: 'poll-foot' }, 'Tap your pick to see the results'), error);
+  return card;
+}
+
+async function castPollVote(p, choice, card, buttons, errorEl) {
+  if (pollMyVotes()[p.id] !== undefined) return;  // this phone already voted
+  buttons.forEach(b => { b.disabled = true; });
+  errorEl.textContent = '';
+  const ref = firebase.firestore().collection('polls').doc(p.id);
+  try {
+    await ref.update({ ['counts.o' + choice]: firebase.firestore.FieldValue.increment(1) });
+  } catch (e) {
+    buttons.forEach(b => { b.disabled = false; });
+    errorEl.textContent = Date.now() >= p.closesAt.toMillis()
+      ? 'Voting has closed for this poll.'
+      : "Couldn't save your vote. Check your connection and try again.";
+    return;
+  }
+  pollRememberVote(p.id, choice);
+  // Show everyone's latest picks; if that read fails, show our own vote added locally.
+  try {
+    const fresh = await ref.get();
+    if (fresh.exists) p = { ...p, ...fresh.data(), id: p.id };
+    else p.counts = { ...(p.counts || {}), ['o' + choice]: (Number((p.counts || {})['o' + choice]) || 0) + 1 };
+  } catch (e) {
+    p.counts = { ...(p.counts || {}), ['o' + choice]: (Number((p.counts || {})['o' + choice]) || 0) + 1 };
+  }
+  card.replaceWith(renderPollCard(p));
 }
 
 // Count each play in Firestore — one doc per episode, count increments.

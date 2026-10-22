@@ -52,5 +52,28 @@ service cloud.firestore {
       allow write: if request.auth != null;
     }
 
+    // Polls — anyone can read. Only the signed-in admin creates, edits or removes them.
+    // A listener can only add ONE vote at a time: nothing but `counts` may change,
+    // exactly one existing answer goes up by exactly 1, and only while voting is open.
+    function isOneVote() {
+      let before = resource.data.counts;
+      let after = request.resource.data.counts;
+      let changed = after.diff(before).affectedKeys();
+      // Answers are stored as o0..o3 (admin allows at most 4).
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['counts'])
+        && changed.size() == 1
+        && before.keys().hasAll(changed)
+        && ((changed.hasAny(['o0']) && after.o0 == before.o0 + 1)
+         || (changed.hasAny(['o1']) && after.o1 == before.o1 + 1)
+         || (changed.hasAny(['o2']) && after.o2 == before.o2 + 1)
+         || (changed.hasAny(['o3']) && after.o3 == before.o3 + 1))
+        && request.time < resource.data.closesAt;
+    }
+    match /polls/{pollId} {
+      allow read: if true;
+      allow create, delete: if request.auth != null;
+      allow update: if request.auth != null || isOneVote();
+    }
+
   }
 }

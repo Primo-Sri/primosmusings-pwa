@@ -4,6 +4,29 @@
 > See **SEO Pages — Automatic, Nothing To Do** near the bottom.
 >
 > **Newsletters (News Bites, NFL Recap, NFL Preview):** publish them from your phone in admin.html. See **Newsletters**.
+>
+> **Polls (NFL, golf, tennis):** create them in admin.html. See **Polls**.
+
+---
+
+## Polls — NFL, Golf, Tennis
+
+Ask listeners a question about a big event. It shows on the app's **Home** tab.
+
+To create one:
+1. Open **primosmusings.web.app/admin.html** and sign in.
+2. In **Polls**: pick the **sport** → type the **question** → fill in **2 to 4 answers** →
+   set **Voting closes** (your local time — e.g. kickoff, or the first tee time) → **Publish poll**.
+
+It's live the moment you tap Publish. No push, no deploy, no Claude needed.
+
+Good to know:
+- Listeners tap their pick, then see the results (bars, percentages, how many voted). Results stay hidden until they vote, so nobody just follows the crowd.
+- **One vote per phone.** The app remembers each phone's vote, and the database only accepts one vote at a time. Someone determined could still vote twice by clearing their browser, which is normal for fun polls.
+- When voting closes, the poll shows **Final results** with the leader marked 🏆.
+- **It disappears from the app on its own 2 days after closing.** You don't have to do anything.
+- **Remove** a poll any time under **Your polls** in admin (it deletes the votes too, and can't be undone).
+- Your News Bites image can now say "Vote in the Primosmusings app" instead of "Reply with your pick".
 
 ---
 
@@ -237,6 +260,7 @@ Good to know:
 |---|---|---|
 | Any new episode (SEO pages) | Nothing — built automatically every night (~10 PM ET) | Don't run the generator or `firebase deploy` by hand |
 | Newsletter (News Bites / NFL Recap / NFL Preview) | Nothing — publish in admin.html → Newsletters | Live instantly at /daily/ or /nfl/ |
+| Poll for a big event | Nothing — create in admin.html → Polls | Live instantly on Home; gone 2 days after closing |
 | New guest | `index.html` (count) · `sw.js` | Tag in admin.html — guest appears automatically |
 | Returning guest | `index.html` (count) · `sw.js` | Tag in admin.html to add the new episode |
 | Solo episode | `index.html` (count) · `sw.js` | Nothing — no tagging needed |
