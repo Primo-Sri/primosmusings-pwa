@@ -21,18 +21,30 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#f0f0f0;line-height:1.5}
   a{color:#4d9ef7}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-  .brand{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:12px}
-  .brand a{color:#1A73E8;text-decoration:none}
+  .crumbs{font-size:.75rem;color:#888;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crumbs a{color:#4d9ef7;text-decoration:none}
   h1{font-size:1.45rem;margin:0 0 8px;line-height:1.25}
+  .cat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8aa30;text-decoration:none;margin-bottom:6px}
   .meta{color:#888;font-size:.85rem;margin-bottom:20px}
-  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0}
-  .desc p{margin:0 0 10px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px}
   .btn{display:inline-block;padding:12px 18px;border-radius:24px;font-weight:700;text-decoration:none;font-size:.9rem}
   .btn-spotify{background:#1DB954;color:#000}
   .btn-apple{background:#fc3c44;color:#fff}
   .btn-home{background:#1e1e1e;color:#fff;border:1px solid #333}
-  footer{margin-top:40px;font-size:.75rem;color:#666}
+  .links{font-size:.85rem;margin:0 0 20px}
+  audio{display:block;width:100%;margin:0 0 20px}
+  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0;overflow-wrap:anywhere}
+  .desc p{margin:0 0 10px}
+  .about{color:#bbb;font-size:.9rem}
+  .pager{display:flex;gap:10px;margin:28px 0}
+  .pager a{flex:1;background:#141414;border:1px solid #282828;border-radius:12px;padding:12px;text-decoration:none;color:#f0f0f0;font-size:.85rem}
+  .pager a span{display:block;color:#4d9ef7;font-size:.75rem;font-weight:700;margin-bottom:4px}
+  .pager .next{text-align:right}
+  .related h2{font-size:1rem;margin:28px 0 8px}
+  .related ul{list-style:none;padding:0;margin:0}
+  .related li{padding:10px 0;border-bottom:1px solid #222;display:flex;flex-direction:column;gap:2px}
+  .d{color:#888;font-size:.75rem}
+  footer{margin-top:40px;font-size:.75rem;color:#888}
 </style>
 <script type="application/ld+json">
 {
@@ -43,32 +55,80 @@
   "datePublished": "2023-12-03T15:39:04.000Z",
   "url": "https://primosmusings.web.app/episodes/nfl-week-13-preview-we2coei9.html",
   "image": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/36382860/36382860-1685991513611-10594f9ef8af3.jpg",
-  "duration": "00:07:47",
+  "duration": "PT7M47S",
+  "timeRequired": "PT7M47S",
+  "genre": "NFL Preview",
   "partOfSeries": {
     "@type": "PodcastSeries",
     "name": "PrimosMusings",
-    "url": "https://primosmusings.web.app/"
+    "url": "https://primosmusings.web.app/",
+    "webFeed": "https://anchor.fm/s/d9746d30/podcast/rss"
   },
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/79493129/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F2023-11-3%2F358267080-44100-1-0bb405becfbcc.m4a"
+    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/79493129/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F2023-11-3%2F358267080-44100-1-0bb405becfbcc.m4a",
+    "encodingFormat": "audio/mp4"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://primosmusings.web.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Episodes",
+      "item": "https://primosmusings.web.app/episodes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "NFL Week 13 Preview",
+      "item": "https://primosmusings.web.app/episodes/nfl-week-13-preview-we2coei9.html"
+    }
+  ]
 }
 </script>
 </head>
 <body>
   <main class="wrap">
-    <div class="brand"><a href="/">Primosmusings</a> / <a href="/episodes/">Episodes</a></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/episodes/">Episodes</a> › <span aria-current="page">NFL Week 13 Preview</span></nav>
     <h1>NFL Week 13 Preview</h1>
-    <div class="meta">Sun, 03 Dec 2023 15:39:04 GMT · 00:07:47</div>
+    <a class="cat" href="/nfl/">NFL Preview</a>
+    <div class="meta">December 3, 2023 · 8 min · NFL Preview</div>
     <div class="cta">
       <a class="btn btn-spotify" href="https://open.spotify.com/search/NFL%20Week%2013%20Preview" rel="noopener">Listen on Spotify</a>
       <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>
       <a class="btn btn-home" href="/">Open app</a>
     </div>
+    <p class="links"><a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Show on Spotify</a> · <a href="https://primosmusings.substack.com" rel="noopener">Read more on Substack</a></p>
+    <audio controls preload="none" src="https://anchor.fm/s/d9746d30/podcast/play/79493129/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F2023-11-3%2F358267080-44100-1-0bb405becfbcc.m4a">Your browser can't play this audio. <a href="https://open.spotify.com/search/NFL%20Week%2013%20Preview" rel="noopener">Listen on Spotify</a>.</audio>
     <div class="desc"><p>Can the 49ers upset the Eagles ? Does the Broncos winning streak come to an end ? Two marquee match ups . Playoffs on the horizon</p></div>
+    <p class="about"><strong>About this episode:</strong> “NFL Week 13 Preview” is an 8-minute NFL Preview from Primosmusings, published December 3, 2023, hosted by Sridhar 'Primo' Srinivasan.</p>
+    <nav class="pager" aria-label="Previous and next episodes">
+      <a class="prev" href="/episodes/nfl-week-12-preview-thanksgiving-edition-ne2caeog.html"><span>← Previous episode</span>NFL Week 12 Preview - Thanksgiving Edition</a>
+      <a class="next" href="/episodes/nfl-week-14-preview-we2d2ccl.html"><span>Next episode →</span>NFL Week 14 Preview</a>
+    </nav>
+    <section class="related">
+      <h2>More NFL Preview episodes</h2>
+      <ul>
+        <li><a href="/episodes/nfl-week-16-preview-christmas-edition-ne2dj130.html">NFL Week 16 Preview Christmas Edition</a><span class="d">December 22, 2023</span></li>
+        <li><a href="/episodes/nfl-week-15-preview-we2daugp.html">NFL Week 15 Preview</a><span class="d">December 16, 2023</span></li>
+        <li><a href="/episodes/nfl-week-14-preview-we2d2ccl.html">NFL Week 14 Preview</a><span class="d">December 10, 2023</span></li>
+        <li><a href="/episodes/nfl-week-12-preview-thanksgiving-edition-ne2caeog.html">NFL Week 12 Preview - Thanksgiving Edition</a><span class="d">November 23, 2023</span></li>
+        <li><a href="/episodes/nfl-week-11-preview-we2c4nlo.html">NFL Week 11 Preview</a><span class="d">November 19, 2023</span></li>
+      </ul>
+    </section>
     <p><a href="/episodes/">← All episodes</a></p>
-    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). SEO landing page; audio hosted on podcast platforms.</footer>
+    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Spotify</a>, <a href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="https://primosmusings.substack.com" rel="noopener">Substack</a>.</footer>
   </main>
 </body>
 </html>

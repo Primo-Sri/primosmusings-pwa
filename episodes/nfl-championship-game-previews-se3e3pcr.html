@@ -21,18 +21,30 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#f0f0f0;line-height:1.5}
   a{color:#4d9ef7}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-  .brand{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:12px}
-  .brand a{color:#1A73E8;text-decoration:none}
+  .crumbs{font-size:.75rem;color:#888;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crumbs a{color:#4d9ef7;text-decoration:none}
   h1{font-size:1.45rem;margin:0 0 8px;line-height:1.25}
+  .cat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8aa30;text-decoration:none;margin-bottom:6px}
   .meta{color:#888;font-size:.85rem;margin-bottom:20px}
-  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0}
-  .desc p{margin:0 0 10px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px}
   .btn{display:inline-block;padding:12px 18px;border-radius:24px;font-weight:700;text-decoration:none;font-size:.9rem}
   .btn-spotify{background:#1DB954;color:#000}
   .btn-apple{background:#fc3c44;color:#fff}
   .btn-home{background:#1e1e1e;color:#fff;border:1px solid #333}
-  footer{margin-top:40px;font-size:.75rem;color:#666}
+  .links{font-size:.85rem;margin:0 0 20px}
+  audio{display:block;width:100%;margin:0 0 20px}
+  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0;overflow-wrap:anywhere}
+  .desc p{margin:0 0 10px}
+  .about{color:#bbb;font-size:.9rem}
+  .pager{display:flex;gap:10px;margin:28px 0}
+  .pager a{flex:1;background:#141414;border:1px solid #282828;border-radius:12px;padding:12px;text-decoration:none;color:#f0f0f0;font-size:.85rem}
+  .pager a span{display:block;color:#4d9ef7;font-size:.75rem;font-weight:700;margin-bottom:4px}
+  .pager .next{text-align:right}
+  .related h2{font-size:1rem;margin:28px 0 8px}
+  .related ul{list-style:none;padding:0;margin:0}
+  .related li{padding:10px 0;border-bottom:1px solid #222;display:flex;flex-direction:column;gap:2px}
+  .d{color:#888;font-size:.75rem}
+  footer{margin-top:40px;font-size:.75rem;color:#888}
 </style>
 <script type="application/ld+json">
 {
@@ -43,33 +55,80 @@
   "datePublished": "2026-01-24T00:47:21.000Z",
   "url": "https://primosmusings.web.app/episodes/nfl-championship-game-previews-se3e3pcr.html",
   "image": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/36382860/36382860-1685991513611-10594f9ef8af3.jpg",
-  "duration": "00:36:13",
+  "duration": "PT36M13S",
+  "timeRequired": "PT36M13S",
+  "genre": "NFL Preview",
   "partOfSeries": {
     "@type": "PodcastSeries",
     "name": "PrimosMusings",
-    "url": "https://primosmusings.web.app/"
+    "url": "https://primosmusings.web.app/",
+    "webFeed": "https://anchor.fm/s/d9746d30/podcast/rss"
   },
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/114467675/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-0-24%2F416722953-44100-2-6408d784da3a8.m4a"
+    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/114467675/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-0-24%2F416722953-44100-2-6408d784da3a8.m4a",
+    "encodingFormat": "audio/mp4"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://primosmusings.web.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Episodes",
+      "item": "https://primosmusings.web.app/episodes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "NFL Championship Game Previews",
+      "item": "https://primosmusings.web.app/episodes/nfl-championship-game-previews-se3e3pcr.html"
+    }
+  ]
 }
 </script>
 </head>
 <body>
   <main class="wrap">
-    <div class="brand"><a href="/">Primosmusings</a> / <a href="/episodes/">Episodes</a></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/episodes/">Episodes</a> › <span aria-current="page">NFL Championship Game Previews</span></nav>
     <h1>NFL Championship Game Previews</h1>
-    <div class="meta">Sat, 24 Jan 2026 00:47:21 GMT · 00:36:13</div>
+    <a class="cat" href="/nfl/">NFL Preview</a>
+    <div class="meta">January 23, 2026 · 36 min · NFL Preview</div>
     <div class="cta">
       <a class="btn btn-spotify" href="https://open.spotify.com/search/NFL%20Championship%20Game%20Previews" rel="noopener">Listen on Spotify</a>
-      <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>
+      <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/nfl-championship-game-previews/id1672851730?i=1000746411816" rel="noopener">Apple Podcasts</a>
       <a class="btn btn-home" href="/">Open app</a>
     </div>
-    <div class="desc"><p>Join Amit and Primo as they dive into an in-depth analysis of the upcoming AFC Championship game. They discuss the key matchups between the New England Patriots and the Denver Broncos, focusing on the impact of injuries, defensive strategies, and the potential for game-changing plays. With insights into both teams' strengths and weaknesses, this episode offers a comprehensive preview of what promises to be an exciting clash. Tune in for expert predictions and a look at how the Patriots can capitalize on the Broncos' challenges. They also preview the NFC championship game between Seahawks and Rams and the coaching carousel around the league </p>
-</div>
+    <p class="links"><a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Show on Spotify</a> · <a href="https://primosmusings.substack.com" rel="noopener">Read more on Substack</a></p>
+    <audio controls preload="none" src="https://anchor.fm/s/d9746d30/podcast/play/114467675/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-0-24%2F416722953-44100-2-6408d784da3a8.m4a">Your browser can't play this audio. <a href="https://open.spotify.com/search/NFL%20Championship%20Game%20Previews" rel="noopener">Listen on Spotify</a>.</audio>
+    <div class="desc"><p>&lt;p&gt;Join Amit and Primo as they dive into an in-depth analysis of the upcoming AFC Championship game. They discuss the key matchups between the New England Patriots and the Denver Broncos, focusing on the impact of injuries, defensive strategies, and the potential for game-changing plays. With insights into both teams&amp;apos; strengths and weaknesses, this episode offers a comprehensive preview of what promises to be an exciting clash. Tune in for expert predictions and a look at how the Patriots can capitalize on the Broncos&amp;apos; challenges. They also preview the NFC championship game between Seahawks and Rams and the coaching carousel around the league &lt;/p&gt;</p></div>
+    <p class="about"><strong>About this episode:</strong> “NFL Championship Game Previews” is a 36-minute NFL Preview from Primosmusings, published January 23, 2026, hosted by Sridhar 'Primo' Srinivasan.</p>
+    <nav class="pager" aria-label="Previous and next episodes">
+      <a class="prev" href="/episodes/2026-australian-open-tennis-medvedev-rallies-from-2-sets-down-ne3e2tks.html"><span>← Previous episode</span>2026 Australian Open Tennis: Medvedev rallies from 2 sets down</a>
+      <a class="next" href="/episodes/2026-australian-open-tennis-salute-to-stan-the-man-sinner-prevails-in-tough-cond-se3e48gh.html"><span>Next episode →</span>2026 Australian Open Tennis: Salute to Stan the Man. Sinner prevails in tough conditions</a>
+    </nav>
+    <section class="related">
+      <h2>More NFL Preview episodes</h2>
+      <ul>
+        <li><a href="/episodes/2025-26-nfl-season-super-bowl-preview-we3en77k.html">2025-26 NFL Season: Super Bowl Preview:</a><span class="d">February 5, 2026</span></li>
+        <li><a href="/episodes/2025-26-nfl-playoffs-divisional-round-preview-we3dmhi3.html">2025-26 NFL Playoffs : Divisional Round Preview</a><span class="d">January 15, 2026</span></li>
+        <li><a href="/episodes/nfl-wild-card-patriots-edition-pats-vs-chargers-preview-we3dd1sd.html">NFL Wild Card : Patriots Edition : Pats vs Chargers preview</a><span class="d">January 8, 2026</span></li>
+        <li><a href="/episodes/2025-26-nfl-playoff-preview-we3da89s.html">2025-26 NFL Playoff Preview</a><span class="d">January 7, 2026</span></li>
+        <li><a href="/episodes/2025-26-nfl-season-week-16-preview-divisions-up-for-grabs-se3ck74d.html">2025-26 NFL Season: Week 16 Preview : Divisions up for grabs</a><span class="d">December 20, 2025</span></li>
+      </ul>
+    </section>
     <p><a href="/episodes/">← All episodes</a></p>
-    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). SEO landing page; audio hosted on podcast platforms.</footer>
+    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Spotify</a>, <a href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="https://primosmusings.substack.com" rel="noopener">Substack</a>.</footer>
   </main>
 </body>
 </html>

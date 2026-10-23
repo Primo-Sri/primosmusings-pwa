@@ -21,18 +21,30 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#f0f0f0;line-height:1.5}
   a{color:#4d9ef7}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-  .brand{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:12px}
-  .brand a{color:#1A73E8;text-decoration:none}
+  .crumbs{font-size:.75rem;color:#888;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crumbs a{color:#4d9ef7;text-decoration:none}
   h1{font-size:1.45rem;margin:0 0 8px;line-height:1.25}
+  .cat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8aa30;text-decoration:none;margin-bottom:6px}
   .meta{color:#888;font-size:.85rem;margin-bottom:20px}
-  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0}
-  .desc p{margin:0 0 10px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px}
   .btn{display:inline-block;padding:12px 18px;border-radius:24px;font-weight:700;text-decoration:none;font-size:.9rem}
   .btn-spotify{background:#1DB954;color:#000}
   .btn-apple{background:#fc3c44;color:#fff}
   .btn-home{background:#1e1e1e;color:#fff;border:1px solid #333}
-  footer{margin-top:40px;font-size:.75rem;color:#666}
+  .links{font-size:.85rem;margin:0 0 20px}
+  audio{display:block;width:100%;margin:0 0 20px}
+  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0;overflow-wrap:anywhere}
+  .desc p{margin:0 0 10px}
+  .about{color:#bbb;font-size:.9rem}
+  .pager{display:flex;gap:10px;margin:28px 0}
+  .pager a{flex:1;background:#141414;border:1px solid #282828;border-radius:12px;padding:12px;text-decoration:none;color:#f0f0f0;font-size:.85rem}
+  .pager a span{display:block;color:#4d9ef7;font-size:.75rem;font-weight:700;margin-bottom:4px}
+  .pager .next{text-align:right}
+  .related h2{font-size:1rem;margin:28px 0 8px}
+  .related ul{list-style:none;padding:0;margin:0}
+  .related li{padding:10px 0;border-bottom:1px solid #222;display:flex;flex-direction:column;gap:2px}
+  .d{color:#888;font-size:.75rem}
+  footer{margin-top:40px;font-size:.75rem;color:#888}
 </style>
 <script type="application/ld+json">
 {
@@ -43,32 +55,80 @@
   "datePublished": "2023-10-01T12:38:26.000Z",
   "url": "https://primosmusings.web.app/episodes/nfl-week-4-preview-we2a0t60.html",
   "image": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/36382860/36382860-1685991513611-10594f9ef8af3.jpg",
-  "duration": "00:06:44",
+  "duration": "PT6M44S",
+  "timeRequired": "PT6M44S",
+  "genre": "NFL Preview",
   "partOfSeries": {
     "@type": "PodcastSeries",
     "name": "PrimosMusings",
-    "url": "https://primosmusings.web.app/"
+    "url": "https://primosmusings.web.app/",
+    "webFeed": "https://anchor.fm/s/d9746d30/podcast/rss"
   },
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/76624512/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F2023-9-1%2F349281507-44100-1-ec0b225c38cd9.m4a"
+    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/76624512/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F2023-9-1%2F349281507-44100-1-ec0b225c38cd9.m4a",
+    "encodingFormat": "audio/mp4"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://primosmusings.web.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Episodes",
+      "item": "https://primosmusings.web.app/episodes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "NFL Week 4 Preview",
+      "item": "https://primosmusings.web.app/episodes/nfl-week-4-preview-we2a0t60.html"
+    }
+  ]
 }
 </script>
 </head>
 <body>
   <main class="wrap">
-    <div class="brand"><a href="/">Primosmusings</a> / <a href="/episodes/">Episodes</a></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/episodes/">Episodes</a> › <span aria-current="page">NFL Week 4 Preview</span></nav>
     <h1>NFL Week 4 Preview</h1>
-    <div class="meta">Sun, 01 Oct 2023 12:38:26 GMT · 00:06:44</div>
+    <a class="cat" href="/nfl/">NFL Preview</a>
+    <div class="meta">October 1, 2023 · 7 min · NFL Preview</div>
     <div class="cta">
       <a class="btn btn-spotify" href="https://open.spotify.com/search/NFL%20Week%204%20Preview" rel="noopener">Listen on Spotify</a>
       <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>
       <a class="btn btn-home" href="/">Open app</a>
     </div>
+    <p class="links"><a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Show on Spotify</a> · <a href="https://primosmusings.substack.com" rel="noopener">Read more on Substack</a></p>
+    <audio controls preload="none" src="https://anchor.fm/s/d9746d30/podcast/play/76624512/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2F2023-9-1%2F349281507-44100-1-ec0b225c38cd9.m4a">Your browser can't play this audio. <a href="https://open.spotify.com/search/NFL%20Week%204%20Preview" rel="noopener">Listen on Spotify</a>.</audio>
     <div class="desc"><p>Can Eagles, Dolphins &amp; 49ers stay undefeated? I am calling for some upsets . International series starts today.</p></div>
+    <p class="about"><strong>About this episode:</strong> “NFL Week 4 Preview” is a 7-minute NFL Preview from Primosmusings, published October 1, 2023, hosted by Sridhar 'Primo' Srinivasan.</p>
+    <nav class="pager" aria-label="Previous and next episodes">
+      <a class="prev" href="/episodes/2023-ryder-cup-preview-we29sk5l.html"><span>← Previous episode</span>2023 Ryder Cup Preview</a>
+      <a class="next" href="/episodes/icc-cricket-world-championship-pe2a54i6.html"><span>Next episode →</span>ICC Cricket World Championship</a>
+    </nav>
+    <section class="related">
+      <h2>More NFL Preview episodes</h2>
+      <ul>
+        <li><a href="/episodes/nfl-week-7-preview-we2at968.html">NFL Week 7 Preview</a><span class="d">October 22, 2023</span></li>
+        <li><a href="/episodes/nfl-week-6-preview-we2aiuqv.html">NFL Week 6 Preview</a><span class="d">October 14, 2023</span></li>
+        <li><a href="/episodes/nfl-week-5-preview-we2aa65v.html">NFL Week 5 Preview</a><span class="d">October 8, 2023</span></li>
+        <li><a href="/episodes/nfl-week-3-preview-we29mmpe.html">NFL Week 3 Preview</a><span class="d">September 23, 2023</span></li>
+        <li><a href="/episodes/nfl-week-2-preview-we29e4uq.html">NFL Week 2 Preview</a><span class="d">September 17, 2023</span></li>
+      </ul>
+    </section>
     <p><a href="/episodes/">← All episodes</a></p>
-    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). SEO landing page; audio hosted on podcast platforms.</footer>
+    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Spotify</a>, <a href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="https://primosmusings.substack.com" rel="noopener">Substack</a>.</footer>
   </main>
 </body>
 </html>

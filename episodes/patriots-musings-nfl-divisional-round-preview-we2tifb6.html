@@ -21,18 +21,30 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#f0f0f0;line-height:1.5}
   a{color:#4d9ef7}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-  .brand{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:12px}
-  .brand a{color:#1A73E8;text-decoration:none}
+  .crumbs{font-size:.75rem;color:#888;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crumbs a{color:#4d9ef7;text-decoration:none}
   h1{font-size:1.45rem;margin:0 0 8px;line-height:1.25}
+  .cat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8aa30;text-decoration:none;margin-bottom:6px}
   .meta{color:#888;font-size:.85rem;margin-bottom:20px}
-  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0}
-  .desc p{margin:0 0 10px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px}
   .btn{display:inline-block;padding:12px 18px;border-radius:24px;font-weight:700;text-decoration:none;font-size:.9rem}
   .btn-spotify{background:#1DB954;color:#000}
   .btn-apple{background:#fc3c44;color:#fff}
   .btn-home{background:#1e1e1e;color:#fff;border:1px solid #333}
-  footer{margin-top:40px;font-size:.75rem;color:#666}
+  .links{font-size:.85rem;margin:0 0 20px}
+  audio{display:block;width:100%;margin:0 0 20px}
+  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0;overflow-wrap:anywhere}
+  .desc p{margin:0 0 10px}
+  .about{color:#bbb;font-size:.9rem}
+  .pager{display:flex;gap:10px;margin:28px 0}
+  .pager a{flex:1;background:#141414;border:1px solid #282828;border-radius:12px;padding:12px;text-decoration:none;color:#f0f0f0;font-size:.85rem}
+  .pager a span{display:block;color:#4d9ef7;font-size:.75rem;font-weight:700;margin-bottom:4px}
+  .pager .next{text-align:right}
+  .related h2{font-size:1rem;margin:28px 0 8px}
+  .related ul{list-style:none;padding:0;margin:0}
+  .related li{padding:10px 0;border-bottom:1px solid #222;display:flex;flex-direction:column;gap:2px}
+  .d{color:#888;font-size:.75rem}
+  footer{margin-top:40px;font-size:.75rem;color:#888}
 </style>
 <script type="application/ld+json">
 {
@@ -43,35 +55,80 @@
   "datePublished": "2025-01-16T04:08:25.000Z",
   "url": "https://primosmusings.web.app/episodes/patriots-musings-nfl-divisional-round-preview-we2tifb6.html",
   "image": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/36382860/36382860-1685991513611-10594f9ef8af3.jpg",
-  "duration": "00:44:48",
+  "duration": "PT44M48S",
+  "timeRequired": "PT44M48S",
+  "genre": "NFL Preview",
   "partOfSeries": {
     "@type": "PodcastSeries",
     "name": "PrimosMusings",
-    "url": "https://primosmusings.web.app/"
+    "url": "https://primosmusings.web.app/",
+    "webFeed": "https://anchor.fm/s/d9746d30/podcast/rss"
   },
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/97123110/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-0-16%2F393163409-44100-2-6086ed141ebcc.m4a"
+    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/97123110/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-0-16%2F393163409-44100-2-6086ed141ebcc.m4a",
+    "encodingFormat": "audio/mp4"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://primosmusings.web.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Episodes",
+      "item": "https://primosmusings.web.app/episodes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Patriots Musings & NFL Divisional Round Preview",
+      "item": "https://primosmusings.web.app/episodes/patriots-musings-nfl-divisional-round-preview-we2tifb6.html"
+    }
+  ]
 }
 </script>
 </head>
 <body>
   <main class="wrap">
-    <div class="brand"><a href="/">Primosmusings</a> / <a href="/episodes/">Episodes</a></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/episodes/">Episodes</a> › <span aria-current="page">Patriots Musings &amp; NFL Divisional Round Preview</span></nav>
     <h1>Patriots Musings &amp; NFL Divisional Round Preview</h1>
-    <div class="meta">Thu, 16 Jan 2025 04:08:25 GMT · 00:44:48</div>
+    <a class="cat" href="/nfl/">NFL Preview</a>
+    <div class="meta">January 15, 2025 · 45 min · NFL Preview</div>
     <div class="cta">
       <a class="btn btn-spotify" href="https://open.spotify.com/search/Patriots%20Musings%20%26%20NFL%20Divisional%20Round%20Preview" rel="noopener">Listen on Spotify</a>
       <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>
       <a class="btn btn-home" href="/">Open app</a>
     </div>
-    <div class="desc"><p>Die hard Patriots fan Amit joins me to discuss the Mike Vrabel coaching hire. How will the Patriots look in the new era in all phases of the game. We discuss how Mike will approach it in all phases of the game </p>
-<p><br></p>
-<p>The NFL Divisional round playoffs are this weekend. Can the Chiefs be upset? Can the Cardiac Commanders continue their magical run and who wins the marquee match up between Bills and Ravens </p>
-</div>
+    <p class="links"><a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Show on Spotify</a> · <a href="https://primosmusings.substack.com" rel="noopener">Read more on Substack</a></p>
+    <audio controls preload="none" src="https://anchor.fm/s/d9746d30/podcast/play/97123110/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-0-16%2F393163409-44100-2-6086ed141ebcc.m4a">Your browser can't play this audio. <a href="https://open.spotify.com/search/Patriots%20Musings%20%26%20NFL%20Divisional%20Round%20Preview" rel="noopener">Listen on Spotify</a>.</audio>
+    <div class="desc"><p>&lt;p&gt;Die hard Patriots fan Amit joins me to discuss the Mike Vrabel coaching hire. How will the Patriots look in the new era in all phases of the game. We discuss how Mike will approach it in all phases of the game &lt;/p&gt; &lt;p&gt;&lt;br&gt;&lt;/p&gt; &lt;p&gt;The NFL Divisional round playoffs are this weekend. Can the Chiefs be upset? Can the Cardiac Commanders continue their magical run and who wins the marquee match up between Bills and Ravens &lt;/p&gt;</p></div>
+    <p class="about"><strong>About this episode:</strong> “Patriots Musings &amp; NFL Divisional Round Preview” is a 45-minute NFL Preview from Primosmusings, published January 15, 2025, hosted by Sridhar 'Primo' Srinivasan.</p>
+    <nav class="pager" aria-label="Previous and next episodes">
+      <a class="prev" href="/episodes/2025-australian-open-day-4-recap-alcaraz-djokovic-move-on-while-rudd-falters-se2th8ok.html"><span>← Previous episode</span>2025 Australian Open Day 4 Recap: Alcaraz, Djokovic move on while Rudd falters</a>
+      <a class="next" href="/episodes/2025-australian-open-day-5-recap-sinner-matches-on-ne2tismf.html"><span>Next episode →</span>2025 Australian Open Day 5 Recap: Sinner matches on</a>
+    </nav>
+    <section class="related">
+      <h2>More NFL Preview episodes</h2>
+      <ul>
+        <li><a href="/episodes/2024-nfl-week-18-preview-it-all-comes-down-to-this-se2t2c51.html">2024 NFL Week 18 Preview: It all comes down to this</a><span class="d">January 4, 2025</span></li>
+        <li><a href="/episodes/2024-week-14-nfl-preview-who-can-win-the-nfc-south-or-nfc-west-te2s0s21.html">2024 Week 14 NFL Preview: Who can win the NFC South or NFC West?</a><span class="d">December 7, 2024</span></li>
+        <li><a href="/episodes/2024-nfl-week-12-recap-week-13-preview-we2ri253.html">2024 NFL Week 12 Recap/ Week 13 Preview</a><span class="d">November 26, 2024</span></li>
+        <li><a href="/episodes/2024-nfl-week-12-preview-can-the-ravens-bounce-back-ke2re5fh.html">2024 NFL Week 12 Preview: Can the Ravens bounce back?</a><span class="d">November 24, 2024</span></li>
+        <li><a href="/episodes/2024-week-10-nfl-preview-showdown-in-nation-s-capital-le2qpmq1.html">2024 Week 10 NFL Preview: Showdown in Nation's Capital</a><span class="d">November 10, 2024</span></li>
+      </ul>
+    </section>
     <p><a href="/episodes/">← All episodes</a></p>
-    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). SEO landing page; audio hosted on podcast platforms.</footer>
+    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Spotify</a>, <a href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="https://primosmusings.substack.com" rel="noopener">Substack</a>.</footer>
   </main>
 </body>
 </html>

@@ -21,18 +21,30 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#f0f0f0;line-height:1.5}
   a{color:#4d9ef7}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-  .brand{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:12px}
-  .brand a{color:#1A73E8;text-decoration:none}
+  .crumbs{font-size:.75rem;color:#888;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crumbs a{color:#4d9ef7;text-decoration:none}
   h1{font-size:1.45rem;margin:0 0 8px;line-height:1.25}
+  .cat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8aa30;text-decoration:none;margin-bottom:6px}
   .meta{color:#888;font-size:.85rem;margin-bottom:20px}
-  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0}
-  .desc p{margin:0 0 10px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px}
   .btn{display:inline-block;padding:12px 18px;border-radius:24px;font-weight:700;text-decoration:none;font-size:.9rem}
   .btn-spotify{background:#1DB954;color:#000}
   .btn-apple{background:#fc3c44;color:#fff}
   .btn-home{background:#1e1e1e;color:#fff;border:1px solid #333}
-  footer{margin-top:40px;font-size:.75rem;color:#666}
+  .links{font-size:.85rem;margin:0 0 20px}
+  audio{display:block;width:100%;margin:0 0 20px}
+  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0;overflow-wrap:anywhere}
+  .desc p{margin:0 0 10px}
+  .about{color:#bbb;font-size:.9rem}
+  .pager{display:flex;gap:10px;margin:28px 0}
+  .pager a{flex:1;background:#141414;border:1px solid #282828;border-radius:12px;padding:12px;text-decoration:none;color:#f0f0f0;font-size:.85rem}
+  .pager a span{display:block;color:#4d9ef7;font-size:.75rem;font-weight:700;margin-bottom:4px}
+  .pager .next{text-align:right}
+  .related h2{font-size:1rem;margin:28px 0 8px}
+  .related ul{list-style:none;padding:0;margin:0}
+  .related li{padding:10px 0;border-bottom:1px solid #222;display:flex;flex-direction:column;gap:2px}
+  .d{color:#888;font-size:.75rem}
+  footer{margin-top:40px;font-size:.75rem;color:#888}
 </style>
 <script type="application/ld+json">
 {
@@ -43,33 +55,80 @@
   "datePublished": "2024-04-30T02:18:43.000Z",
   "url": "https://primosmusings.web.app/episodes/nfl-draft-2024-recap-6-time-super-bowl-champions-patriots-se2j1qna.html",
   "image": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/36382860/36382860-1685991513611-10594f9ef8af3.jpg",
-  "duration": "00:32:37",
+  "duration": "PT32M37S",
+  "timeRequired": "PT32M37S",
+  "genre": "NFL Recap",
   "partOfSeries": {
     "@type": "PodcastSeries",
     "name": "PrimosMusings",
-    "url": "https://primosmusings.web.app/"
+    "url": "https://primosmusings.web.app/",
+    "webFeed": "https://anchor.fm/s/d9746d30/podcast/rss"
   },
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/86091946/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2Fexports%2Fd9746d30%2F86091946%2F8202aad3bc3affc43b747e6e80d9af08.m4a"
+    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/86091946/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2Fexports%2Fd9746d30%2F86091946%2F8202aad3bc3affc43b747e6e80d9af08.m4a",
+    "encodingFormat": "audio/mp4"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://primosmusings.web.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Episodes",
+      "item": "https://primosmusings.web.app/episodes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "NFL Draft 2024 Recap: 6-Time Super Bowl Champions Patriots",
+      "item": "https://primosmusings.web.app/episodes/nfl-draft-2024-recap-6-time-super-bowl-champions-patriots-se2j1qna.html"
+    }
+  ]
 }
 </script>
 </head>
 <body>
   <main class="wrap">
-    <div class="brand"><a href="/">Primosmusings</a> / <a href="/episodes/">Episodes</a></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/episodes/">Episodes</a> › <span aria-current="page">NFL Draft 2024 Recap: 6-Time Super Bowl Champions Patriots</span></nav>
     <h1>NFL Draft 2024 Recap: 6-Time Super Bowl Champions Patriots</h1>
-    <div class="meta">Tue, 30 Apr 2024 02:18:43 GMT · 00:32:37</div>
+    <a class="cat" href="/nfl/">NFL Recap</a>
+    <div class="meta">April 29, 2024 · 33 min · NFL Recap</div>
     <div class="cta">
       <a class="btn btn-spotify" href="https://open.spotify.com/search/NFL%20Draft%202024%20Recap%3A%206-Time%20Super%20Bowl%20Champions%20Patriots" rel="noopener">Listen on Spotify</a>
       <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>
       <a class="btn btn-home" href="/">Open app</a>
     </div>
-    <div class="desc"><p>The 2024 NFL Draft has come to an end and the New England Patriots selected Drake Maye as #3 overall pick to herald a new era in Foxborough. The Patriots selected 8 picks in the draft. My good friend and resident Patriots expert, Amit Duvedi, joins me in analyzing each and every pick. </p>
-</div>
+    <p class="links"><a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Show on Spotify</a> · <a href="https://primosmusings.substack.com" rel="noopener">Read more on Substack</a></p>
+    <audio controls preload="none" src="https://anchor.fm/s/d9746d30/podcast/play/86091946/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fproduction%2Fexports%2Fd9746d30%2F86091946%2F8202aad3bc3affc43b747e6e80d9af08.m4a">Your browser can't play this audio. <a href="https://open.spotify.com/search/NFL%20Draft%202024%20Recap%3A%206-Time%20Super%20Bowl%20Champions%20Patriots" rel="noopener">Listen on Spotify</a>.</audio>
+    <div class="desc"><p>&lt;p&gt;The 2024 NFL Draft has come to an end and the New England Patriots selected Drake Maye as #3 overall pick to herald a new era in Foxborough. The Patriots selected 8 picks in the draft. My good friend and resident Patriots expert, Amit Duvedi, joins me in analyzing each and every pick. &lt;/p&gt;</p></div>
+    <p class="about"><strong>About this episode:</strong> “NFL Draft 2024 Recap: 6-Time Super Bowl Champions Patriots” is a 33-minute NFL Recap from Primosmusings, published April 29, 2024, hosted by Sridhar 'Primo' Srinivasan.</p>
+    <nav class="pager" aria-label="Previous and next episodes">
+      <a class="prev" href="/episodes/nfl-draft-2024-day-1-recap-pe2itgc7.html"><span>← Previous episode</span>NFL Draft 2024: Day 1 Recap</a>
+      <a class="next" href="/episodes/nfl-draft-2024-recap-nfc-east-te2j3luq.html"><span>Next episode →</span>NFL Draft 2024 Recap: NFC East</a>
+    </nav>
+    <section class="related">
+      <h2>More NFL Recap episodes</h2>
+      <ul>
+        <li><a href="/episodes/2024-nfl-week-2-recap-ravens-and-bengals-slide-ee2ogl5i.html">2024 NFL Week 2 Recap: Ravens and Bengals Slide</a><span class="d">September 17, 2024</span></li>
+        <li><a href="/episodes/2024-nfl-week-1-recap-chiefs-49ers-notch-impressive-wins-se2o767n.html">2024 NFL Week 1 Recap: Chiefs/49ers notch impressive wins</a><span class="d">September 9, 2024</span></li>
+        <li><a href="/episodes/nfl-draft-2024-recap-nfc-east-te2j3luq.html">NFL Draft 2024 Recap: NFC East</a><span class="d">April 30, 2024</span></li>
+        <li><a href="/episodes/nfl-draft-2024-day-1-recap-pe2itgc7.html">NFL Draft 2024: Day 1 Recap</a><span class="d">April 26, 2024</span></li>
+        <li><a href="/episodes/nfl-championship-round-recap-pe2f1qur.html">NFL Championship Round Recap</a><span class="d">January 28, 2024</span></li>
+      </ul>
+    </section>
     <p><a href="/episodes/">← All episodes</a></p>
-    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). SEO landing page; audio hosted on podcast platforms.</footer>
+    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Spotify</a>, <a href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="https://primosmusings.substack.com" rel="noopener">Substack</a>.</footer>
   </main>
 </body>
 </html>

@@ -21,18 +21,30 @@
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0a0a;color:#f0f0f0;line-height:1.5}
   a{color:#4d9ef7}
   .wrap{max-width:720px;margin:0 auto;padding:24px 16px 64px}
-  .brand{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:12px}
-  .brand a{color:#1A73E8;text-decoration:none}
+  .crumbs{font-size:.75rem;color:#888;margin-bottom:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .crumbs a{color:#4d9ef7;text-decoration:none}
   h1{font-size:1.45rem;margin:0 0 8px;line-height:1.25}
+  .cat{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#e8aa30;text-decoration:none;margin-bottom:6px}
   .meta{color:#888;font-size:.85rem;margin-bottom:20px}
-  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0}
-  .desc p{margin:0 0 10px}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 10px}
   .btn{display:inline-block;padding:12px 18px;border-radius:24px;font-weight:700;text-decoration:none;font-size:.9rem}
   .btn-spotify{background:#1DB954;color:#000}
   .btn-apple{background:#fc3c44;color:#fff}
   .btn-home{background:#1e1e1e;color:#fff;border:1px solid #333}
-  footer{margin-top:40px;font-size:.75rem;color:#666}
+  .links{font-size:.85rem;margin:0 0 20px}
+  audio{display:block;width:100%;margin:0 0 20px}
+  .desc{background:#141414;border:1px solid #282828;border-radius:12px;padding:16px;margin:20px 0;overflow-wrap:anywhere}
+  .desc p{margin:0 0 10px}
+  .about{color:#bbb;font-size:.9rem}
+  .pager{display:flex;gap:10px;margin:28px 0}
+  .pager a{flex:1;background:#141414;border:1px solid #282828;border-radius:12px;padding:12px;text-decoration:none;color:#f0f0f0;font-size:.85rem}
+  .pager a span{display:block;color:#4d9ef7;font-size:.75rem;font-weight:700;margin-bottom:4px}
+  .pager .next{text-align:right}
+  .related h2{font-size:1rem;margin:28px 0 8px}
+  .related ul{list-style:none;padding:0;margin:0}
+  .related li{padding:10px 0;border-bottom:1px solid #222;display:flex;flex-direction:column;gap:2px}
+  .d{color:#888;font-size:.75rem}
+  footer{margin-top:40px;font-size:.75rem;color:#888}
 </style>
 <script type="application/ld+json">
 {
@@ -43,33 +55,80 @@
   "datePublished": "2026-02-10T12:35:36.000Z",
   "url": "https://primosmusings.web.app/episodes/icc-cricket-t20-world-cup-preview-we3et1jf.html",
   "image": "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/36382860/36382860-1685991513611-10594f9ef8af3.jpg",
-  "duration": "00:07:19",
+  "duration": "PT7M19S",
+  "timeRequired": "PT7M19S",
+  "genre": "Sports",
   "partOfSeries": {
     "@type": "PodcastSeries",
     "name": "PrimosMusings",
-    "url": "https://primosmusings.web.app/"
+    "url": "https://primosmusings.web.app/",
+    "webFeed": "https://anchor.fm/s/d9746d30/podcast/rss"
   },
   "associatedMedia": {
     "@type": "MediaObject",
-    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/115295279/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-1-10%2F417822034-44100-2-2ad3a2c718828.m4a"
+    "contentUrl": "https://anchor.fm/s/d9746d30/podcast/play/115295279/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-1-10%2F417822034-44100-2-2ad3a2c718828.m4a",
+    "encodingFormat": "audio/mp4"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://primosmusings.web.app/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Episodes",
+      "item": "https://primosmusings.web.app/episodes/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "ICC Cricket T20 World Cup Preview",
+      "item": "https://primosmusings.web.app/episodes/icc-cricket-t20-world-cup-preview-we3et1jf.html"
+    }
+  ]
 }
 </script>
 </head>
 <body>
   <main class="wrap">
-    <div class="brand"><a href="/">Primosmusings</a> / <a href="/episodes/">Episodes</a></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> › <a href="/episodes/">Episodes</a> › <span aria-current="page">ICC Cricket T20 World Cup Preview</span></nav>
     <h1>ICC Cricket T20 World Cup Preview</h1>
-    <div class="meta">Tue, 10 Feb 2026 12:35:36 GMT · 00:07:19</div>
+    <span class="cat">Sports</span>
+    <div class="meta">February 10, 2026 · 7 min · Sports</div>
     <div class="cta">
       <a class="btn btn-spotify" href="https://open.spotify.com/search/ICC%20Cricket%20T20%20World%20Cup%20Preview" rel="noopener">Listen on Spotify</a>
-      <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>
+      <a class="btn btn-apple" href="https://podcasts.apple.com/us/podcast/icc-cricket-t20-world-cup-preview/id1672851730?i=1000749077346" rel="noopener">Apple Podcasts</a>
       <a class="btn btn-home" href="/">Open app</a>
     </div>
-    <div class="desc"><p>Cricket fans, attention: the ICC Men's T20 World Cup is storming through India and Sri Lanka, and the storylines are more unpredictable than ever. From giant upsets to fierce rivalries, you’ll discover how this tournament's expanding global roster could redefine the game. Primo provides a preview of the world cup . </p><p><br /></p><p>The 10th edition of the T20 World Cup features the largest group of teams in history, including debutants like the USA, Italy, and Namibia, alongside cricket heavyweights like India, Australia, and England. </p><p><br /></p><p><br /></p>
-</div>
+    <p class="links"><a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Show on Spotify</a> · <a href="https://primosmusings.substack.com" rel="noopener">Read more on Substack</a></p>
+    <audio controls preload="none" src="https://anchor.fm/s/d9746d30/podcast/play/115295279/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-1-10%2F417822034-44100-2-2ad3a2c718828.m4a">Your browser can't play this audio. <a href="https://open.spotify.com/search/ICC%20Cricket%20T20%20World%20Cup%20Preview" rel="noopener">Listen on Spotify</a>.</audio>
+    <div class="desc"><p>&lt;p&gt;Cricket fans, attention: the ICC Men&amp;apos;s T20 World Cup is storming through India and Sri Lanka, and the storylines are more unpredictable than ever. From giant upsets to fierce rivalries, you’ll discover how this tournament&amp;apos;s expanding global roster could redefine the game. Primo provides a preview of the world cup . &lt;/p&gt;&lt;p&gt;&lt;br /&gt;&lt;/p&gt;&lt;p&gt;The 10th edition of the T20 World Cup features the largest group of teams in history, including debutants like the USA, Italy, and Namibia, alongside cricket heavyweights like India, Australia, and England. &lt;/p&gt;&lt;p&gt;&lt;br /&gt;&lt;/p&gt;&lt;p&gt;&lt;br /&gt;&lt;/p&gt;</p></div>
+    <p class="about"><strong>About this episode:</strong> “ICC Cricket T20 World Cup Preview” is a 7-minute sports episode from Primosmusings, published February 10, 2026, hosted by Sridhar 'Primo' Srinivasan.</p>
+    <nav class="pager" aria-label="Previous and next episodes">
+      <a class="prev" href="/episodes/2025-26-nfl-season-super-bowl-preview-we3en77k.html"><span>← Previous episode</span>2025-26 NFL Season: Super Bowl Preview:</a>
+      <a class="next" href="/episodes/nfl-super-bowl-recap-seahawks-dominate-patriots-to-win-their-second-lombardi-tro-ye3evst1.html"><span>Next episode →</span>NFL Super Bowl Recap: Seahawks dominate Patriots to win their second Lombardi Trophy</a>
+    </nav>
+    <section class="related">
+      <h2>More sports episodes</h2>
+      <ul>
+        <li><a href="/episodes/icc-cricket-t20-world-cup-semifinalists-ready-to-battle-ee3fqt80.html">ICC Cricket T20 World Cup: Semifinalists ready to battle</a><span class="d">March 2, 2026</span></li>
+        <li><a href="/episodes/icc-t20-cricket-super-8-preview-can-a-dark-horse-team-win-it-all-le3fbj9o.html">ICC T20 Cricket Super 8 Preview: Can a dark horse team win it all</a><span class="d">February 20, 2026</span></li>
+        <li><a href="/episodes/2026-icc-t-20-cricket-championship-update-ee3f9r9p.html">2026 ICC T 20 Cricket Championship Update</a><span class="d">February 19, 2026</span></li>
+        <li><a href="/episodes/2026-australian-open-tennis-men-s-final-recap-carlos-reigns-supreme-ee3egnee.html">2026 Australian Open Tennis: Men's Final Recap : Carlos reigns supreme</a><span class="d">February 1, 2026</span></li>
+        <li><a href="/episodes/2026-australian-open-tennis-women-s-final-recap-elena-rises-to-the-top-pe3eelf6.html">2026 Australian Open Tennis Women's Final Recap : Elena rises to the top</a><span class="d">January 31, 2026</span></li>
+      </ul>
+    </section>
     <p><a href="/episodes/">← All episodes</a></p>
-    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). SEO landing page; audio hosted on podcast platforms.</footer>
+    <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="https://open.spotify.com/show/0rN6FI7HAsjcm7Y19FMo0J" rel="noopener">Spotify</a>, <a href="https://podcasts.apple.com/us/podcast/primosmusings/id1672851730" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="https://primosmusings.substack.com" rel="noopener">Substack</a>.</footer>
   </main>
 </body>
 </html>
