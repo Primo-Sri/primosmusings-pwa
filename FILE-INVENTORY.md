@@ -20,7 +20,7 @@
 | `index.html` | Entire app — all HTML, CSS, and JavaScript in one file | May 2026 |
 | `sw.js` | Service worker — caching strategy, push notifications | May 2026 |
 | `manifest.json` | PWA manifest — app name, icons, shortcuts, theme color | — |
-| `firebase.json` | Firebase Hosting config — deploy target, cache headers for sw.js, and a rewrite so `/nfl/` serves the newsletter page | Oct 2026 |
+| `firebase.json` | Firebase Hosting config — deploy target; `no-cache` for sw.js and for every page (`.html` and folder addresses) so people always get the latest version; and a rewrite so `/nfl/` serves the newsletter page | Oct 2026 |
 | `.firebaserc` | Firebase project binding — links to `primosmusings-b47f7` | — |
 | `logo.jpg` | Podcast logo image used in header | — |
 | `icon-192.png` | App icon 192×192 (Android home screen, notification badge) | — |

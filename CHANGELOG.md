@@ -4,6 +4,13 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v60 — 2026-10-24
+- **Auto-update when people open the app.** Coming back to the app after 30+ seconds away now counts as opening it (phones usually resume an installed app rather than restart it), so a waiting update applies silently with a quick reload instead of showing the banner. The quiet-update window after opening goes from 5 to 15 seconds, so slow connections still qualify
+- **Never interrupts listening:** if an episode is playing, the app shows the "New version available" banner instead of reloading
+- **Fix — today's episodes missing from Home (Oct 27).** The NFL Recap was titled "2026-27 Week 7 Recap" with no "NFL", so it wasn't recognized. A numbered week ("Week 7") now counts as NFL too, unless the title names another sport (tennis, golf, an Open, cricket, NBA, F1, soccer, World Cup, baseball). The same rule is used by the SEO page generator, which re-labels 6 old episode pages that also left out "NFL"
+- **"Also today" shows every other episode from the same day**, with Listen Now, even before its newsletter is published (the newsletter buttons appear once it is). It used to show only episodes whose newsletter was already up. At most two cards
+- **Pages always check for the latest version** (`firebase.json`): `.html` pages and folder addresses (`/`, `/daily/`, `/nfl/`, `/episodes/`) are served with `Cache-Control: no-cache`, replacing Firebase's default one-hour cache. That cache was why phones could show an old version for up to an hour after a deploy. Images, icons, the manifest and the sitemap keep normal caching
+
 ## v59 — 2026-10-22
 - **News tab removed from the tab bar** (it repeated what Home already shows). The bar is now 5 tabs: Home, Listen, Guests, Primo, More
 - The newsletter page is now called **Newsletters** and has a **‹ Back** button. It opens from Home (📰 See the newsletter, or the newsletter card), keeps Home lit, and Back returns there

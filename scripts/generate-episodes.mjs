@@ -116,11 +116,15 @@ async function fetchAppleLinks() {
 }
 
 // Matches the app's names: News Bites, NFL Preview, NFL Recap; everything else is Sports.
+// Titles don't always say "NFL" ("2026-27 Week 7 Recap"), so a numbered week counts too,
+// unless the title names another sport ("French Open Tennis Week 1 Recap").
 function categoryOf(title) {
   const t = String(title || '');
   if (/news\s*bites/i.test(t)) return 'Primos News Bites';
-  if (/\bnfl\b/i.test(t) && /preview/i.test(t)) return 'NFL Preview';
-  if (/\bnfl\b/i.test(t) && /recap/i.test(t)) return 'NFL Recap';
+  const otherSport = /tennis|golf|\bopen\b|cricket|\bnba\b|\bf1\b|formula|soccer|world cup|baseball|\bmlb\b/i.test(t);
+  const nfl = /\bnfl\b/i.test(t) || (/\bweek\s*\d+/i.test(t) && !otherSport);
+  if (nfl && /preview/i.test(t)) return 'NFL Preview';
+  if (nfl && /recap/i.test(t)) return 'NFL Recap';
   return 'Sports';
 }
 

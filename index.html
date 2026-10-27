@@ -2586,11 +2586,15 @@ function getNewsletters() {
   return newsMetaPromise;
 }
 
+// Titles don't always say "NFL" ("2026-27 Week 7 Recap"), so a numbered week counts too,
+// unless the title names another sport ("French Open Tennis Week 1 Recap").
 function newsKindForEpisode(title) {
   const t = (title || '').toLowerCase();
   if (/news\s*bites/.test(t)) return 'daily';
-  if (/\bnfl\b/.test(t) && /\brecap\b/.test(t)) return 'nflRecap';
-  if (/\bnfl\b/.test(t) && /\bpreview\b/.test(t)) return 'nflPreview';
+  const otherSport = /tennis|golf|\bopen\b|cricket|\bnba\b|\bf1\b|formula|soccer|world cup|baseball|\bmlb\b/.test(t);
+  const nfl = /\bnfl\b/.test(t) || (/\bweek\s*\d+/.test(t) && !otherSport);
+  if (nfl && /\brecap\b/.test(t)) return 'nflRecap';
+  if (nfl && /\bpreview\b/.test(t)) return 'nflPreview';
   return '';
 }
 
@@ -2651,13 +2655,13 @@ function renderAlsoTodayCard(ep, issue) {
     dailyEl('h3', {}, ep.title),
     ep.desc ? dailyEl('p', {}, ep.desc + '…') : null,
     listenNowLink(ep),
-    dailyEl('div', { class: 'lc-news' }, ...newsletterButtons(issue))
+    issue ? dailyEl('div', { class: 'lc-news' }, ...newsletterButtons(issue)) : null
   );
 }
 
-// Home: the Latest Episode card gets its newsletter's buttons. On days with more than one
-// newsletter episode (say News Bites plus an NFL Recap or Preview), each of that day's other
-// newsletter episodes gets its own "Also today" card with its own buttons.
+// Home: the Latest Episode card gets its newsletter's buttons. Every other episode from the
+// same day (say News Bites plus an NFL Recap) gets its own "Also today" card, with its
+// newsletter's buttons once that newsletter is published.
 async function showLatestEpisodeNewsletter(ep) {
   const box = document.getElementById('home-latest-news');
   const more = document.getElementById('home-more-episodes');
@@ -2680,11 +2684,11 @@ async function showLatestEpisodeNewsletter(ep) {
   const extras = [];
   for (const other of loadedEpisodes.slice(1, 15)) {
     if (!day || !other.ts || dailyEtDate(other.ts) !== day) continue;  // same Eastern day only
-    const match = issues.find(i => episodeMatchesNewsletter(other, i));
-    if (!match || linked.some(l => l.kind === match.kind)) continue;
-    linked.push(match);
+    let match = issues.find(i => episodeMatchesNewsletter(other, i)) || null;
+    if (match && linked.some(l => l.kind === match.kind)) match = null;  // already shown above
+    if (match) linked.push(match);
     extras.push(renderAlsoTodayCard(other, match));
-    if (extras.length === 2) break;  // at most the other two newsletters
+    if (extras.length === 2) break;  // at most two more cards
   }
   more.replaceChildren(...extras);
 
@@ -3023,24 +3027,33 @@ function submitContact(e) {
   document.getElementById('contact-success').style.display='block';
 }
 
-/* ── Service worker ──────────────────────────────── */
+/* ── Service worker: keep everyone on the latest version ──
+   A new version downloads in the background, then switches on with a quick reload:
+   - silently when the app was just opened, or just brought back after 30+ seconds
+     away (on phones an installed app is usually resumed, not restarted),
+     as long as no episode is playing;
+   - otherwise via the "New version available" banner, so nobody is interrupted. */
 let swWaiting = null;
-const appStartTime = Date.now();
+let appOpenedAt = Date.now();     // when the app was last opened or brought back
+let appHiddenAt = 0;
+const FRESH_OPEN_MS = 15000;      // an update found this soon after opening applies silently
+const AWAY_MS = 30000;            // away this long counts as opening the app again
 
 function activateUpdate() {
   if (swWaiting) swWaiting.postMessage({ type: 'SKIP_WAITING' });
 }
 
+function episodeIsPlaying() {
+  return typeof audioEl !== 'undefined' && !!audioEl && !audioEl.paused && !audioEl.ended;
+}
+
+// Never reload on someone mid-episode: a reload would cut off their audio.
+function canUpdateSilently() {
+  return Date.now() - appOpenedAt < FRESH_OPEN_MS && !episodeIsPlaying();
+}
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').then(reg => {
-    // Check for updates every 10 minutes and whenever user returns to the app
-    setInterval(() => reg.update(), 10 * 60 * 1000);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') reg.update();
-    });
-
-    const activateSilently = (sw) => sw.postMessage({ type: 'SKIP_WAITING' });
-
     const showBanner = (sw) => {
       swWaiting = sw;
       const bar = document.getElementById('update-bar');
@@ -3048,14 +3061,18 @@ if ('serviceWorker' in navigator) {
     };
 
     const handleWaiting = (sw) => {
-      // Fresh open (within 5s of page load) — activate silently, user won't notice
-      if (Date.now() - appStartTime < 5000) {
-        activateSilently(sw);
-      } else {
-        // Mid-session — show banner so we don't interrupt
-        showBanner(sw);
-      }
+      if (canUpdateSilently()) sw.postMessage({ type: 'SKIP_WAITING' });
+      else showBanner(sw);
     };
+
+    // Check for updates every 10 minutes, and whenever someone comes back to the app.
+    setInterval(() => reg.update(), 10 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') { appHiddenAt = Date.now(); return; }
+      if (appHiddenAt && Date.now() - appHiddenAt >= AWAY_MS) appOpenedAt = Date.now();
+      if (reg.waiting) handleWaiting(reg.waiting);  // a version that arrived while they were away
+      reg.update();
+    });
 
     if (reg.waiting) handleWaiting(reg.waiting);
 
