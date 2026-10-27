@@ -20,6 +20,8 @@ const APPLE_LOOKUP = 'https://itunes.apple.com/lookup?id=1672851730&entity=podca
 const SUBSTACK = 'https://primosmusings.substack.com';
 const OG_IMAGE = `${SITE}/og-image-1200x630.jpg`;
 const HOST = "Sridhar 'Primo' Srinivasan";
+// Usage analytics. The measurement ID lives in /analytics.js, not here.
+const ANALYTICS_SNIPPET = '<script src="/analytics.js" defer></script>';
 
 function escapeHtml(s) {
   return String(s || '')
@@ -347,6 +349,7 @@ ${jsonLd(breadcrumbLd)}
     <p><a href="/episodes/">← All episodes</a></p>
     <footer>Primosmusings — global sports podcast by Sridhar Srinivasan (Primo). Listen on <a href="${SPOTIFY_SHOW}" rel="noopener">Spotify</a>, <a href="${APPLE}" rel="noopener">Apple Podcasts</a>, or in the <a href="/">Primosmusings app</a>. Read more on <a href="${SUBSTACK}" rel="noopener">Substack</a>.</footer>
   </main>
+${ANALYTICS_SNIPPET}
 </body>
 </html>
 `;
@@ -429,6 +432,7 @@ ${jsonLd(pageLd)}
 ${list}
     </ul>
   </main>
+${ANALYTICS_SNIPPET}
 </body>
 </html>
 `;

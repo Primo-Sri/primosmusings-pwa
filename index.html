@@ -880,6 +880,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:1px}
 </style>
+<script src="/analytics.js" defer></script>
 </head>
 <body>
 <div id="app">
@@ -2448,7 +2449,7 @@ function playEpisode(el) {
     document.getElementById('mp-dur').textContent = '–:––';
     document.getElementById('mp-seek').value = 0;
     a.play().catch(() => {});
-    logPlay(title);
+    logPlay(title, audio);
   }
 
   document.getElementById('mini-player').style.display = 'block';
@@ -2991,8 +2992,18 @@ async function castPollVote(p, choice, card, buttons, errorEl) {
 }
 
 // Count each play in Firestore — one doc per episode, count increments.
+// Also reports an episode_play to Google Analytics when that ID is set.
 // Fire-and-forget: analytics must never block or break playback.
-function logPlay(title) {
+function logPlay(title, audioUrl) {
+  try {
+    if (window.pmTrack) {
+      window.pmTrack('episode_play', {
+        episode_title: title,
+        episode_url: audioUrl || '',
+        play_source: 'app'
+      });
+    }
+  } catch (e) {}
   try {
     if (typeof firebase === 'undefined' || !firebase.firestore) return;
     const id = title.toLowerCase().trim().replace(/\//g, '-').substring(0, 300);

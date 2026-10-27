@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v62 — 2026-10-27
+- **Usage analytics, now on (ID G-C7JG53MTFV).** Visits, episode plays (in the app, on episode pages, and inside the Spotify embed), and clicks out to Spotify, Apple Podcasts, and the other listening apps can be counted in Google Analytics 4. See README.md. The Home tab's play list is unchanged
+
 ## v61 — 2026-10-27
 - **Fix — "Also today" episodes appear right away.** The Home tab used to wait for the newsletters to load from the database before drawing the other episodes from the same day. On a slow connection that wait can be 10 seconds or more, so the second episode (e.g. the Week 7 NFL Recap next to News Bites) seemed to be missing. The cards now show as soon as the episode list loads, and their newsletter buttons fill in when the newsletters arrive
 
