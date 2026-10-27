@@ -8,7 +8,7 @@
    Leave the placeholder and nothing is loaded or sent. Playback, the
    episode pages, and the in-app Firestore play count all keep working.
 */
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+const GA_MEASUREMENT_ID = 'G-C7JG53MTFV';
 
 (function () {
   function measurementId() {

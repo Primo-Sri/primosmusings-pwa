@@ -4,43 +4,15 @@ How episodes, newsletters, and polls get published is in [WORKFLOW.md](WORKFLOW.
 
 ## Usage analytics
 
-Nothing is sent yet. The Firebase web app config in this repo has no measurement ID, so `analytics.js` ships with a placeholder and stays quiet until you paste a real one.
+It's on. The measurement ID **G-C7JG53MTFV** (Firebase project primosmusings-b47f7) is set at the top of `analytics.js`. That's the only place it lives. Episode pages, the newsletter pages and the app all read that one file.
 
-### 1. Turn on Google Analytics and get the measurement ID
+To switch analytics off, put the placeholder `G-XXXXXXXXXX` back on that line. Nothing is sent to Google then, and the site works exactly the same.
 
-Google Analytics 4 is free. You do not need a paid plan or a billing account.
+### Deploying
 
-1. Open the Firebase project **primosmusings-b47f7**: [Project settings → Integrations](https://console.firebase.google.com/project/primosmusings-b47f7/settings/integrations).
-2. On the **Google Analytics** card, choose **Enable** (or **Link**). Sign in with the Google account that should own the numbers. Create a new property named Primosmusings, or link one you already have. Stay on the free property. Do not pick Analytics 360.
-3. Copy the **measurement ID**. It looks like `G-1A2BCD3EFG`. Either place works:
-   - Firebase → Project settings → General → Your apps → the web app → the config includes `measurementId`.
-   - [Google Analytics](https://analytics.google.com/) → Admin → Data streams → the web stream → **Measurement ID** at the top right.
+Merging to `master` deploys automatically (GitHub Actions). **Don't run `firebase deploy` by hand.** The nightly SEO job also commits and deploys, and a hand deploy from a local folder can put pages live that git doesn't have (that happened on Oct 15). See WORKFLOW.md.
 
-### 2. Paste the ID
-
-Open `analytics.js`. The only line to change is the one marked at the top:
-
-```javascript
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
-```
-
-Replace `G-XXXXXXXXXX` with your ID, quotes included. Do not put the ID anywhere else. Episode pages, the newsletter page, and the app all read this file.
-
-Leave the placeholder alone and the site keeps working exactly as it does now. No call is made to Google.
-
-### 3. Deploy
-
-From this folder, publish only this site's hosting:
-
-```bash
-firebase deploy --only hosting --project primosmusings-b47f7
-```
-
-That updates the **primosmusings** Hosting site (https://primosmusings.web.app). It does not deploy Firestore rules, and it does not touch any other Firebase project.
-
-A push to `master` also deploys hosting, which is the usual path. Use the command above when you want to publish just this change.
-
-### 4. Where to read the numbers
+### Where to read the numbers
 
 Open the property you linked in [Google Analytics](https://analytics.google.com/).
 

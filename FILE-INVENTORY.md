@@ -18,7 +18,7 @@
 | File | Purpose | Last Modified |
 |---|---|---|
 | `index.html` | Entire app — all HTML, CSS, and JavaScript in one file | May 2026 |
-| `analytics.js` | Google Analytics 4 (page views, episode plays, Spotify embed plays, outbound streaming clicks). No-op until the measurement ID at the top of the file is filled in. See README.md | Oct 2026 |
+| `analytics.js` | Google Analytics 4 (page views, episode plays, Spotify embed plays, outbound streaming clicks). The measurement ID (G-C7JG53MTFV) is the line at the top of the file. See README.md | Oct 2026 |
 | `README.md` | How to turn on Google Analytics and where to read the numbers | Oct 2026 |
 | `sw.js` | Service worker — caching strategy, push notifications | May 2026 |
 | `manifest.json` | PWA manifest — app name, icons, shortcuts, theme color | — |
