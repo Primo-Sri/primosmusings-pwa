@@ -1,4 +1,4 @@
-const CACHE_NAME = 'primosmusings-v61';
+const CACHE_NAME = 'primosmusings-v62';
 const STATIC_ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
@@ -78,6 +78,13 @@ self.addEventListener('fetch', event => {
   if (isHTML || isManifest) {
     // Network-first with 4s timeout — user always gets fresh content,
     // but falls back to cache instantly if offline or network is slow
+    event.respondWith(networkFirst(event.request, 4000));
+    return;
+  }
+
+  // analytics.js holds the GA measurement ID. Network-first so pasting a
+  // new ID isn't stuck on the cache-first rule used for images below.
+  if (url.pathname === '/analytics.js') {
     event.respondWith(networkFirst(event.request, 4000));
     return;
   }
