@@ -2659,6 +2659,13 @@ function renderAlsoTodayCard(ep, issue) {
   );
 }
 
+// The other episodes from the same Eastern day as `ep` (newest first, at most two).
+function sameDayEpisodes(ep) {
+  const day = ep && ep.ts ? dailyEtDate(ep.ts) : '';
+  if (!day) return [];
+  return loadedEpisodes.slice(1, 15).filter(o => o.ts && dailyEtDate(o.ts) === day).slice(0, 2);
+}
+
 // Home: the Latest Episode card gets its newsletter's buttons. Every other episode from the
 // same day (say News Bites plus an NFL Recap) gets its own "Also today" card, with its
 // newsletter's buttons once that newsletter is published.
@@ -2666,6 +2673,11 @@ async function showLatestEpisodeNewsletter(ep) {
   const box = document.getElementById('home-latest-news');
   const more = document.getElementById('home-more-episodes');
   if (!box || !more) return;
+  // Show today's other episodes straight away. Their newsletter buttons follow once the
+  // newsletters load, which can take several seconds on a slow connection.
+  const others = sameDayEpisodes(ep);
+  more.replaceChildren(...others.map(o => renderAlsoTodayCard(o, null)));
+
   const issues = await getNewsletters();
   if (loadedEpisodes[0] !== ep) return;  // a fresher episode list arrived meanwhile
 
@@ -2680,17 +2692,12 @@ async function showLatestEpisodeNewsletter(ep) {
     box.replaceChildren();
   }
 
-  const day = ep.ts ? dailyEtDate(ep.ts) : '';
-  const extras = [];
-  for (const other of loadedEpisodes.slice(1, 15)) {
-    if (!day || !other.ts || dailyEtDate(other.ts) !== day) continue;  // same Eastern day only
+  more.replaceChildren(...others.map(other => {
     let match = issues.find(i => episodeMatchesNewsletter(other, i)) || null;
     if (match && linked.some(l => l.kind === match.kind)) match = null;  // already shown above
     if (match) linked.push(match);
-    extras.push(renderAlsoTodayCard(other, match));
-    if (extras.length === 2) break;  // at most two more cards
-  }
-  more.replaceChildren(...extras);
+    return renderAlsoTodayCard(other, match);
+  }));
 
   linkedIssues = linked;
   syncHomeNewsCard();

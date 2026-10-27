@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v61 — 2026-10-27
+- **Fix — "Also today" episodes appear right away.** The Home tab used to wait for the newsletters to load from the database before drawing the other episodes from the same day. On a slow connection that wait can be 10 seconds or more, so the second episode (e.g. the Week 7 NFL Recap next to News Bites) seemed to be missing. The cards now show as soon as the episode list loads, and their newsletter buttons fill in when the newsletters arrive
+
 ## v60 — 2026-10-24
 - **Auto-update when people open the app.** Coming back to the app after 30+ seconds away now counts as opening it (phones usually resume an installed app rather than restart it), so a waiting update applies silently with a quick reload instead of showing the banner. The quiet-update window after opening goes from 5 to 15 seconds, so slow connections still qualify
 - **Never interrupts listening:** if an episode is playing, the app shows the "New version available" banner instead of reloading
