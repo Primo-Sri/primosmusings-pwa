@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v63 — 2026-11-03
+- **Fix — Primo tab episode count.** It was stuck at "647+" because only the Home count got updated when the episode list loaded. The Primo tab now gets the same live number as Home. The starting number shown before the list loads goes from 647+ to 770+ everywhere
+
 ## v62 — 2026-10-27
 - **Usage analytics, now on (ID G-C7JG53MTFV).** Visits, episode plays (in the app, on episode pages, and inside the Spotify embed), and clicks out to Spotify, Apple Podcasts, and the other listening apps can be counted in Google Analytics 4. See README.md. The Home tab's play list is unchanged
 
