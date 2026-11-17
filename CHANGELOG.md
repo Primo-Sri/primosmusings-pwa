@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v64 — 2026-11-16
+- **All-time plays updated to 11,970** (from Spotify for Creators, was 10,677). From now on a weekly job (Sundays 8 PM) reads the number and asks before pushing
+
 ## v63 — 2026-11-03
 - **Fix — Primo tab episode count.** It was stuck at "647+" because only the Home count got updated when the episode list loaded. The Primo tab now gets the same live number as Home. The starting number shown before the list loads goes from 647+ to 770+ everywhere
 
