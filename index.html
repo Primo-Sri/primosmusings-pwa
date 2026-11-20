@@ -1743,6 +1743,10 @@ const GUESTS = [
     aliases:['david janson','david'],
     spotify:'https://open.spotify.com/search/David%20Janson',
     episodes:[]},
+  { name:'Carlos Badiola Jr', init:'CB', year:2026, sports:['Golf'],
+    aliases:['carlos badiola'],
+    spotify:'https://open.spotify.com/search/Carlos%20Badiola%20Jr',
+    episodes:[]},
 ];
 
 /* ── Sport-tagged episode index ─────────────────────────────────────────────
@@ -3150,6 +3154,20 @@ async function cacheEpisodesInFirestore(items) {
   } catch(e) { /* non-fatal */ }
 }
 
+// Best guess at an episode's sport from its title, using the same names as the sport filter.
+function sportFromTitle(title) {
+  const t = (title || '').toLowerCase();
+  if (/\bgolf\b|\bpga\b|\bliv\b|masters|ryder cup/.test(t)) return 'Golf';
+  if (/tennis|wimbledon|\batp\b|\bwta\b/.test(t)) return 'Tennis';
+  if (/cricket|\bipl\b|\bt20\b|\bicc\b/.test(t)) return 'Cricket';
+  if (/\bf1\b|formula/.test(t)) return 'F1';
+  if (/\bnba\b/.test(t)) return 'NBA';
+  if (/\bnfl\b|super bowl/.test(t)) return 'NFL';
+  if (/soccer|fifa|world cup|premier league|champions league|\buefa\b/.test(t)) return 'Soccer';
+  if (/baseball|\bmlb\b|world series/.test(t)) return 'Baseball';
+  return '';
+}
+
 // Load guest tags from Firestore and merge with the hardcoded GUESTS array.
 // New tags added via admin.html show up here automatically.
 async function loadFirestoreTags() {
@@ -3172,7 +3190,8 @@ async function loadFirestoreTags() {
         // New guest — create an entry on the fly
         console.log('[Firestore] creating new guest:', guestName);
         const initials = guestName.trim().split(/\s+/).map(w => w[0]).join('').substring(0, 2).toUpperCase();
-        guest = { name: guestName, init: initials, year: episodeYear || new Date().getFullYear(), sports: [], episodes: [] };
+        guest = { name: guestName, init: initials, year: episodeYear || new Date().getFullYear(), sports: [], episodes: [],
+                  spotify: 'https://open.spotify.com/search/' + encodeURIComponent(guestName) };
         GUESTS.push(guest);
       } else {
         console.log('[Firestore] matched existing guest:', guest.name);
@@ -3186,6 +3205,9 @@ async function loadFirestoreTags() {
       if (!alreadyAdded) {
         console.log('[Firestore] adding episode to', guest.name, ':', episodeTitle);
         guest.episodes.unshift({ year: episodeYear || new Date().getFullYear(), title: episodeTitle, url: episodeUrl });
+        // So the guest shows under the right sport filter even before Claude adds a full profile.
+        const sport = sportFromTitle(episodeTitle);
+        if (sport && !guest.sports.includes(sport)) guest.sports.push(sport);
       } else {
         console.log('[Firestore] episode already in list for', guest.name, '— skipped');
       }

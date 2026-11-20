@@ -4,6 +4,10 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v66 — 2026-11-20
+- **Fix — new guests missing from their sport filter.** A guest tagged in admin who isn't in the app's guest list yet (like Carlos Badiola Jr) got no sport, so they didn't appear under e.g. ⛳ Golf, and their Spotify button had no link. New guests now get their sport from the episode title (golf, tennis, cricket, F1, NBA, NFL, soccer, baseball) and a Spotify search link for their name
+- **Added Carlos Badiola Jr** (Golf) to the app's guest list and the admin name list
+
 ## v65 — 2026-11-20
 - **Admin page redesigned in Material style, in the app's gold-and-black colours.** One section at a time instead of one long scroll: **Bites** (newsletters), **Polls**, **Guests** (tag a guest, transcripts) and **Top Played**, switched from a bar at the bottom of the phone (a side rail on a computer). The page remembers the last section you used. Same fields, buttons and behaviour as before; only the look and layout changed
 

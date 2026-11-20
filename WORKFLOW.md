@@ -77,7 +77,7 @@ Auto-deploys in about 1 minute.
 5. Tap **Save** → ✓ Saved!
 
 The guest will now appear automatically in the main app's Guests tab on the next load.
-Their card will show their name and this episode. No code needed.
+Their card will show their name and this episode, under the sport named in the episode title (e.g. "Golf" puts them under ⛳ Golf). No code needed.
 
 ---
 
