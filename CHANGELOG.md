@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v65 — 2026-11-20
+- **Admin page redesigned in Material style, in the app's gold-and-black colours.** One section at a time instead of one long scroll: **Bites** (newsletters), **Polls**, **Guests** (tag a guest, transcripts) and **Top Played**, switched from a bar at the bottom of the phone (a side rail on a computer). The page remembers the last section you used. Same fields, buttons and behaviour as before; only the look and layout changed
+
 ## v64 — 2026-11-16
 - **All-time plays updated to 11,970** (from Spotify for Creators, was 10,677). From now on a weekly job (Sundays 8 PM) reads the number and asks before pushing
 

@@ -6,6 +6,8 @@
 > **Newsletters (News Bites, NFL Recap, NFL Preview):** publish them from your phone in admin.html. See **Newsletters**.
 >
 > **Polls (NFL, golf, tennis):** create them in admin.html. See **Polls**.
+>
+> **Finding things in admin.html:** use the bar at the bottom of the screen: **Bites** (newsletters), **Polls**, **Guests** (tag a guest) and **Top Played**. On a computer it is a rail down the left side.
 
 ---
 
