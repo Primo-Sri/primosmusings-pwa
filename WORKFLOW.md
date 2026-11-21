@@ -280,3 +280,10 @@ Good to know:
 - **Never push to GitHub without asking Claude to bump the SW cache version** (`sw.js`).
   If you forget, some users will see stale content until their browser refreshes on its own.
 - **Admin page URL:** primosmusings.web.app/admin.html (bookmark this on your phone)
+- **"Also on" platform buttons are automatic.** Every episode card gets Spotify / Apple / Amazon /
+  YT Music / iHeart / Pocket Casts buttons with nothing to do per episode. The show links live in
+  the `PLATFORMS` list in `index.html` — edit there if a platform's show address ever changes.
+- **Platform stats live in different places:** Spotify for Creators total (11,970) already includes
+  Apple, Amazon, iHeart and Pocket Casts downloads. YouTube is separate (YouTube Studio).
+  Amazon's own dashboard: podcasters.amazon.com (show claimed Feb 2023). Followers can be added
+  up across platforms; plays should not (they'd be counted twice).

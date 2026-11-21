@@ -576,6 +576,18 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
   border-radius:7px;padding:7px 13px;font-size:.72rem;font-weight:700;
   text-decoration:none;-webkit-tap-highlight-color:transparent;
 }
+/* Per-episode "Also on" row of streaming platform chips */
+.ep-platforms{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:10px}
+.ep-platforms-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+.pl-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:.62rem;font-weight:600;color:rgba(255,255,255,.75);
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:20px;padding:3px 8px;text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.pl-chip:active{background:rgba(255,255,255,.1)}
+.pl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
 /* ══════════════════════════════════════════════════════
    GUESTS
@@ -961,6 +973,7 @@ main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;o
             Listen Now
           </button>
         </a>
+        <div id="home-latest-platforms"></div>
         <div class="lc-news" id="home-latest-news" hidden></div>
       </div>
       <div id="home-more-episodes"></div>
@@ -2224,6 +2237,7 @@ function updateHomeLatest() {
   latestLink.href = link;
   latestLink.dataset.audio = ep.audio || '';
   latestLink.dataset.eptitle = ep.title || '';
+  document.getElementById('home-latest-platforms').innerHTML = platformLinksHtml(ep);
   document.getElementById('home-latest-card').onclick = null;
   showLatestEpisodeNewsletter(ep);
 }
@@ -2244,8 +2258,54 @@ function renderEpCard(ep) {
     <a class="btn-ep-play" href="${spotifyLink(ep.link, ep.title)}" target="_blank" data-audio="${escAttr(ep.audio)}" data-eptitle="${escAttr(ep.title)}" onclick="return playEpisode(this)">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Play
     </a>
+    ${platformLinksHtml(ep)}
   </div>`;
 }
+
+/* ── Per-episode streaming platform links ───────────
+   Spotify: search by title (shows the episode first).
+   Apple: the exact episode, looked up from Apple's free
+   lookup service (latest 200 episodes). Everyone else
+   has no public episode lookup, so they open the show,
+   where the newest episode is at the top. */
+const APPLE_SHOW_URL = 'https://podcasts.apple.com/us/podcast/primosmusings/id1672851730';
+const PLATFORMS = [
+  { key:'spotify', name:'Spotify',      color:'#1DB954' },
+  { key:'apple',   name:'Apple',        color:'#fc3c44', url: APPLE_SHOW_URL },
+  { key:'amazon',  name:'Amazon',       color:'#FF9900', url:'https://music.amazon.com/podcasts/26244d08-ef1b-430e-8e03-38f33efb7adb/primosmusings' },
+  { key:'youtube', name:'YT Music',     color:'#FF0000', url:'https://music.youtube.com/playlist?list=PL15rJes1kJmHmPAQm7FRzX5VqAXi1slvX' },
+  { key:'iheart',  name:'iHeart',       color:'#C6002B', url:'https://www.iheart.com/podcast/269-primosmusings-143372825/' },
+  { key:'pocket',  name:'Pocket Casts', color:'#F43E37', url:'https://pocketcasts.com/podcast/primosmusings/f8647a40-1307-013c-f5e2-0acc26574db2' },
+];
+let appleEpisodeUrls = {};   // lowercase title → exact Apple episode link
+
+function platformLinksHtml(ep) {
+  const chips = PLATFORMS.map(p => {
+    let href = p.url;
+    if (p.key === 'spotify') href = spotifyLink(ep.link, ep.title);
+    if (p.key === 'apple') href = appleEpisodeUrls[(ep.title || '').toLowerCase().trim()] || APPLE_SHOW_URL;
+    return `<a class="pl-chip pl-${p.key}" href="${escAttr(href)}" target="_blank" rel="noopener" data-eptitle="${escAttr(ep.title)}"><span class="pl-dot" style="background:${p.color}"></span>${p.name}</a>`;
+  }).join('');
+  return `<div class="ep-platforms"><span class="ep-platforms-label">Also on</span>${chips}</div>`;
+}
+
+async function loadAppleEpisodeLinks() {
+  try {
+    const res = await fetch('https://itunes.apple.com/lookup?id=1672851730&entity=podcastEpisode&limit=200');
+    const data = await res.json();
+    (data.results || []).forEach(r => {
+      if (r.kind === 'podcast-episode' && r.trackName && r.trackViewUrl) {
+        appleEpisodeUrls[r.trackName.toLowerCase().trim()] = r.trackViewUrl.replace(/[?&]uo=\d+/, '');
+      }
+    });
+    // Upgrade any Apple chips already on screen from the show page to the exact episode
+    document.querySelectorAll('a.pl-apple').forEach(a => {
+      const exact = appleEpisodeUrls[(a.dataset.eptitle || '').toLowerCase().trim()];
+      if (exact) a.href = exact;
+    });
+  } catch (e) { /* non-fatal: Apple chips keep the show link */ }
+}
+loadAppleEpisodeLinks();
 
 /* ── Search ──────────────────────────────────────── */
 function openSearch() {

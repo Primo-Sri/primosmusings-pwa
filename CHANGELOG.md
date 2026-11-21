@@ -4,6 +4,9 @@ All notable changes to the app are recorded here. Most recent first.
 
 ---
 
+## v67 — 2026-11-21
+- **"Also on" platform links under every episode.** The Home Latest Episode card and each card in the Listen tab's episode list now have a row of small buttons: Spotify, Apple, Amazon, YT Music, iHeart, Pocket Casts. **Apple opens the exact episode** (looked up from Apple's free podcast lookup, latest 200 episodes). Spotify searches for the episode title. Amazon, YouTube Music, iHeart and Pocket Casts have no public way to look up a single episode, so they open the show, where the newest episode is at the top. Clicks are counted by the existing outbound-click tracking
+
 ## v66 — 2026-11-20
 - **Fix — new guests missing from their sport filter.** A guest tagged in admin who isn't in the app's guest list yet (like Carlos Badiola Jr) got no sport, so they didn't appear under e.g. ⛳ Golf, and their Spotify button had no link. New guests now get their sport from the episode title (golf, tennis, cricket, F1, NBA, NFL, soccer, baseball) and a Spotify search link for their name
 - **Added Carlos Badiola Jr** (Golf) to the app's guest list and the admin name list
